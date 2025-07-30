@@ -1,0 +1,15 @@
+<div class="login-container">
+  <h2>Login - Caixinha</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <label for="email">E-mail</label>
+    <input type="email" formControlName="email" required />
+
+    <label for="senha">Senha</label>
+    <input type="password" formControlName="senha" required />
+
+    <button type="submit" [disabled]="loading">Entrar</button>
+  </form>
+
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+</div>

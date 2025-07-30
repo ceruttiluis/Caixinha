@@ -1,0 +1,33 @@
+<app-header></app-header>
+
+<div class="form-container">
+  <h2>Lançar Cupom Fiscal</h2>
+
+  <form [formGroup]="cupomForm" (ngSubmit)="enviarCupom()">
+    <label>Tipo de Gasto</label>
+    <select formControlName="tipo">
+      <option value="">Selecione</option>
+      <option>Almoço</option>
+      <option>Janta</option>
+      <option>Transporte</option>
+      <option>Outros</option>
+    </select>
+
+    <div *ngIf="cupomForm.value.tipo === 'Outros'">
+      <label>Descreva</label>
+      <input type="text" formControlName="descricao" />
+    </div>
+
+    <label>Data da Nota</label>
+    <input type="date" formControlName="data" />
+
+    <label>Valor</label>
+    <input type="number" step="0.01" formControlName="valor" />
+
+    <label>Foto do Cupom</label>
+    <input type="file" (change)="onFileChange($event)" />
+    <img *ngIf="preview" [src]="preview" alt="Preview" width="200" />
+
+    <button type="submit" [disabled]="uploading">Enviar</button>
+  </form>
+</div>

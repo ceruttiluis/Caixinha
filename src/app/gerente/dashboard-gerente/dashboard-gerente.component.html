@@ -1,0 +1,36 @@
+<app-sidebar-gerente></app-sidebar-gerente>
+
+<div class="main-content">
+  <h2>Dashboard da Filial</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Colaborador</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+        <th>Excedente</th>
+        <th>Status</th>
+        <th>Imagem</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cupom of cupons">
+        <td>{{ cupom.usuario_nome }}</td>
+        <td>{{ cupom.tipo_gasto }}</td>
+        <td>R$ {{ cupom.valor.toFixed(2) }}</td>
+        <td [ngStyle]="{color: cupom.excedente > 0 ? 'red' : 'black'}">
+          R$ {{ cupom.excedente?.toFixed(2) || '0.00' }}
+        </td>
+        <button (click)="exportarParaExcel()">Exportar Excel</button>
+        <td>{{ cupom.status }}</td>
+        <td><a [href]="cupom.url_imagem" target="_blank">Ver</a></td>
+        <td>
+          <button (click)="updateStatus(cupom.id, 'Aprovado')">Aprovar</button>
+          <button (click)="updateStatus(cupom.id, 'Descontado')">Descontar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
