@@ -33,9 +33,10 @@ router.post('/', async (req, res) => {
   // 1. Criar usuário no auth
   const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
     user_metadata: { nome },
-    email: `${Date.now()}@fakeemail.com`, // e-mail opcional para testes
+    email: `teste@fakeemail.com`, // e-mail opcional para testes
     password: 'SenhaForte123',            // defina lógica real
-    id: auth_user_id                      // opcional: use ID específico
+    id: auth_user_id,    
+    user_metadata: { role: 'CIOP' }                  // opcional: use ID específico
   });
 
   if (authError) {

@@ -23,7 +23,7 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      senha: ['', Validators.required]
+      password: ['', Validators.required]
     });
   }
 
@@ -33,11 +33,12 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    const { email, senha } = this.loginForm.value;
-
+    const { email, password } = this.loginForm.value;
+    console.log('Tentando login com:', email, password);
     try {
-      await this.authService.login(email, senha);
+      await this.authService.login(email, password);
       const role = await this.authService.getRole();
+      console.log('Role detectada:', role);
 
       if (role === 'CIOP') this.router.navigate(['/ciop']);
       else if (role === 'GERENTE') this.router.navigate(['/gerente']);
