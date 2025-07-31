@@ -4,11 +4,12 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class ColaboradorGuard implements CanActivate {
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
-    const role = this.auth.getRole();
+   async canActivate(): Promise<boolean> {
+    const role = await this.authService.getRole();
     if (role === 'COLABORADOR') return true;
+
     this.router.navigate(['/login']);
     return false;
   }

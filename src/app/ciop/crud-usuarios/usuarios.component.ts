@@ -3,12 +3,13 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-usuarios',
   templateUrl: './usuarios.component.html',
   //styleUrls: ['./usuarios.component.scss']
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   standalone: true
 })
 export class UsuariosComponent implements OnInit {

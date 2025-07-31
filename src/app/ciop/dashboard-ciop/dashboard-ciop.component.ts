@@ -6,7 +6,7 @@ import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { CommonModule, NgStyle } from '@angular/common'; 
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
-
+import { RouterModule } from '@angular/router';
 
 
 @Component({
@@ -14,7 +14,7 @@ import * as FileSaver from 'file-saver';
   templateUrl: './dashboard-ciop.component.html',
  //tyleUrls: ['./dashboard-ciop.component.scss']
   standalone: true,
-  imports: [SidebarCiopComponent, CommonModule, NgStyle]
+  imports: [SidebarCiopComponent, CommonModule, NgStyle, RouterModule]
 })
 export class DashboardCiopComponent implements OnInit {
   supabase: SupabaseClient;

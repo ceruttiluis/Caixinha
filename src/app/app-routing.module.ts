@@ -21,14 +21,14 @@ export const routes: Routes = [
   },
   {
     path: 'ciop',
-    canActivate: [CiopGuard],
-    loadChildren: () => import('./ciop/ciop.module').then(m => m.CiopModule)
+    loadChildren: () => import('./ciop/ciop.module').then(m => m.CiopModule),
+    canActivate: [CiopGuard]
   },
   { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { enableTracing: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

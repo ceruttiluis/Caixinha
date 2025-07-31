@@ -4,11 +4,13 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CiopGuard implements CanActivate {
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
-    const role = this.auth.getRole();
+  async canActivate(): Promise<boolean> {
+    const role = await this.authService.getRole();
+     console.log('[CiopGuard] Role detectada:', role);
     if (role === 'CIOP') return true;
+
     this.router.navigate(['/login']);
     return false;
   }

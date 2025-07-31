@@ -34,20 +34,35 @@ export class LoginComponent {
     this.errorMessage = '';
 
     const { email, password } = this.loginForm.value;
-    console.log('Tentando login com:', email, password);
-    try {
-      await this.authService.login(email, password);
-      const role = await this.authService.getRole();
-      console.log('Role detectada:', role);
 
-      if (role === 'CIOP') this.router.navigate(['/ciop']);
-      else if (role === 'GERENTE') this.router.navigate(['/gerente']);
-      else if (role === 'COLABORADOR') this.router.navigate(['/colaborador']);
-      else throw new Error('Tipo de usuário desconhecido.');
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Erro ao fazer login';
-    } finally {
-      this.loading = false;
-    }
+    try {
+    const userData = await this.authService.login(email, password);
+    console.log('[Login] Login bem-sucedido:', userData);
+    const role = await this.authService.getRole();
+    console.log('Role detectada:', userData.role);
+
+    const redirectUrl = `/${userData.role.toLowerCase()}`;
+    console.log('Redirecionando para:', redirectUrl);
+
+   setTimeout(() => {
+  switch(userData.role) {
+    case 'CIOP':
+      this.router.navigate(['/ciop']);
+      break;
+    case 'GERENTE':
+      this.router.navigate(['/gerente']);
+      break;
+    case 'COLABORADOR':
+      this.router.navigate(['/colaborador']);
+      break;
+    default:
+      this.errorMessage = 'Tipo de usuário não reconhecido.';
+  }
+}, 100);} catch (error: any) {
+    console.error('Erro completo:', error);
+    this.errorMessage = error.message || 'Credenciais inválidas ou erro no servidor';
+  } finally {
+    this.loading = false;
+  }
   }
 }

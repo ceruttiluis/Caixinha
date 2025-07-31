@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-sidebar-ciop',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  standalone: true,
 })
 export class SidebarCiopComponent {
   constructor(private auth: AuthService, private router: Router) {}
