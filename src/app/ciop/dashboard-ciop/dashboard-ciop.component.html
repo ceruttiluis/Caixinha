@@ -1,37 +1,208 @@
-<app-sidebar-ciop></app-sidebar-ciop>
+
 <router-outlet></router-outlet>
 
-<div class="main-content">
-  <h2>Dashboard da Filial</h2>
+<!----
+<app-sidebar-ciop></app-sidebar-ciop>
+<div class="dashboard-container">
+  <h2>Dashboard Geral</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Colaborador</th>
-        <th>Tipo</th>
-        <th>Valor</th>
-        <th>Excedente</th>
-        <th>Status</th>
-        <th>Imagem</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let cupom of cupons">
-        <td>{{ cupom.usuario_nome }}</td>
-        <td>{{ cupom.tipo_gasto }}</td>
-        <td>R$ {{ cupom.valor.toFixed(2) }}</td>
-        <td [ngStyle]="{color: cupom.excedente > 0 ? 'red' : 'black'}">
-          R$ {{ cupom.excedente?.toFixed(2) || '0.00' }}
-        </td>
-        <button (click)="exportarParaExcel()">Exportar Excel</button>
-        <td>{{ cupom.status }}</td>
-        <td><a [href]="cupom.url_imagem" target="_blank">Ver</a></td>
-        <td>
-          <button (click)="updateStatus(cupom.id, 'Aprovado')">Aprovar</button>
-          <button (click)="updateStatus(cupom.id, 'Descontado')">Descontar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="filters">
+    <label for="filialSelect">Filtrar por Filial:</label>
+    <select id="filialSelect" [(ngModel)]="filialSelecionada">
+      <option value="">Todas</option>
+      <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
+    </select>
+  </div>
+  
+  <div class="indicators">
+    <div class="indicator">
+      <h3>Total Gasto</h3>
+      <p class="green">R$ {{ totalGasto | number:'1.2-2' }}</p>
+    </div>
+    <div class="indicator">
+      <h3>Orçamento Base</h3>
+      <p>R$ {{ totalOrcamento | number:'1.2-2' }}</p>
+    </div>
+    <div class="indicator">
+      <h3>Déficit (Prejuízo)</h3>
+      <p class="red">R$ {{ totalDeficit | number:'1.2-2' }}</p>
+    </div>
+    <div class="indicator">
+      <h3>Descontado na Folha</h3>
+      <p class="red">R$ {{ totalDescontado | number:'1.2-2' }}</p>
+    </div>
+    <div class="indicator">
+      <h3>Excedente Aprovado</h3>
+      <p class="blue">R$ {{ totalExcedenteAprovado | number:'1.2-2' }}</p>
+    </div>
+  </div>
+
+  <div class="rankings">
+    <div class="ranking-card">
+      <h4>Ranking - Quem mais gastou</h4>
+      <ul>
+        <li *ngFor="let user of rankingGastos">
+          {{ user.nome }} - R$ {{ user.total | number:'1.2-2' }}
+        </li>
+      </ul>
+    </div>
+    <div class="ranking-card">
+      <h4>Ranking - Quem mais extrapolou</h4>
+      <ul>
+        <li *ngFor="let user of rankingExtrapolo">
+          {{ user.nome }} - R$ {{ user.excedente | number:'1.2-2' }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="lancamentos-section">
+    <h3>Lista de Lançamentos</h3>
+    <div class="export-btn">
+      <button (click)="exportarParaExcel()">Exportar para Excel</button>
+    </div>
+
+    <table class="tabela-lancamentos">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Usuário</th>
+      <th>Data</th>
+      <th>Tipo</th>
+      <th>Valor</th>
+      <th>Imagem</th>
+      <th>Status</th>
+      <th>Excedente</th>
+      <th>Observação</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let lancamento of cupons">
+      <td>{{ lancamento.id }}</td>
+      <td>{{ lancamento.usuario_nome || lancamento.usuario }}</td>
+      <td>{{ lancamento.data_nota || lancamento.data | date:'shortDate' }}</td>
+      <td>{{ lancamento.tipo_gasto || lancamento.tipo }}</td>
+      <td>R$ {{ lancamento.valor | number:'1.2-2' }}</td>
+      <td>
+        <a [href]="lancamento.url_imagem" target="_blank">Ver Foto</a>
+      </td>
+      <td>{{ lancamento.status }}</td>
+      <td
+        [ngClass]="{
+          'red': lancamento.excedente > 0 && lancamento.descontar,
+          'blue': lancamento.excedente > 0 && !lancamento.descontar,
+          'black': lancamento.excedente <= 0
+        }"
+      >
+        R$ {{ lancamento.excedente | number:'1.2-2' }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+  </div>
 </div>
+---->
+
+<main class="dashboard">
+ <aside class="sidebar">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">
+        <img src="assets/BtnDash.png" alt="Dashboard">
+      </a>
+      <div class="label">Dashboard</div>
+      <a routerLink="/usuarios" routerLinkActive="active">
+        <img src="assets/Usuarios.png" alt="Usuários">
+      </a>
+      <div class="label">Usuarios</div>
+      <a (click)="logout()">
+        <img src="assets/Logout.png" alt="Sair">
+      </a>
+      <div class="label">Sair</div>
+    </nav>
+  </aside>
+
+  <section class="content animate-fade-in">
+    <h1>DASHBOARD GERAL</h1>
+    <h1>Filial</h1>
+    <h1>Colaborador</h1>
+    <div class="filters">
+      <input type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial...">
+      <input type="text" placeholder="Colaborador...">
+    </div>
+
+    <div class="cards">
+      <div class="card total">
+        <div class="label">Total Gasto</div>
+      <div class="coin">$</div>
+        <div class="value">{{ totalGasto | currency:'BRL' }}</div>
+      </div>
+      <div class="card orcamento">
+        <div class="label">Orçamento Base</div>
+        <div class="coin">$</div>
+        <div class="value">{{ totalOrcamento | currency:'BRL' }}</div>
+      </div>
+      <div class="card deficit">
+        <div class="label">Déficit (Prejuízo)</div>
+        <div class="coin">$</div>
+        <div class="value">{{ totalDeficit | currency:'BRL' }}</div>
+      </div>
+      <div class="card folha">
+        <div class="label">Descontado na Folha</div>
+        <div class="coin">$</div>
+        <div class="value">{{ totalDescontado | currency:'BRL' }}</div>
+      </div>
+      <div class="card excedente">
+        <div class="label">Excedente Aprovado</div>
+        <div class="coin">$</div>
+        <div class="value">{{ totalExcedenteAprovado | currency:'BRL' }}</div>
+      </div>
+    </div>
+
+    <div class="rankings">
+      <div class="ranking">
+        <h2>Ranking - Maior Gasto</h2>
+        <ul>
+          <li *ngFor="let item of rankingGastos">{{ item.nome }} - {{ item.total | currency:'BRL' }}</li>
+        </ul>
+      </div>
+
+      <div class="ranking">
+        <h2>Ranking - Fora da Política</h2>
+        <ul>
+          <li *ngFor="let item of rankingExtrapolo">{{ item.nome }} - {{ item.excedente | currency:'BRL' }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tabela-lancamentos">
+      <h2>Lista de Lançamento</h2>
+      <button (click)="exportarParaExcel()">Exportar Excel</button>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Imagem</th>
+            <th>Status</th>
+            <th>Excedente</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cupom of cupons">
+            <td>{{ cupom.id }}</td>
+            <td>{{ cupom.usuario }}</td>
+            <td>{{ cupom.data | date:'shortDate' }}</td>
+            <td>{{ cupom.tipo }}</td>
+            <td>{{ cupom.valor | currency:'BRL' }}</td>
+            <td><img [src]="cupom.url_imagem" alt="Nota" class="imagem-nota"></td>
+            <td>{{ cupom.status }}</td>
+            <td>{{ cupom.excedente | currency:'BRL' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

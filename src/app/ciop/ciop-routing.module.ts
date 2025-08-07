@@ -1,17 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
+// Standalone components
 import { DashboardCiopComponent } from './dashboard-ciop/dashboard-ciop.component';
 import { UsuariosComponent } from './crud-usuarios/usuarios.component';
 import { CiopGuard } from '../guards/ciop.guard';
 
-export const routes: Routes = [
-  { 
-    path: '', 
+const routes: Routes = [
+  {
+    path: '',
+    component: DashboardCiopComponent,
     canActivate: [CiopGuard],
-    children: [
-      { path: '', component: DashboardCiopComponent },
-      { path: 'usuarios', component: UsuariosComponent }
-    ]
+    data: { roles: ['CIOP'] }
+  },
+  {
+    path: 'usuarios',
+    component: UsuariosComponent,
+    canActivate: [CiopGuard],
+    data: { roles: ['CIOP'] }
   }
 ];
 

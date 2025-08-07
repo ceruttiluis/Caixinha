@@ -21,8 +21,8 @@ export class AuthService {
   }
   private roleMapping: {[key: string]: string} = {
   'admin': 'CIOP', // Mapeia 'admin' do banco para 'CIOP' no front
-  'gerente': 'GERENTE',
-  'colaborador': 'COLABORADOR'
+  'moderator': 'GERENTE',
+  'user': 'COLABORADOR'
 };
   
   async login(email: string, password: string): Promise<{role: string}> {
@@ -40,37 +40,26 @@ export class AuthService {
 
   // 2. Buscar perfil
   const { data: profile, error: profileError } = await this.supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', authData.user?.id)
-    .single();
+  .from('profiles')
+  .select('role, filial_id')
+  .eq('id', authData.user?.id)
+  .single();
 
-    const frontendRole = this.roleMapping[profile?.role?.toLowerCase()] || 'COLABORADOR';
-  
-  console.log('Resultado da busca de perfil:', { profile, profileError });
+if (profileError) throw profileError;
+if (!profile) throw new Error('Perfil não encontrado');
 
-  if (profileError) {
-    console.error('Erro ao buscar perfil:', profileError);
-    throw profileError;
-  }
+const frontendRole = this.roleMapping[profile.role?.toLowerCase()] || 'COLABORADOR';
 
-  if (!profile) {
-    console.error('Perfil não encontrado para user ID:', authData.user?.id);
-    throw new Error('Perfil não encontrado');
-  }
+const userData = {
+  ...authData.user,
+  role: frontendRole,
+  filial_id: profile.filial_id || null
+};
 
-  const userData = {
-    ...authData.user,
-    role: frontendRole, // Fallback seguro
-    filial_id: profile || null
-  };
+localStorage.setItem('token', authData.session.access_token);
+localStorage.setItem('user', JSON.stringify(userData));
 
-  console.log('Dados completos do usuário:', userData);
-  
-  localStorage.setItem('token', authData.session.access_token);
-  localStorage.setItem('user', JSON.stringify(userData));
-
-  return userData;
+return userData;
 }
 async signUp(email: string, password: string) {
   // 1. Registrar no Auth
@@ -98,17 +87,15 @@ async signUp(email: string, password: string) {
     localStorage.removeItem('token');
   }
 
-async getRole(): Promise<string | null> {
-  const userData = localStorage.getItem('user');
-  if (!userData) return null;
-
-  try {
-    const parsed = JSON.parse(userData);
-    return parsed.role || null;
-  } catch (e) {
-    console.error('Erro ao fazer parse de user no localStorage:', e);
-    return null;
-  }
+getRoleSync(): string | null {
+    const userData = localStorage.getItem('user');
+    if (!userData) return null;
+    try {
+      const parsed = JSON.parse(userData);
+      return parsed.role || null;
+      } catch {
+      return null;
+      }
 }
 
   getUserId(): string | null {

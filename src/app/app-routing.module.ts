@@ -9,21 +9,6 @@ import { ColaboradorGuard } from './guards/colaborador.guard';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  {
-    path: 'colaborador',
-    canActivate: [ColaboradorGuard],
-    loadChildren: () => import('./colaborador/colaborador.module').then(m => m.ColaboradorModule)
-  },
-  {
-    path: 'gerente',
-    canActivate: [GerenteGuard],
-    loadChildren: () => import('./gerente/gerente.module').then(m => m.GerenteModule)
-  },
-  {
-    path: 'ciop',
-    loadChildren: () => import('./ciop/ciop.module').then(m => m.CiopModule),
-    canActivate: [CiopGuard]
-  },
   { path: '**', redirectTo: 'login' }
 ];
 

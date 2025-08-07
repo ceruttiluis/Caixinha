@@ -15,18 +15,21 @@ export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string = '';
   loading: boolean = false;
-
+  
   constructor(
     private authService: AuthService,
     private router: Router,
     private fb: FormBuilder
-  ) {
+  )
+  
+  
+  {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
   }
-
+  
   async onSubmit(): Promise<void> {
     if (this.loginForm.invalid) return;
 
@@ -38,7 +41,7 @@ export class LoginComponent {
     try {
     const userData = await this.authService.login(email, password);
     console.log('[Login] Login bem-sucedido:', userData);
-    const role = await this.authService.getRole();
+    const role = await this.authService.getRoleSync();
     console.log('Role detectada:', userData.role);
 
     const redirectUrl = `/${userData.role.toLowerCase()}`;

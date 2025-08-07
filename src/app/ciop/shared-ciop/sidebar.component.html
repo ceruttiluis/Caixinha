@@ -1,8 +1,13 @@
-<nav class="sidebar">
-  <h2>CIOP</h2>
-  <ul>
-    <li><a routerLink="/ciop" routerLinkActive="active">Dashboard</a></li>
-    <li><a routerLink="/ciop/usuarios" routerLinkActive="active">Gerenciar Usuários</a></li>
-    <li><button (click)="logout()">Sair</button></li>
-  </ul>
-</nav>
+<aside class="sidebar">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">
+        <img src="assets/IconDash.png" alt="Dashboard">
+      </a>
+      <a routerLink="/usuarios" routerLinkActive="active">
+        <img src="assets/Usuario.png" alt="Usuários">
+      </a>
+      <a (click)="logout()">
+        <img src="assets/Logout.png" alt="Sair">
+      </a>
+    </nav>
+  </aside>
