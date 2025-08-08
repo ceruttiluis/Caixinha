@@ -1,43 +1,58 @@
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #007bff;
-  color: white;
-  padding: 1rem 2rem;
+.Principal {
+          background-color: #e8f5e9;
+          margin-left: 90px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 30px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+          height: 190px;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          height: 120px;
+          z-index: 1000;
+          gap: 8rem;
+          font-family: 'Segoe UI', sans-serif;
+          h1 {
+            width: 500px;
+            font-size: 2.5rem;
+            color: #130458;
+            margin-bottom: 1rem;
+          }
+          .Logo {
+            width: 330px;
+            height: 100px;
+          }
+          .Policy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            line-height: 0.1;
+            margin-top: 6rem;
+            background-color: #c8d3c6;
+            border-radius: 20px;
 
-  h1 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
+            p {
+              display: flex;
+              justify-content: space-between;
+              width: 210px;
+              gap: 0;
+              font-size: 1.0rem;
+            }
 
-  button {
-    background: white;
-    color: #007bff;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    font-weight: bold;
-  }
-   .logo {
-    font-weight: bold;
-    font-size: 1.5rem;
-  }
-  .nav {
-    display: flex;
-    gap: 1rem;
+            span {
+              margin-left: 10px;
+              font-weight: 500;
+            }
 
-    a, button {
-      color: white;
-      text-decoration: none;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    a.active {
-      border-bottom: 2px solid white;
-    }
-  }
+            strong {
+              color: #130458;
+              font-weight: bold;
+              margin-right: 10px;
+            }
 }
+}
+

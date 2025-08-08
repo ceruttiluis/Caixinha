@@ -102,32 +102,46 @@
   </div>
 </div>
 ---->
+<app-header></app-header>
 
 <main class="dashboard">
  <aside class="sidebar">
     <nav>
       <a routerLink="/dashboard" routerLinkActive="active">
-        <img src="assets/BtnDash.png" alt="Dashboard">
+        <img class="img" src="assets/BtnDash.png" alt="Dashboard">
       </a>
       <div class="label">Dashboard</div>
       <a routerLink="/usuarios" routerLinkActive="active">
-        <img src="assets/Usuarios.png" alt="Usuários">
+        <img class="img" src="assets/Usuarios.png" alt="Usuários">
       </a>
       <div class="label">Usuarios</div>
       <a (click)="logout()">
-        <img src="assets/Logout.png" alt="Sair">
+        <img class="img" src="assets/Logout.png" alt="Sair">
       </a>
       <div class="label">Sair</div>
     </nav>
   </aside>
 
   <section class="content animate-fade-in">
-    <h1>DASHBOARD GERAL</h1>
-    <h1>Filial</h1>
-    <h1>Colaborador</h1>
+    <div class="Description">
+      <h2>Filial</h2>
+    <h2>Colaborador</h2>
+    </div>
     <div class="filters">
-      <input type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial...">
-      <input type="text" placeholder="Colaborador...">
+      <input list="listaFiliais" id="filial" name="filial" placeholder="Filial..." />
+      <datalist id="listaFiliais">
+      <option value="Curitiba"></option>
+      <option value="Foz do Iguaçu"></option>
+      <option value="Cascavel"></option>
+      </datalist>
+      <!--<input type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial...">
+      <input type="text" placeholder="Colaborador...">-->
+      <input list="listaColaboradores" id="colaborador" name="colaborador" placeholder="Colaborador..." />
+      <datalist id="listaColaboradores">
+      <option value="João Silva"></option>
+      <option value="Maria Souza"></option>
+      <option value="Carlos Lima"></option>
+      </datalist>
     </div>
 
     <div class="cards">
@@ -160,20 +174,56 @@
 
     <div class="rankings">
       <div class="ranking">
-        <h2>Ranking - Maior Gasto</h2>
+          <div class="Title">
+            <img src="assets/Logo.png" alt="Logo" class="Logo">
+            <h2>Ranking - Maior Gasto</h2>
+          </div>
+          <div class="table-container">
+              <table>
+            <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Filial</th>
+            <th>Valor</th>
+          </tr>
+            </thead>
         <ul>
-          <li *ngFor="let item of rankingGastos">{{ item.nome }} - {{ item.total | currency:'BRL' }}</li>
+          <tr *ngFor="let item of rankingGastos">
+            <td>{{ item.nome }} </td>
+            <td>Toledo</td>
+            <td>{{ item.total | currency:'BRL' }}</td>
+          </tr>
         </ul>
+        </table>
+          </div>
       </div>
 
       <div class="ranking">
-        <h2>Ranking - Fora da Política</h2>
+         <div class="Title">
+            <img src="assets/Logo.png" alt="Logo" class="Logo">
+            <h2>Ranking - Fora da Política</h2>
+          </div>
+          <div class="table-container">
+              <table>
+            <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Filial</th>
+            <th>Valor</th>
+          </tr>
+            </thead>
         <ul>
-          <li *ngFor="let item of rankingExtrapolo">{{ item.nome }} - {{ item.excedente | currency:'BRL' }}</li>
+          <tr *ngFor="let item of rankingExtrapolo">
+            <td>{{ item.nome }} </td>
+            <td>Toledo</td>
+            <td>{{ item.excedente | currency:'BRL' }}</td>
+          </tr>
         </ul>
+        </table>
+          </div>
       </div>
     </div>
-
+<button (click)="usarDadosTeste()">Usar dados de teste</button>
     <div class="tabela-lancamentos">
       <h2>Lista de Lançamento</h2>
       <button (click)="exportarParaExcel()">Exportar Excel</button>
@@ -191,15 +241,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cupom of cupons">
-            <td>{{ cupom.id }}</td>
-            <td>{{ cupom.usuario }}</td>
-            <td>{{ cupom.data | date:'shortDate' }}</td>
-            <td>{{ cupom.tipo }}</td>
-            <td>{{ cupom.valor | currency:'BRL' }}</td>
-            <td><img [src]="cupom.url_imagem" alt="Nota" class="imagem-nota"></td>
-            <td>{{ cupom.status }}</td>
-            <td>{{ cupom.excedente | currency:'BRL' }}</td>
+          <tr *ngFor="let lancamento of cupons">
+            <td>{{ lancamento.id }}</td>
+            <td>{{ lancamento.usuario }}</td>
+            <td>{{ lancamento.data | date:'shortDate' }}</td>
+            <td>{{ lancamento.tipo }}</td>
+            <td>{{ lancamento.valor | currency:'BRL' }}</td>
+            <td><img [src]="lancamento.url_imagem" alt="Nota" class="imagem-nota"></td>
+            <td>{{ lancamento.status }}</td>
+             <td
+        [ngClass]="{
+          'red': lancamento.excedente > 0 && lancamento.descontar,
+          'blue': lancamento.excedente > 0 && !lancamento.descontar,
+          'black': lancamento.excedente <= 0
+        }"
+      >
+        R$ {{ lancamento.excedente | currency:'BRL' }}
+      </td>
           </tr>
         </tbody>
       </table>
