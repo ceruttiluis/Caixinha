@@ -35,37 +35,61 @@ export class LancarCupomComponent {
     });
   }
 
-  onFileChange(event: any): void {
-    const file = event.target.files[0];
-    this.cupomForm.patchValue({ imagem: file });
+onFileChange(event: any): void {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => (this.preview = reader.result as string);
-    reader.readAsDataURL(file);
+  this.cupomForm.patchValue({ imagem: file });
+  this.cupomForm.get('imagem')?.updateValueAndValidity();
+
+  const reader = new FileReader();
+  reader.onload = () => (this.preview = reader.result as string);
+  reader.readAsDataURL(file);
+}
+
+async enviarCupom(): Promise<void> {
+  if (this.cupomForm.invalid) {
+    alert('Preencha todos os campos obrigatórios!');
+    return;
   }
 
-  async enviarCupom(): Promise<void> {
-    if (this.cupomForm.invalid) return;
+  this.uploading = true;
+  const file: File = this.cupomForm.value.imagem;
+  const filePath = `cupons/${Date.now()}-${file.name}`;
 
-    this.uploading = true;
-    const file = this.cupomForm.value.imagem;
-    const filePath = `cupons/${Date.now()}-${file.name}`;
+  // Upload para o bucket "cupons"
+  const { error: uploadError } = await this.supabase
+    .storage
+    .from('cupons')
+    .upload(filePath, file);
 
-    const { data: uploadData, error: uploadError } = await this.supabase.storage
-      .from('cupons')
-      .upload(filePath, file);
+  if (uploadError) {
+    alert('Erro ao enviar imagem: ' + uploadError.message);
+    this.uploading = false;
+    return;
+  }
 
-    if (uploadError) {
-      alert('Erro ao enviar imagem');
-      this.uploading = false;
-      return;
-    }
+  const imageUrl = `${environment.supabaseUrl}/storage/v1/object/public/cupons/${filePath}`;
 
-    const imageUrl = `${environment.supabaseUrl}/storage/v1/object/public/cupons/${filePath}`;
-    const { tipo, descricao, data, valor } = this.cupomForm.value;
+  const { tipo, descricao, data, valor } = this.cupomForm.value;
 
-    const { error: insertError } = await this.supabase.from('cupons').insert({
+   const { data: perfil, error: perfilError } = await this.supabase
+    .from('profiles')
+    .select('filial_id')
+    .eq('id', this.auth.getUserId())
+    .single();
+
+  if (perfilError || !perfil?.filial_id) {
+    alert('Erro: não foi possível encontrar a filial do usuário.');
+    this.uploading = false;
+    return;
+  }
+
+  const { error: insertError } = await this.supabase
+    .from('cupons')
+    .insert({
       usuario_id: this.auth.getUserId(),
+      filial_id: perfil.filial_id, 
       tipo_gasto: tipo,
       descricao_outros: tipo === 'Outros' ? descricao : null,
       data_nota: data,
@@ -74,10 +98,16 @@ export class LancarCupomComponent {
     });
 
     if (insertError) {
-      alert('Erro ao salvar cupom');
+      alert('Erro ao salvar cupom: ' + insertError.message);
     } else {
       alert('Cupom enviado com sucesso!');
-      this.cupomForm.reset();
+      this.cupomForm.reset({
+        tipo: '',
+        descricao: '',
+        data: new Date().toISOString().split('T')[0],
+        valor: '',
+        imagem: null
+      });
       this.preview = '';
     }
 

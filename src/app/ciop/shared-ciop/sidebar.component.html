@@ -1,13 +1,20 @@
-<aside class="sidebar">
+ <aside class="sidebar">
     <nav>
       <a routerLink="/dashboard" routerLinkActive="active">
-        <img src="assets/IconDash.png" alt="Dashboard">
+        <img class="img" src="assets/BtnDash.png" alt="Dashboard">
       </a>
+      <div class="label">Dashboard</div>
       <a routerLink="/usuarios" routerLinkActive="active">
-        <img src="assets/Usuario.png" alt="Usuários">
+        <img class="img" src="assets/Usuarios.png" alt="Usuários">
       </a>
-      <a (click)="logout()">
-        <img src="assets/Logout.png" alt="Sair">
+      <div class="label">Usuarios</div>
+      <a routerLink="/filiais" routerLinkActive="active">
+        <img class="img" src="assets/Filiais.png" alt="Filiais">
       </a>
+      <div class="label">Filiais</div>
+      <a (click)="logout()" routerLinkActive="active">
+        <img class="img" src="assets/Logout.png" alt="Sair">
+      </a>
+      <div class="label">Sair</div>
     </nav>
   </aside>

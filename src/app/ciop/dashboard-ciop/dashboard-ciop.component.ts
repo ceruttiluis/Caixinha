@@ -31,7 +31,9 @@ export class DashboardCiopComponent implements OnInit {
   cupons: any[] = [];
   filialId: string | null = null;
   filiais: any[] = [];
+  usuario: any[] = [];
   filialSelecionada: string = '';
+  colaboradorSelecionado: string = '';
 
   totalGasto = 0;
   totalOrcamento = 0;
@@ -52,6 +54,7 @@ export class DashboardCiopComponent implements OnInit {
   async ngOnInit() {
     this.filialId = this.auth.getFilialId(); // ou null para ver todas
     await this.carregarFiliais();
+    await this.carregarColaboradores()
     await this.carregarDados();
   }
   usarDadosTeste() {
@@ -140,8 +143,29 @@ export class DashboardCiopComponent implements OnInit {
 }
 
   async carregarFiliais() {
-    const { data } = await this.supabase.from('filiais').select('id, nome');
-    this.filiais = data || [];
+        const { data, error } = await this.supabase
+      .from('filiais')
+      .select('id, nome');
+
+    if (!error && data) {
+      this.filiais = data;
+    }
+  }
+   async carregarColaboradores() {
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .select('id, name');
+
+    if (!error && data) {
+      this.usuario = data;
+    }
+  }
+  onFilialChange() {
+    console.log('Filial selecionada:', this.filialSelecionada);
+  }
+
+  onColaboradorChange() {
+    console.log('Colaborador selecionado:', this.colaboradorSelecionado);
   }
 
   async carregarDados() {
@@ -223,9 +247,6 @@ export class DashboardCiopComponent implements OnInit {
     await this.carregarDados(); // refresh
   }
 
-  async onFilialChange() {
-    await this.carregarDados();
-  }
 
   exportarParaExcel() {
     const exportData = this.cupons.map(cupom => ({

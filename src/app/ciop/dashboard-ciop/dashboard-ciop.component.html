@@ -115,7 +115,11 @@
         <img class="img" src="assets/Usuarios.png" alt="Usuários">
       </a>
       <div class="label">Usuarios</div>
-      <a (click)="logout()">
+      <a routerLink="/filiais" routerLinkActive="active">
+        <img class="img" src="assets/Filiais.png" alt="Filiais">
+      </a>
+      <div class="label">Filiais</div>
+      <a (click)="logout()" routerLinkActive="active">
         <img class="img" src="assets/Logout.png" alt="Sair">
       </a>
       <div class="label">Sair</div>
@@ -128,21 +132,26 @@
     <h2>Colaborador</h2>
     </div>
     <div class="filters">
-      <input list="listaFiliais" id="filial" name="filial" placeholder="Filial..." />
-      <datalist id="listaFiliais">
-      <option value="Curitiba"></option>
-      <option value="Foz do Iguaçu"></option>
-      <option value="Cascavel"></option>
-      </datalist>
-      <!--<input type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial...">
-      <input type="text" placeholder="Colaborador...">-->
-      <input list="listaColaboradores" id="colaborador" name="colaborador" placeholder="Colaborador..." />
-      <datalist id="listaColaboradores">
-      <option value="João Silva"></option>
-      <option value="Maria Souza"></option>
-      <option value="Carlos Lima"></option>
-      </datalist>
-    </div>
+  <input 
+    type="text" 
+    [(ngModel)]="filialSelecionada" 
+    (ngModelChange)="onFilialChange()" 
+    placeholder="Filial..."
+    list="listaFiliais">
+  <datalist id="listaFiliais">
+    <option *ngFor="let filial of filiais" [value]="filial.nome"></option>
+  </datalist>
+
+  <input 
+    type="text" 
+    [(ngModel)]="colaboradorSelecionado" 
+    (ngModelChange)="onColaboradorChange()"
+    placeholder="Colaborador..."
+    list="listaColaboradores">
+  <datalist id="listaColaboradores">
+    <option *ngFor="let colaborador of usuario" [value]="colaborador.nome"></option>
+  </datalist>
+</div>
 
     <div class="cards">
       <div class="card total">
@@ -187,13 +196,11 @@
             <th>Valor</th>
           </tr>
             </thead>
-        <ul>
           <tr *ngFor="let item of rankingGastos">
             <td>{{ item.nome }} </td>
             <td>Toledo</td>
             <td>{{ item.total | currency:'BRL' }}</td>
           </tr>
-        </ul>
         </table>
           </div>
       </div>
@@ -212,21 +219,21 @@
             <th>Valor</th>
           </tr>
             </thead>
-        <ul>
           <tr *ngFor="let item of rankingExtrapolo">
             <td>{{ item.nome }} </td>
             <td>Toledo</td>
             <td>{{ item.excedente | currency:'BRL' }}</td>
           </tr>
-        </ul>
         </table>
           </div>
       </div>
     </div>
 <button (click)="usarDadosTeste()">Usar dados de teste</button>
     <div class="tabela-lancamentos">
-      <h2>Lista de Lançamento</h2>
-      <button (click)="exportarParaExcel()">Exportar Excel</button>
+      <div class="list-lancamento">
+        <h2>Lista de Lançamento</h2>
+        <button (click)="exportarParaExcel()">Exportar Excel</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -237,7 +244,7 @@
             <th>Valor</th>
             <th>Imagem</th>
             <th>Status</th>
-            <th>Excedente</th>
+            <th>Excedente/Deficit</th>
           </tr>
         </thead>
         <tbody>

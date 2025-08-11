@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardCiopComponent } from './dashboard-ciop/dashboard-ciop.component';
 import { UsuariosComponent } from './crud-usuarios/usuarios.component';
 import { CiopGuard } from '../guards/ciop.guard';
+import { FiliaisComponent } from './Filiais/filiais.component';
 
 const routes: Routes = [
   {
@@ -16,6 +17,12 @@ const routes: Routes = [
   {
     path: 'usuarios',
     component: UsuariosComponent,
+    canActivate: [CiopGuard],
+    data: { roles: ['CIOP'] }
+  },
+  {
+    path: 'filiais',
+    component: FiliaisComponent,
     canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   }
