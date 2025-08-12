@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 // Standalone components
 import { DashboardCiopComponent } from './dashboard-ciop/dashboard-ciop.component';
-import { UsuariosComponent } from './crud-usuarios/usuarios.component';
+import { UsuariosComponent } from './usuarios/usuarios.component';
 import { CiopGuard } from '../guards/ciop.guard';
 import { FiliaisComponent } from './Filiais/filiais.component';
 

@@ -10,21 +10,19 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { RouterModule, Router } from '@angular/router';
 
-
-
 @Component({
   selector: 'app-dashboard-ciop',
   templateUrl: './dashboard-ciop.component.html',
   styleUrls: ['./dashboard-ciop.component.scss'],
   standalone: true,
   imports: [
-    //SidebarCiopComponent,
+    SidebarCiopComponent,
     CommonModule,
     NgFor,
     RouterModule,
     FormsModule,
-    SharedModule
-  ]
+    SharedModule,
+]
 })
 export class DashboardCiopComponent implements OnInit {
   supabase: SupabaseClient;
@@ -32,6 +30,8 @@ export class DashboardCiopComponent implements OnInit {
   filialId: string | null = null;
   filiais: any[] = [];
   usuario: any[] = [];
+  rankingGastos: any[] = [];
+  rankingExtrapolo: any[] = [];
   filialSelecionada: string = '';
   colaboradorSelecionado: string = '';
 
@@ -48,99 +48,13 @@ export class DashboardCiopComponent implements OnInit {
     this.auth.logout();
     this.router.navigate(['/login']);
   }
-  rankingGastos: any[] = [];
-  rankingExtrapolo: any[] = [];
 
   async ngOnInit() {
-    this.filialId = this.auth.getFilialId(); // ou null para ver todas
+    this.filialId = this.auth.getFilialId();
     await this.carregarFiliais();
     await this.carregarColaboradores()
     await this.carregarDados();
   }
-  usarDadosTeste() {
-  this.cupons = [
-    {
-      id: 1,
-      usuario: 'Pedro',
-      data: new Date().toISOString(),
-      tipo: 'Almoço',
-      valor: 75,
-      orcamento_base: 35,
-      excedente: 40,
-      descontar: true,
-      status: 'Aprovado',
-      url_imagem: 'https://via.placeholder.com/100',
-      filial_id: 'test-filial',
-    },
-    {
-      id: 2,
-      usuario: 'Joao',
-      data: new Date().toISOString(),
-      tipo: 'Janta',
-      valor: 90,
-      orcamento_base: 35,
-      excedente: 55,
-      descontar: true,
-      status: 'Aprovado',
-      url_imagem: 'https://via.placeholder.com/100',
-      filial_id: 'test-filial',
-    },
-    {
-      id: 3,
-      usuario: 'Andrezin',
-      data: new Date().toISOString(),
-      tipo: 'Café da Manhã',
-      valor: 20,
-      orcamento_base: 15,
-      excedente: 5,
-      descontar: true,
-      status: 'Aprovado',
-      url_imagem: 'https://via.placeholder.com/100',
-      filial_id: 'test-filial',
-    },
-    {
-      id: 4,
-      usuario: 'Edilso',
-      data: new Date().toISOString(),
-      tipo: 'Hospedagem',
-      valor: 150,
-      orcamento_base: 130,
-      excedente: 20,
-      descontar: true,
-      status: 'Aprovado',
-      url_imagem: 'https://via.placeholder.com/100',
-      filial_id: 'test-filial',
-    },
-    {
-      id: 5,
-      usuario: 'Sid',
-      data: new Date().toISOString(),
-      tipo: 'Almoço',
-      valor: 50,
-      orcamento_base: 35,
-      excedente: 15,
-      descontar: true,
-      status: 'Reprovado',
-      url_imagem: 'https://via.placeholder.com/100',
-      filial_id: 'test-filial',
-    },{
-      id: 6,
-      usuario: 'Cristiano Ronaldo',
-      data: new Date().toISOString(),
-      tipo: 'Almoço',
-      valor: 60,
-      orcamento_base: 35,
-      excedente: 25,
-      descontar: true,
-      status: 'Reprovado',
-      url_imagem: 'https://via.placeholder.com/100',
-      filial_id: 'test-filial',
-    },
-  ];
-
-  this.processarIndicadores();
-  this.gerarRankings();
-}
 
   async carregarFiliais() {
         const { data, error } = await this.supabase
@@ -169,24 +83,72 @@ export class DashboardCiopComponent implements OnInit {
   }
 
   async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
+  const filtro = this.filialSelecionada || this.filialId;
 
-    const query = this.supabase
-      .from('cupons_com_excedente')
-      .select('*');
+  let query = this.supabase
+    .from('cupons_com_usuario') // ← agora usa a view
+    .select('*');
 
-    if (filtro) {
-      query.eq('filial_id', filtro);
-    }
-
-    const { data, error } = await query;
-
-    if (!error && data) {
-      this.cupons = data;
-      this.processarIndicadores();
-      this.gerarRankings();
-    }
+  if (filtro) {
+    query = query.eq('filial_id', filtro);
   }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Erro ao buscar cupons:', error.message);
+    return;
+  }
+
+  this.cupons = (data || []).map((c: any) => {
+    const valorBase = this.getValorBase(c.tipo_gasto);
+    const diferenca = Number((c.valor- valorBase ).toFixed(2));
+    const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+
+    let publicUrl = '';
+    if (c.url_imagem) {
+        // Verifica se já é uma URL completa
+        if (c.url_imagem.startsWith('http')) {
+          const fileName = c.url_imagem.split('/').pop();
+            publicUrl = c.url_imagem;
+        } else {
+            // Se não for URL completa, gera a URL corretamente
+            const cleanPath = c.url_imagem.replace(/^(cupons\/|public\/)/, '');
+            const { data: { publicUrl: supabaseUrl } } = this.supabase.storage
+                .from('cupons')
+                .getPublicUrl(__filename);
+            publicUrl = supabaseUrl;
+        }
+        // Adiciona timestamp para evitar cache
+        publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+    }
+    return {
+      id: c.id,
+      usuario: c.usuario_nome,
+      data: c.data_nota,
+      tipo: c.tipo_gasto,
+      valor: c.valor,
+      url_imagem: publicUrl,
+      publicUrl: publicUrl,
+      status: c.status,
+      diferenca,
+      exceDeficit,
+      descontar: c.descontar ?? true
+    };
+  });
+
+  this.processarIndicadores();
+  this.gerarRankings();
+}
+getValorBase(tipo: string) {
+  const valores: Record<string, number> = {
+    'Almoço': 35,
+    'Janta': 35,
+    'Cafe da Manhã': 15,
+    'Hospedagem': 130,
+  };
+  return valores[tipo] ?? 0;
+}
 
   processarIndicadores() {
     this.totalGasto = 0;
@@ -197,9 +159,9 @@ export class DashboardCiopComponent implements OnInit {
 
     for (const cupom of this.cupons) {
       this.totalGasto += cupom.valor;
-      this.totalOrcamento += cupom.orcamento_base || 0;
+      this.totalOrcamento += this.getValorBase(cupom.tipo || 0)
 
-      const excedente = cupom.excedente || 0;
+      const excedente = cupom.diferenca || 0;
 
       if (excedente > 0) {
         this.totalDeficit += excedente;
@@ -222,8 +184,8 @@ export class DashboardCiopComponent implements OnInit {
       const filial = cupom.filial_id;
       gastosPorUsuario[nome] = (gastosPorUsuario[nome] || 0) + cupom.valor;
 
-      if (cupom.excedente > 0) {
-        excedentePorUsuario[nome] = (excedentePorUsuario[nome] || 0) + cupom.excedente;
+      if (cupom.diferenca > 0) {
+        excedentePorUsuario[nome] = (excedentePorUsuario[nome] || 0) + cupom.diferenca;
       }
     }
 
@@ -232,9 +194,9 @@ export class DashboardCiopComponent implements OnInit {
       .sort((a, b) => b.total - a.total)
       .slice(0, 5);
 
-    this.rankingExtrapolo = Object.entries(excedentePorUsuario)
-      .map(([nome, excedente]) => ({ nome, excedente }))
-      .sort((a, b) => b.excedente - a.excedente)
+    this.rankingExtrapolo = Object.entries(excedentePorUsuario) 
+      .map(([nome, diferenca]) => ({ nome, diferenca }))
+      .sort((a, b) => b.diferenca - a.diferenca)
       .slice(0, 5);
   }
 

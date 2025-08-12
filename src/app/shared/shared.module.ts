@@ -5,8 +5,8 @@ import { SidebarGerenteComponent } from '../gerente/shared-gerente/sidebar.compo
 import { DashboardGerenteComponent } from '../gerente/dashboard-gerente/dashboard-gerente.component';
 
 @NgModule({
-  declarations: [HeaderComponent, SidebarGerenteComponent, DashboardGerenteComponent],
+  declarations: [HeaderComponent, SidebarGerenteComponent ],
   imports: [CommonModule,],
-  exports: [HeaderComponent, SidebarGerenteComponent, DashboardGerenteComponent] 
+  exports: [HeaderComponent, SidebarGerenteComponent] 
 })
 export class SharedModule {}

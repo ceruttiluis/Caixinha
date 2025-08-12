@@ -1,131 +1,9 @@
-
 <router-outlet></router-outlet>
 
-<!----
-<app-sidebar-ciop></app-sidebar-ciop>
-<div class="dashboard-container">
-  <h2>Dashboard Geral</h2>
-
-  <div class="filters">
-    <label for="filialSelect">Filtrar por Filial:</label>
-    <select id="filialSelect" [(ngModel)]="filialSelecionada">
-      <option value="">Todas</option>
-      <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
-    </select>
-  </div>
-  
-  <div class="indicators">
-    <div class="indicator">
-      <h3>Total Gasto</h3>
-      <p class="green">R$ {{ totalGasto | number:'1.2-2' }}</p>
-    </div>
-    <div class="indicator">
-      <h3>Orçamento Base</h3>
-      <p>R$ {{ totalOrcamento | number:'1.2-2' }}</p>
-    </div>
-    <div class="indicator">
-      <h3>Déficit (Prejuízo)</h3>
-      <p class="red">R$ {{ totalDeficit | number:'1.2-2' }}</p>
-    </div>
-    <div class="indicator">
-      <h3>Descontado na Folha</h3>
-      <p class="red">R$ {{ totalDescontado | number:'1.2-2' }}</p>
-    </div>
-    <div class="indicator">
-      <h3>Excedente Aprovado</h3>
-      <p class="blue">R$ {{ totalExcedenteAprovado | number:'1.2-2' }}</p>
-    </div>
-  </div>
-
-  <div class="rankings">
-    <div class="ranking-card">
-      <h4>Ranking - Quem mais gastou</h4>
-      <ul>
-        <li *ngFor="let user of rankingGastos">
-          {{ user.nome }} - R$ {{ user.total | number:'1.2-2' }}
-        </li>
-      </ul>
-    </div>
-    <div class="ranking-card">
-      <h4>Ranking - Quem mais extrapolou</h4>
-      <ul>
-        <li *ngFor="let user of rankingExtrapolo">
-          {{ user.nome }} - R$ {{ user.excedente | number:'1.2-2' }}
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="lancamentos-section">
-    <h3>Lista de Lançamentos</h3>
-    <div class="export-btn">
-      <button (click)="exportarParaExcel()">Exportar para Excel</button>
-    </div>
-
-    <table class="tabela-lancamentos">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Usuário</th>
-      <th>Data</th>
-      <th>Tipo</th>
-      <th>Valor</th>
-      <th>Imagem</th>
-      <th>Status</th>
-      <th>Excedente</th>
-      <th>Observação</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let lancamento of cupons">
-      <td>{{ lancamento.id }}</td>
-      <td>{{ lancamento.usuario_nome || lancamento.usuario }}</td>
-      <td>{{ lancamento.data_nota || lancamento.data | date:'shortDate' }}</td>
-      <td>{{ lancamento.tipo_gasto || lancamento.tipo }}</td>
-      <td>R$ {{ lancamento.valor | number:'1.2-2' }}</td>
-      <td>
-        <a [href]="lancamento.url_imagem" target="_blank">Ver Foto</a>
-      </td>
-      <td>{{ lancamento.status }}</td>
-      <td
-        [ngClass]="{
-          'red': lancamento.excedente > 0 && lancamento.descontar,
-          'blue': lancamento.excedente > 0 && !lancamento.descontar,
-          'black': lancamento.excedente <= 0
-        }"
-      >
-        R$ {{ lancamento.excedente | number:'1.2-2' }}
-      </td>
-    </tr>
-  </tbody>
-</table>
-  </div>
-</div>
----->
 <app-header></app-header>
 
 <main class="dashboard">
- <aside class="sidebar">
-    <nav>
-      <a routerLink="/dashboard" routerLinkActive="active">
-        <img class="img" src="assets/BtnDash.png" alt="Dashboard">
-      </a>
-      <div class="label">Dashboard</div>
-      <a routerLink="/usuarios" routerLinkActive="active">
-        <img class="img" src="assets/Usuarios.png" alt="Usuários">
-      </a>
-      <div class="label">Usuarios</div>
-      <a routerLink="/filiais" routerLinkActive="active">
-        <img class="img" src="assets/Filiais.png" alt="Filiais">
-      </a>
-      <div class="label">Filiais</div>
-      <a (click)="logout()" routerLinkActive="active">
-        <img class="img" src="assets/Logout.png" alt="Sair">
-      </a>
-      <div class="label">Sair</div>
-    </nav>
-  </aside>
-
+  <app-sidebar-ciop></app-sidebar-ciop>
   <section class="content animate-fade-in">
     <div class="Description">
       <h2>Filial</h2>
@@ -222,52 +100,55 @@
           <tr *ngFor="let item of rankingExtrapolo">
             <td>{{ item.nome }} </td>
             <td>Toledo</td>
-            <td>{{ item.excedente | currency:'BRL' }}</td>
+            <td>{{ item.diferenca | currency:'BRL' }}</td>
           </tr>
         </table>
           </div>
       </div>
     </div>
-<button (click)="usarDadosTeste()">Usar dados de teste</button>
     <div class="tabela-lancamentos">
-      <div class="list-lancamento">
-        <h2>Lista de Lançamento</h2>
-        <button (click)="exportarParaExcel()">Exportar Excel</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuário</th>
-            <th>Data</th>
-            <th>Tipo</th>
-            <th>Valor</th>
-            <th>Imagem</th>
-            <th>Status</th>
-            <th>Excedente/Deficit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let lancamento of cupons">
-            <td>{{ lancamento.id }}</td>
-            <td>{{ lancamento.usuario }}</td>
-            <td>{{ lancamento.data | date:'shortDate' }}</td>
-            <td>{{ lancamento.tipo }}</td>
-            <td>{{ lancamento.valor | currency:'BRL' }}</td>
-            <td><img [src]="lancamento.url_imagem" alt="Nota" class="imagem-nota"></td>
-            <td>{{ lancamento.status }}</td>
-             <td
-        [ngClass]="{
-          'red': lancamento.excedente > 0 && lancamento.descontar,
-          'blue': lancamento.excedente > 0 && !lancamento.descontar,
-          'black': lancamento.excedente <= 0
-        }"
-      >
-        R$ {{ lancamento.excedente | currency:'BRL' }}
-      </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="list-lancamento">
+    <h2>Lista de Lançamento</h2>
+    <button (click)="exportarParaExcel()">Exportar Excel</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuário</th>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+        <th>Imagem</th>
+        <th>Status</th>
+        <th>Excedente/Deficit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let lancamento of cupons">
+        <td>{{ lancamento.id }}</td>
+        <td>{{ lancamento.usuario }}</td>
+        <td>{{ lancamento.data | date:'shortDate' }}</td>
+        <td>{{ lancamento.tipo }}</td>
+        <td>{{ lancamento.valor | currency:'BRL' }}</td>
+        <td>
+          <a [href]="lancamento.url_imagem " target="_blank">
+            <img [src]="lancamento.publicUrl " alt="Nota" class="imagem-nota">
+          </a>
+        </td>
+        <td>{{ lancamento.status }}</td>
+        <td
+          [ngClass]="{
+            'verde': lancamento.exceDeficit > 0,
+            'vermelho': lancamento.exceDeficit < 0,
+            'azul': lancamento.exceDeficit === 0
+          }"
+        >
+          {{ lancamento.exceDeficit | currency:'BRL' }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
   </section>
 </main>

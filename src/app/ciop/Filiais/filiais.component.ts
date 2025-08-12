@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } 
 import { createClient } from '@supabase/supabase-js';
 import { NgFor, NgIf, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 
 interface Filial {
   id?: number;
@@ -21,6 +22,7 @@ const supabase = createClient(
   styleUrls: ['./filiais.component.scss'],
   standalone: true,
   imports:[
+    SidebarCiopComponent,
     NgIf,
     NgFor,
     CommonModule,

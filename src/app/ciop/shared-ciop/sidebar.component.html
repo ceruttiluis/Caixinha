@@ -1,20 +1,22 @@
- <aside class="sidebar">
+<div class="Sidebar">
+  <aside class="sidebar">
     <nav>
-      <a routerLink="/dashboard" routerLinkActive="active">
+      <a routerLink="/ciop" routerLinkActive="active">
         <img class="img" src="assets/BtnDash.png" alt="Dashboard">
       </a>
       <div class="label">Dashboard</div>
       <a routerLink="/usuarios" routerLinkActive="active">
         <img class="img" src="assets/Usuarios.png" alt="Usuários">
       </a>
-      <div class="label">Usuarios</div>
+        <div class="label">Usuarios</div>
       <a routerLink="/filiais" routerLinkActive="active">
         <img class="img" src="assets/Filiais.png" alt="Filiais">
       </a>
-      <div class="label">Filiais</div>
-      <a (click)="logout()" routerLinkActive="active">
+        <div class="label">Filiais</div>
+      <a (click)="logout()">
         <img class="img" src="assets/Logout.png" alt="Sair">
       </a>
-      <div class="label">Sair</div>
+        <div class="label">Sair</div>
     </nav>
   </aside>
+</div>
