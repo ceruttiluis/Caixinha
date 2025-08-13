@@ -1,7 +1,25 @@
-<nav class="sidebar">
-  <h2>Gerente</h2>
-  <ul>
-    <li><a routerLink="/gerente" routerLinkActive="active">Dashboard</a></li>
-    <li><button (click)="logout()">Sair</button></li>
-  </ul>
-</nav>
+<div class="Sidebar">
+  <aside class="sidebar">
+    <nav>
+      <a routerLink="/gerente" routerLinkActive="active">
+        <img class="img" src="assets/BtnDash.png" alt="Dashboard">
+      </a>
+      <div class="label">Dashboard</div>
+
+      <a routerLink="/usuarios" routerLinkActive="active">
+        <img class="img" src="assets/Usuarios.png" alt="Usuários">
+      </a>
+        <div class="label">Usuarios</div>
+
+      <a routerLink="/cupons" routerLinkActive="active">
+        <img class="img" src="assets/Aprovar.png" alt="Filiais">
+      </a>
+        <div class="label">Aprovar</div>
+        
+      <a (click)="logout()">
+        <img class="img" src="assets/Logout.png" alt="Sair">
+      </a>
+        <div class="label">Sair</div>
+    </nav>
+  </aside>
+</div>

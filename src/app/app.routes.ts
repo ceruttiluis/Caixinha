@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { FiliaisComponent } from './ciop/Filiais/filiais.component';
 import { UsuariosComponent } from './ciop/usuarios/usuarios.component';
+import { HomeGerenteComponent } from './gerente/home-gerente/home-gerente.component';
+import { CuponsComponent } from './gerente/cupons/cupons.component';
 
 
 export const routes: Routes = [
@@ -21,4 +23,6 @@ export const routes: Routes = [
     path: 'gerente',
     loadChildren: () => import('./gerente/gerente.module').then(m => m.GerenteModule)
   },
+  { path: 'home', component: HomeGerenteComponent },
+  { path: 'cupons', component: CuponsComponent }
 ];

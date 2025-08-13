@@ -1,0 +1,139 @@
+<app-header></app-header>
+<app-sidebar-gerente></app-sidebar-gerente>
+
+<main class="dashboard">
+  <section class="content animate-fade-in">
+
+    <div class="Description">
+      <h2>Aprovação de Cupons</h2>
+    </div>
+
+    <div class="tabela-lancamentos">
+      <div class="list-lancamento">
+        <h2>Cupons Pendentes</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Imagem</th>
+            <th>Excedente/Deficit</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cupom of cuponsPendentes">
+            <td>{{ cupom.id }}</td>
+            <td>{{ cupom.usuario }}</td>
+            <td>{{ cupom.data | date:'shortDate' }}</td>
+            <td>{{ cupom.tipo }}</td>
+            <td>{{ cupom.valor | currency:'BRL' }}</td>
+            <td>
+              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+            </td>
+            <td [ngClass]="{
+                  'vermelho': cupom.diferenca > 0,
+                  'verde': cupom.diferenca < 0,
+                  'azul': cupom.diferenca === 0
+                }">
+              {{ cupom.diferenca | currency:'BRL' }}
+            </td>
+            <td class="actions">
+              <button class="approve" (click)="atualizarStatusCupom(cupom, 'APROVADO')">Aprovar</button>
+              <button class="reject" (click)="atualizarStatusCupom(cupom, 'DESCONTADO')">Descontar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabela-lancamentos">
+      <div class="list-lancamento">
+        <h2>Cupons Aprovados</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Imagem</th>
+            <th>Excedente/Deficit</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cupom of cuponsAprovados">
+            <td>{{ cupom.id }}</td>
+            <td>{{ cupom.usuario }}</td>
+            <td>{{ cupom.data | date:'shortDate' }}</td>
+            <td>{{ cupom.tipo }}</td>
+            <td>{{ cupom.valor | currency:'BRL' }}</td>
+            <td>
+              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+            </td>
+            <td [ngClass]="{
+                  'vermelho': cupom.exceDeficit > 0,
+                  'verde': cupom.exceDeficit < 0,
+                  'azul': cupom.exceDeficit === 0
+                }">
+              {{ cupom.exceDeficit | currency:'BRL' }}
+            </td>
+            <td class="actions">
+              <button class="reject" (click)="atualizarStatusCupom(cupom, 'DESCONTADO')">Descontar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabela-lancamentos">
+      <div class="list-lancamento">
+        <h2>Cupons Reprovados</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Imagem</th>
+            <th>Excedente/Deficit</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cupom of cuponsReprovados">
+            <td>{{ cupom.id }}</td>
+            <td>{{ cupom.usuario }}</td>
+            <td>{{ cupom.data | date:'shortDate' }}</td>
+            <td>{{ cupom.tipo }}</td>
+            <td>{{ cupom.valor | currency:'BRL' }}</td>
+            <td>
+              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+            </td>
+            <td [ngClass]="{
+                  'vermelho': cupom.exceDeficit > 0,
+                  'verde': cupom.exceDeficit < 0,
+                  'azul': cupom.exceDeficit === 0
+                }">
+              {{ cupom.exceDeficit | currency:'BRL' }}
+            </td>
+            <td class="actions">
+              <button class="approve" (click)="atualizarStatusCupom(cupom, 'APROVADO')">Aprovar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+</main>

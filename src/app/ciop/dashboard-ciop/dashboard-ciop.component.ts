@@ -51,20 +51,10 @@ export class DashboardCiopComponent implements OnInit {
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
-    await this.carregarFiliais();
     await this.carregarColaboradores()
     await this.carregarDados();
   }
 
-  async carregarFiliais() {
-        const { data, error } = await this.supabase
-      .from('filiais')
-      .select('id, nome');
-
-    if (!error && data) {
-      this.filiais = data;
-    }
-  }
    async carregarColaboradores() {
     const { data, error } = await this.supabase
       .from('profiles')
@@ -100,28 +90,37 @@ export class DashboardCiopComponent implements OnInit {
     return;
   }
 
-  this.cupons = (data || []).map((c: any) => {
-    const valorBase = this.getValorBase(c.tipo_gasto);
-    const diferenca = Number((c.valor- valorBase ).toFixed(2));
-    const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+ this.cupons = (data || []).map((c: any) => {
+  const valorBase = this.getValorBase(c.tipo_gasto);
+  const diferenca = Number((c.valor - valorBase).toFixed(2));
+  const exceDeficit = Number((valorBase - c.valor).toFixed(2));
 
-    let publicUrl = '';
-    if (c.url_imagem) {
-        // Verifica se já é uma URL completa
-        if (c.url_imagem.startsWith('http')) {
-          const fileName = c.url_imagem.split('/').pop();
-            publicUrl = c.url_imagem;
-        } else {
-            // Se não for URL completa, gera a URL corretamente
-            const cleanPath = c.url_imagem.replace(/^(cupons\/|public\/)/, '');
-            const { data: { publicUrl: supabaseUrl } } = this.supabase.storage
-                .from('cupons')
-                .getPublicUrl(__filename);
-            publicUrl = supabaseUrl;
-        }
-        // Adiciona timestamp para evitar cache
-        publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+  let publicUrl = '';
+
+if (c.url_imagem) {
+    let filePath = c.url_imagem.trim();
+
+    // Se veio um link completo do Supabase, extrai só o path a partir do bucket
+    if (filePath.startsWith('http')) {
+      // Pega tudo depois de "/cupons/" (preservando subpastas)
+      const match = filePath.match(/cupons\/(.+)$/);
+      if (match) {
+        filePath = match[1];
+      }
     }
+
+    // Gera a URL pública correta
+    const { data: pu } = this.supabase.storage
+      .from('cupons')
+      .getPublicUrl(filePath);
+
+    publicUrl = pu?.publicUrl || '';
+
+    // Adiciona timestamp para evitar cache
+    if (publicUrl) {
+      publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+    }
+  }
     return {
       id: c.id,
       usuario: c.usuario_nome,
@@ -129,7 +128,6 @@ export class DashboardCiopComponent implements OnInit {
       tipo: c.tipo_gasto,
       valor: c.valor,
       url_imagem: publicUrl,
-      publicUrl: publicUrl,
       status: c.status,
       diferenca,
       exceDeficit,
