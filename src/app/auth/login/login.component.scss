@@ -1,6 +1,26 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #e8f5e9;
+  color: #1b1b1b;
+  min-height: 98vh;
+  background: linear-gradient(
+  135deg,
+  rgb(158, 205, 184) 10%,
+  rgb(190, 222, 207) 40%,
+  rgb(213, 215, 214) 70%,
+  rgb(229, 236, 233) 80%
+);
+}
+
 .login-container {
-  max-width: 400px;
-  margin: 5rem auto;
+  max-height: 400px;
+  width: 350px;
+  margin: auto;
   padding: 2rem;
   background: #fff;
   border-radius: 10px;

@@ -12,10 +12,8 @@
       <option>Café da Manhã</option>
     </select>
 
-    <div *ngIf="cupomForm.value.tipo === 'Outros'">
-      <label>Descreva</label>
-      <input type="text" formControlName="descricao" />
-    </div>
+      <label>Observações</label>
+      <input type="text" formControlName="observacoes" />
 
     <label>Data da Nota</label>
     <input type="date" formControlName="data" />

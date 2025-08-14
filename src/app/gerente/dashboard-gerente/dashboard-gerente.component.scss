@@ -2,7 +2,13 @@
   margin-left: 90px;
   display: flex;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #e8f5e9;
+  background: linear-gradient(
+  135deg,
+  rgb(158, 205, 184) 10%,
+  rgb(190, 222, 207) 40%,
+  rgb(213, 215, 214) 70%,
+  rgb(229, 236, 233) 80%
+);
   color: #1b1b1b;
 
   .content {
@@ -56,11 +62,11 @@
         transform: scale(1.02);
       }
 
-      &.total { background-color: #cfd8dc; }
+      &.total { background-color: #b6c0c4; }
       &.orcamento { background-color: #bbdefb; }
-      &.deficit { background-color: #ef9a9a; }
-      &.folha { background-color: #fff59d; }
-      &.excedente { background-color: #a5d6a7; }
+      &.deficit { background-color: #eb8989; }
+      &.folha { background-color: #eee383; }
+      &.excedente { background-color: #9bdb9d; }
 
       .label {
         font-weight: bold;
@@ -99,7 +105,7 @@
 
   .ranking {
     flex: 1;
-    background-color: #f1f8e9;
+    background-color: #f5fffa;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
@@ -144,8 +150,9 @@
   }
 }
   .tabela-lancamentos {
+    border-radius: 8px;
     margin-top: 2rem;
-    background-color: #f1f8e9;
+    background-color: #f5fffa;
 
     table {
       width: 100%;

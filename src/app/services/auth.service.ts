@@ -7,7 +7,7 @@ interface UserProfile {
   id: string;
   email: string;
   role: string;
-  filial_id?: string; // Opcional se nem todos usuários tiverem
+  filial_id?: string; 
   name?: string;
   created_at?: string;
 }

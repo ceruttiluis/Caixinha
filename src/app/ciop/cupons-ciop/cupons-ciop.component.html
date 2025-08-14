@@ -1,13 +1,10 @@
-<app-header></app-header>
-<app-sidebar-gerente></app-sidebar-gerente>
 
+<app-sidebar-ciop></app-sidebar-ciop>
 <main class="dashboard">
   <section class="content animate-fade-in">
-
     <div class="Description">
       <h2>Aprovação de Cupons</h2>
     </div>
-
     <div class="tabela-lancamentos">
       <div class="list-lancamento">
         <h2>Cupons Pendentes</h2>
@@ -23,7 +20,7 @@
             <th>Imagem</th>
             <th>Excedente/Deficit</th>
             <th>Observações</th>
-            <th>Ações</th>
+            <th>Aprovação</th>
           </tr>
         </thead>
         <tbody>
@@ -37,19 +34,22 @@
               <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
             </td>
             <td [ngClass]="{
-                  'vermelho': cupom.diferenca > 0,
-                  'verde': cupom.diferenca < 0,
-                  'azul': cupom.diferenca === 0
+                  'verde': cupom.exceDeficit > 0,
+                  'vermelho': cupom.exceDeficit < 0,
+                  'azul': cupom.exceDeficit === 0
                 }">
               {{ cupom.diferenca | currency:'BRL' }}
             </td>
-            <td class="observacoes" [title]="cupom.observacoes">
-              {{ cupom.observacoes }}
+            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+              <span class="obs-preview">{{ cupom.observacoes }}</span>
+
+              <div class="tooltip-observacao"
+                  *ngIf="isTooltipOpen(cupom.id)"
+                  (click)="$event.stopPropagation()">
+                {{ cupom.observacoes }}
+              </div>
             </td>
-            <td class="actions">
-              <button class="approve" (click)="atualizarStatusCupom(cupom, 'APROVADO')">Aprovar</button>
-              <button class="reject" (click)="atualizarStatusCupom(cupom, 'DESCONTADO')">Descontar</button>
-            </td>
+            <td>{{ cupom.aprovacao }}</td>
           </tr>
         </tbody>
       </table>
@@ -70,7 +70,7 @@
             <th>Imagem</th>
             <th>Excedente/Deficit</th>
             <th>Observações</th>
-            <th>Ações</th>
+            <th>Aprovação</th>
           </tr>
         </thead>
         <tbody>
@@ -84,18 +84,22 @@
               <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
             </td>
             <td [ngClass]="{
-                  'vermelho': cupom.exceDeficit > 0,
-                  'verde': cupom.exceDeficit < 0,
+                  'verde': cupom.exceDeficit > 0,
+                  'vermelho': cupom.exceDeficit < 0,
                   'azul': cupom.exceDeficit === 0
                 }">
               {{ cupom.exceDeficit | currency:'BRL' }}
             </td>
-            <td class="observacoes" [title]="cupom.observacoes">
-              {{ cupom.observacoes }}
+            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+              <span class="obs-preview">{{ cupom.observacoes }}</span>
+
+              <div class="tooltip-observacao"
+                  *ngIf="isTooltipOpen(cupom.id)"
+                  (click)="$event.stopPropagation()">
+                {{ cupom.observacoes }}
+              </div>
             </td>
-            <td class="actions">
-              <button class="reject" (click)="atualizarStatusCupom(cupom, 'DESCONTADO')">Descontar</button>
-            </td>
+            <td>{{ cupom.aprovacao }}</td>
           </tr>
         </tbody>
       </table>
@@ -116,7 +120,7 @@
             <th>Imagem</th>
             <th>Excedente/Deficit</th>
             <th>Observações</th>
-            <th>Ações</th>
+            <th>Aprovação</th>
           </tr>
         </thead>
         <tbody>
@@ -127,13 +131,11 @@
             <td>{{ cupom.tipo }}</td>
             <td>{{ cupom.valor | currency:'BRL' }}</td>
             <td>
-              <a [href]="cupom" target="_blank">
               <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
-              </a>
             </td>
             <td [ngClass]="{
-                  'vermelho': cupom.exceDeficit > 0,
-                  'verde': cupom.exceDeficit < 0,
+                  'verde': cupom.exceDeficit > 0,
+                  'vermelho': cupom.exceDeficit < 0,
                   'azul': cupom.exceDeficit === 0
                 }">
               {{ cupom.exceDeficit | currency:'BRL' }}
@@ -147,9 +149,7 @@
                 {{ cupom.observacoes }}
               </div>
             </td>
-            <td class="actions">
-              <button class="approve" (click)="atualizarStatusCupom(cupom, 'APROVADO')">Aprovar</button>
-            </td>
+            <td>{{ cupom.aprovacao }}</td>
           </tr>
         </tbody>
       </table>

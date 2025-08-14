@@ -4,9 +4,8 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
-import { SharedModule } from '../../shared/shared.module';
 import { environment } from '../../../environments/environment';
+import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -22,22 +21,22 @@ interface Cupom {
   exceDeficit: number;
   descontar?: boolean;
   observacoes: string;
+  aprovacao: string;
 }
 
 @Component({
-  selector: 'app-cupons',
-  templateUrl: './cupons.component.html',
-  styleUrls: ['./cupons.component.scss'],
+  selector: 'app-cupons-ciop',
+  templateUrl: './cupons-ciop.component.html',
+  styleUrls: ['./cupons-ciop.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
     NgFor,
     CommonModule,
-    SidebarGerenteComponent,
-    SharedModule
+    SidebarCiopComponent,
   ]
 })
-export class CuponsComponent {
+export class CuponsCiopComponent {
   supabase: SupabaseClient;
   filialId: string | null = null;
   filialSelecionada: string = '';
@@ -91,6 +90,7 @@ export class CuponsComponent {
         diferenca,
         exceDeficit,
         observacoes: c.observacoes,
+        aprovacao: c.aprovado_por_nome
       };
     });
     this.separarListas();
@@ -158,19 +158,17 @@ export class CuponsComponent {
 
     return publicUrl;
   }
-  
-
-isTooltipOpen(id: number | string): boolean {
+  isTooltipOpen(id: number | string): boolean {
   return this.tooltipOpenId === String(id);
 }
 
-toggleTooltip(id: number | string) {
-  const key = String(id);
-  this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
-}
+  toggleTooltip(id: number | string) {
+    const key = String(id);
+    this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
+  }
 
-@HostListener('document:click')
-closeTooltip() {
-  this.tooltipOpenId = null;
-}
+  @HostListener('document:click')
+  closeTooltip() {
+    this.tooltipOpenId = null;
+  }
 }

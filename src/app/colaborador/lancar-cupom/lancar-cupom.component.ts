@@ -28,7 +28,7 @@ export class LancarCupomComponent {
 
     this.cupomForm = this.fb.group({
       tipo: ['', Validators.required],
-      descricao: [''],
+      observacoes: ['', Validators.required],
       data: [new Date().toISOString().split('T')[0], Validators.required],
       valor: ['', Validators.required],
       imagem: [null, Validators.required]
@@ -71,7 +71,7 @@ async enviarCupom(): Promise<void> {
 
   const imageUrl = `${environment.supabaseUrl}/storage/v1/object/public/cupons/${filePath}`;
 
-  const { tipo, descricao, data, valor } = this.cupomForm.value;
+  const { tipo, observacoes, data, valor } = this.cupomForm.value;
 
    const { data: perfil, error: perfilError } = await this.supabase
     .from('profiles')
@@ -91,7 +91,7 @@ async enviarCupom(): Promise<void> {
       usuario_id: this.auth.getUserId(),
       filial_id: perfil.filial_id, 
       tipo_gasto: tipo,
-      descricao_outros: tipo === 'Outros' ? descricao : null,
+      observacoes: observacoes,
       data_nota: data,
       valor: parseFloat(valor),
       url_imagem: imageUrl
@@ -103,7 +103,7 @@ async enviarCupom(): Promise<void> {
       alert('Cupom enviado com sucesso!');
       this.cupomForm.reset({
         tipo: '',
-        descricao: '',
+        observacoes: '',
         data: new Date().toISOString().split('T')[0],
         valor: '',
         imagem: null

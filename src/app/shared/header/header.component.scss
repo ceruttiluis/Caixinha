@@ -1,5 +1,11 @@
 .Principal {
-          background-color: #e8f5e9;
+           background: linear-gradient(
+            135deg,
+            rgb(158, 205, 184) 20%,
+            rgb(190, 222, 207) 70%,
+            rgb(213, 215, 214) 100%,
+            rgb(229, 236, 233) 80%
+);
           margin-left: 90px;
           display: flex;
           justify-content: space-between;
@@ -32,7 +38,7 @@
             font-size: 1.2rem;
             line-height: 0.1;
             margin-top: 6rem;
-            background-color: #c8d3c6;
+            background-color: #e5fcf0;
             border-radius: 20px;
 
             p {

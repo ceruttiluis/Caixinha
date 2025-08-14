@@ -2,7 +2,13 @@
   max-width: 500px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #f9f9f9;
+  background: linear-gradient(
+  135deg,
+  rgb(158, 205, 184) 0%,
+  rgb(190, 222, 207) 30%,
+  rgb(213, 215, 214) 70%,
+  rgb(229, 236, 233) 100%
+);
   border-radius: 10px;
 
   h2 {
