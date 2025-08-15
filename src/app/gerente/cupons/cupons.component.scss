@@ -1,14 +1,11 @@
 .dashboard {
   margin-left: 90px;
   display: flex;
+  padding: 0;
+  min-height: 98vh;
+
   font-family: 'Segoe UI', sans-serif;
-   background: linear-gradient(
-  135deg,
-  rgb(158, 205, 184) 10%,
-  rgb(190, 222, 207) 40%,
-  rgb(213, 215, 214) 70%,
-  rgb(229, 236, 233) 80%
-);
+  background: linear-gradient(135deg, #2d7d32 0%, #a8aca9 55%, #4caf50 100%);
   color: #1b1b1b;
 
   .content {

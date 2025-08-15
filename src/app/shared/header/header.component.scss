@@ -1,11 +1,5 @@
 .Principal {
-           background: linear-gradient(
-            135deg,
-            rgb(158, 205, 184) 20%,
-            rgb(190, 222, 207) 70%,
-            rgb(213, 215, 214) 100%,
-            rgb(229, 236, 233) 80%
-);
+          background: linear-gradient(135deg, #2d7d32 6%, #a8aca9 82.5%, #4caf50 120%);
           margin-left: 90px;
           display: flex;
           justify-content: space-between;
@@ -27,7 +21,7 @@
             margin-bottom: 1rem;
           }
           .Logo {
-            width: 330px;
+            width: 380px;
             height: 100px;
           }
           .Policy {

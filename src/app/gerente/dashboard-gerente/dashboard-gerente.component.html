@@ -20,27 +20,27 @@
     <div class="cards">
       <div class="card total">
         <div class="label">Total Gasto</div>
-      <div class="coin">$</div>
+      <img src="assets/$.png" alt="Logo" class="coin">
         <div class="value">{{ totalGasto | currency:'BRL' }}</div>
       </div>
       <div class="card orcamento">
-        <div class="label">Orçamento Base</div>
-        <div class="coin">$</div>
+        <div class="label">Orçamento Previsto</div>
+        <img src="assets/$.png" alt="Logo" class="coin">
         <div class="value">{{ totalOrcamento | currency:'BRL' }}</div>
       </div>
       <div class="card deficit">
         <div class="label">Déficit (Prejuízo)</div>
-        <div class="coin">$</div>
+        <img src="assets/$.png" alt="Logo" class="coin">
         <div class="value">{{ totalDeficit | currency:'BRL' }}</div>
       </div>
       <div class="card folha">
         <div class="label">Descontado na Folha</div>
-        <div class="coin">$</div>
+        <img src="assets/$.png" alt="Logo" class="coin">
         <div class="value">{{ totalDescontado | currency:'BRL' }}</div>
       </div>
       <div class="card excedente">
         <div class="label">Excedente Aprovado</div>
-        <div class="coin">$</div>
+        <img src="assets/$.png" alt="Logo" class="coin">
         <div class="value">{{ totalExcedenteAprovado | currency:'BRL' }}</div>
       </div>
     </div>
@@ -86,7 +86,7 @@
           <tr *ngFor="let item of rankingExtrapolo">
             <td>{{ item.nome }} </td>
             <td>Toledo</td>
-            <td>{{ item.excedente | currency:'BRL' }}</td>
+            <td>{{ item.diferenca | currency:'BRL' }}</td>
           </tr>
         </table>
           </div>

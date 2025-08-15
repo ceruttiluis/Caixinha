@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NgFor, NgIf, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
+import { SharedModule } from "../../shared/shared.module";
 
 interface Filial {
   id?: number;
@@ -21,13 +22,14 @@ const supabase = createClient(
   templateUrl: './filiais.component.html',
   styleUrls: ['./filiais.component.scss'],
   standalone: true,
-  imports:[
+  imports: [
     SidebarCiopComponent,
     NgIf,
     NgFor,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    SharedModule
 ]
 })
 export class FiliaisComponent implements OnInit {

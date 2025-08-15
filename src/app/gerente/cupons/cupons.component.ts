@@ -102,15 +102,23 @@ export class CuponsComponent {
   }
 
    async atualizarStatusCupom(cupom: Cupom, novoStatus: CupomStatus) {
-    const { error } = await this.supabase
+    const { data, error } = await this.supabase
       .from('cupons')
       .update({ status: novoStatus })
-      .eq('id', cupom.id);
+      .eq('id', Number(cupom.id))
+      .select()
+      .maybeSingle();
 
     if (error) {
       console.error(`Erro ao atualizar cupom #${cupom.id}:`, error.message);
       return;
     }
+    if (!data) {
+    console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
+    return;
+    }
+  
+  console.log(`Cupom atualizado no banco:`, data);
 
     // Remove das listas atuais
     this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);

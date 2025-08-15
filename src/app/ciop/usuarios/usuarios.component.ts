@@ -5,12 +5,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-usuarios',
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, SidebarCiopComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SidebarCiopComponent, SharedModule],
   standalone: true
 })
 export class UsuariosComponent implements OnInit {

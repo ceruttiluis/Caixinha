@@ -1,3 +1,16 @@
+MAKE THE SAME UPDATE OS FILIAIS
+CRIAR BOTÃO PARA O GERENTE EXCLUIR O CUPOM 
+DASHBOARD DE VISUALIZAÇÃO
+
+Caso o gerente, tenha que mudar a sua decisão, de aprovado para recusado, ou vice e versa, terá de ter um campo de observação para justificar a sua ação.
+Após o gerente reprovar o cupom, e será descontado do usuario o valor, terá de ter um campo para que anexe imagem do documento, para ter o historico. 
+CIOP, também pode aprovar e reprovar o cupom.
+
+O usuario, ter um saldo de valor, e a cada valor adicionado dos cupons, exemplo gastei 40 reais, já debitar do saldo que o usuario tem. O ciop, no caso o joao ter um acesso para adicionar saldo para o usuario, quando ele solicitar. Assim, no gerenciamento do usuario, terá de ter esse "caixa" para que possa adicionar valor e debitar de acordo com os cupons. Esses valores terão de ser adicionados no banco.
+
+Quando terminar isso tudo, pensar em melhorar a tela de cupons, para que fique menor como se fosse um kanban, assim os cupons viriam de forma pequena e ao clicar em cima, abriria o cupon inteiro.
+
+
 # Caixinha
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.1.

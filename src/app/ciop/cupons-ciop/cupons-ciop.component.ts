@@ -6,6 +6,7 @@ import { Component, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
+import { SharedModule } from "../../shared/shared.module";
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -34,7 +35,8 @@ interface Cupom {
     NgFor,
     CommonModule,
     SidebarCiopComponent,
-  ]
+    SharedModule
+]
 })
 export class CuponsCiopComponent {
   supabase: SupabaseClient;
