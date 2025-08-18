@@ -23,6 +23,7 @@ interface Cupom {
   descontar?: boolean;
   observacoes: string;
   aprovacao: string;
+  link: string;
 }
 
 @Component({
@@ -88,6 +89,7 @@ export class CuponsCiopComponent {
         tipo: c.tipo_gasto,
         valor: c.valor,
         imagem: this.getPublicImageUrl(c.url_imagem),
+        link: c.url_imagem,
         status: c.status,
         diferenca,
         exceDeficit,

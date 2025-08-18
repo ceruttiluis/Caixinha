@@ -1,0 +1,38 @@
+import { Component, OnInit } from '@angular/core';
+import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
+import { SharedModule } from '../../shared/shared.module';
+
+@Component({
+  selector: 'app-usuarios',
+  templateUrl: './usu-gerente.component.html',
+  styleUrls: ['./usu-gerente.component.scss'],
+  imports: [CommonModule, FormsModule, RouterModule, SidebarGerenteComponent, SharedModule],
+  standalone: true
+})
+export class UsuariosGerenteComponent implements OnInit {
+  supabase: SupabaseClient;
+  usuarios: any[] = [];
+  novoUsuario = { name: '', email: '', role: 'colaborador', filial_nome: '' };
+
+  constructor() {
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+  }
+
+  async ngOnInit() {
+    const { data } = await this.supabase
+    .from('profiles')
+     .select(`
+        name,
+        email,
+        role,
+        filiais (nome)
+      `);
+    this.usuarios = data || [];
+  }
+
+}

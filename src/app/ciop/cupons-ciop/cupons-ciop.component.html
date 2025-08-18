@@ -31,7 +31,9 @@
             <td>{{ cupom.tipo }}</td>
             <td>{{ cupom.valor | currency:'BRL' }}</td>
             <td>
-              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              <a [href]="cupom.link" target="_blank">
+                <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              </a>
             </td>
             <td [ngClass]="{
                   'verde': cupom.exceDeficit > 0,
@@ -81,7 +83,9 @@
             <td>{{ cupom.tipo }}</td>
             <td>{{ cupom.valor | currency:'BRL' }}</td>
             <td>
-              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              <a [href]="cupom.link " target="_blank">
+                <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
+              </a>
             </td>
             <td [ngClass]="{
                   'verde': cupom.exceDeficit > 0,
@@ -131,7 +135,9 @@
             <td>{{ cupom.tipo }}</td>
             <td>{{ cupom.valor | currency:'BRL' }}</td>
             <td>
-              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              <a [href]="cupom.link " target="_blank">
+                <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
+              </a>
             </td>
             <td [ngClass]="{
                   'verde': cupom.exceDeficit > 0,

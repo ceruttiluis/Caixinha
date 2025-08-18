@@ -17,21 +17,21 @@ import { SharedModule } from '../../shared/shared.module';
 export class UsuariosComponent implements OnInit {
   supabase: SupabaseClient;
   usuarios: any[] = [];
-  novoUsuario = { nome: '', email: '', role: 'colaborador', filial_id: '' };
+  novoUsuario = { name: '', email: '', role: 'colaborador', filial_nome: '' };
 
   constructor() {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
-    const { data } = await this.supabase.from('usuarios').select('*');
+    const { data } = await this.supabase.from('profiles_info').select('*');
     this.usuarios = data || [];
   }
 
   async criarUsuario() {
-    const { error } = await this.supabase.from('usuarios').insert([this.novoUsuario]);
+    const { error } = await this.supabase.from('profiles').insert([this.novoUsuario]);
     if (!error) {
-      this.novoUsuario = { nome: '', email: '', role: 'colaborador', filial_id: '' };
+      this.novoUsuario = { name: '', email: '', role: 'colaborador', filial_nome: '' };
       await this.ngOnInit();
     }
   }

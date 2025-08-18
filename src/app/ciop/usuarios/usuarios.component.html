@@ -4,13 +4,13 @@
 <h1>Gerenciar Usuários</h1>
 
 <form (submit)="criarUsuario(); $event.preventDefault()">
-  <input [(ngModel)]="novoUsuario.nome" name="nome" placeholder="Nome" required />
+  <input [(ngModel)]="novoUsuario.name" name="nome" placeholder="Nome" required />
   <input [(ngModel)]="novoUsuario.email" name="email" placeholder="Email" required />
   <select [(ngModel)]="novoUsuario.role" name="role">
     <option value="colaborador">Colaborador</option>
     <option value="gerente">Gerente</option>
   </select>
-  <input [(ngModel)]="novoUsuario.filial_id" name="filial_id" placeholder="ID da Filial" required />
+  <input [(ngModel)]="novoUsuario.filial_nome" name="filial_id" placeholder="ID da Filial" required />
   <button type="submit">Criar Usuário</button>
 </form>
 
@@ -20,10 +20,10 @@
   </thead>
   <tbody>
     <tr *ngFor="let user of usuarios">
-      <td>{{ user.nome }}</td>
+      <td>{{ user.name }}</td>
       <td>{{ user.email }}</td>
       <td>{{ user.role }}</td>
-      <td>{{ user.filial_id }}</td>
+      <td>{{ user.filial_nome }}</td>
       <td><button (click)="excluirUsuario(user.id)">Excluir</button></td>
     </tr>
   </tbody>

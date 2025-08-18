@@ -11,6 +11,7 @@
     <div class="tabela-lancamentos">
       <div class="list-lancamento">
         <h2>Cupons Pendentes</h2>
+        <button (click)="exportarParaExcel()">Exportar Excel</button>
       </div>
       <table>
         <thead>
@@ -34,7 +35,9 @@
             <td>{{ cupom.tipo }}</td>
             <td>{{ cupom.valor | currency:'BRL' }}</td>
             <td>
-              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              <a [href]="cupom.link" target="_blank">
+                <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              </a>
             </td>
             <td [ngClass]="{
                   'vermelho': cupom.diferenca > 0,
@@ -58,6 +61,7 @@
     <div class="tabela-lancamentos">
       <div class="list-lancamento">
         <h2>Cupons Aprovados</h2>
+        <button (click)="exportarParaExcel()">Exportar Excel</button>
       </div>
       <table>
         <thead>
@@ -81,7 +85,9 @@
             <td>{{ cupom.tipo }}</td>
             <td>{{ cupom.valor | currency:'BRL' }}</td>
             <td>
-              <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              <a [href]="cupom.link" target="_blank">
+                <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+              </a>
             </td>
             <td [ngClass]="{
                   'vermelho': cupom.exceDeficit > 0,
@@ -104,6 +110,7 @@
     <div class="tabela-lancamentos">
       <div class="list-lancamento">
         <h2>Cupons Reprovados</h2>
+        <button (click)="exportarParaExcel()">Exportar Excel</button>
       </div>
       <table>
         <thead>
@@ -127,7 +134,7 @@
             <td>{{ cupom.tipo }}</td>
             <td>{{ cupom.valor | currency:'BRL' }}</td>
             <td>
-              <a [href]="cupom" target="_blank">
+              <a [href]="cupom.link" target="_blank">
               <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
               </a>
             </td>

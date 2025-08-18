@@ -134,6 +134,7 @@ export class DashboardGerenteComponent implements OnInit {
         tipo: c.tipo_gasto,
         valor: c.valor,
         url_imagem: publicUrl,
+        imagem: c.url_imagem,
         status: c.status,
         diferenca,
         exceDeficit,

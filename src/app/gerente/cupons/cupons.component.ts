@@ -7,6 +7,8 @@ import { AuthService } from '../../services/auth.service';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { environment } from '../../../environments/environment';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -22,6 +24,7 @@ interface Cupom {
   exceDeficit: number;
   descontar?: boolean;
   observacoes: string;
+  link: string;
 }
 
 @Component({
@@ -87,6 +90,7 @@ export class CuponsComponent {
         tipo: c.tipo_gasto,
         valor: c.valor,
         imagem: this.getPublicImageUrl(c.url_imagem),
+        link: c.url_imagem,
         status: c.status,
         diferenca,
         exceDeficit,
@@ -181,4 +185,23 @@ toggleTooltip(id: number | string) {
 closeTooltip() {
   this.tooltipOpenId = null;
 }
+exportarParaExcel() {
+      const exportData = this.cupons.map(cupom => ({
+        ID: cupom.id,
+        Colaborador: cupom.usuario_nome,
+        Data: cupom.data_nota,
+        Tipo: cupom.tipo_gasto,
+        Valor: cupom.valor,
+        Excedente: cupom.diferenca,
+        Status: cupom.status,
+        separarListas(cupons : Cupom[]) {}
+      }));
+  
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
+      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  
+      const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
+    }
 }

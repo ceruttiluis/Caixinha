@@ -33,7 +33,7 @@
 
     <div class="cards">
       <div class="card total">
-        <div class="label">Total Gasto</div>
+        <div class="label">Orçamento Realizado</div>
       <img src="assets/$.png" alt="Logo" class="coin">
         <div class="value">{{ totalGasto | currency:'BRL' }}</div>
       </div>
@@ -133,7 +133,7 @@
         <td>{{ lancamento.valor | currency:'BRL' }}</td>
         <td>
           <a [href]="lancamento.url_imagem " target="_blank">
-            <img [src]="lancamento.publicUrl " alt="Nota" class="imagem-nota">
+            <img [src]="lancamento.imagem " alt="Nota" class="imagem-nota">
           </a>
         </td>
         <td>{{ lancamento.status }}</td>

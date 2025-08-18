@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { RouterModule, Router } from '@angular/router';
+import { url } from 'inspector';
 
 @Component({
   selector: 'app-dashboard-ciop',
@@ -76,7 +77,7 @@ export class DashboardCiopComponent implements OnInit {
   const filtro = this.filialSelecionada || this.filialId;
 
   let query = this.supabase
-    .from('cupons_com_usuario') // ← agora usa a view
+    .from('cupons_com_usuario')
     .select('*');
 
   if (filtro) {
@@ -100,23 +101,19 @@ export class DashboardCiopComponent implements OnInit {
 if (c.url_imagem) {
     let filePath = c.url_imagem.trim();
 
-    // Se veio um link completo do Supabase, extrai só o path a partir do bucket
     if (filePath.startsWith('http')) {
-      // Pega tudo depois de "/cupons/" (preservando subpastas)
       const match = filePath.match(/cupons\/(.+)$/);
       if (match) {
         filePath = match[1];
       }
     }
 
-    // Gera a URL pública correta
     const { data: pu } = this.supabase.storage
       .from('cupons')
       .getPublicUrl(filePath);
 
     publicUrl = pu?.publicUrl || '';
 
-    // Adiciona timestamp para evitar cache
     if (publicUrl) {
       publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
     }
@@ -128,10 +125,11 @@ if (c.url_imagem) {
       tipo: c.tipo_gasto,
       valor: c.valor,
       url_imagem: publicUrl,
+      imagem: c.url_imagem,
       status: c.status,
       diferenca,
       exceDeficit,
-      descontar: c.descontar ?? true
+      descontar: c.descontar
     };
   });
 
@@ -142,7 +140,7 @@ getValorBase(tipo: string) {
   const valores: Record<string, number> = {
     'Almoço': 35,
     'Janta': 35,
-    'Cafe da Manhã': 15,
+    'Café da Manhã': 15,
     'Hospedagem': 130,
   };
   return valores[tipo] ?? 0;
@@ -164,9 +162,9 @@ getValorBase(tipo: string) {
       if (excedente > 0) {
         this.totalDeficit += excedente;
 
-        if (cupom.descontar) {
+        if (cupom.status === 'DESCONTADO') {
           this.totalDescontado += excedente;
-        } else {
+        } else if(cupom.status === 'APROVADO') {
           this.totalExcedenteAprovado += excedente;
         }
       }
