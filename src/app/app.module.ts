@@ -4,6 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './auth/login/login.component';
+import { NgChartsModule } from 'ng2-charts';
 
 // Serviços
 import { AuthService } from './services/auth.service';
@@ -18,6 +19,7 @@ import { SharedModule } from './shared/shared.module';
     HttpClientModule,
     SharedModule,
     LoginComponent,
+    NgChartsModule,
   ],
   providers: [AuthService],
   bootstrap: []

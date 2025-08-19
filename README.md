@@ -7,6 +7,7 @@ Após o gerente reprovar o cupom, e será descontado do usuario o valor, terá d
 CIOP, também pode aprovar e reprovar o cupom.
 
 O usuario, ter um saldo de valor, e a cada valor adicionado dos cupons, exemplo gastei 40 reais, já debitar do saldo que o usuario tem. O ciop, no caso o joao ter um acesso para adicionar saldo para o usuario, quando ele solicitar. Assim, no gerenciamento do usuario, terá de ter esse "caixa" para que possa adicionar valor e debitar de acordo com os cupons. Esses valores terão de ser adicionados no banco.
+Esse adicionar saldo, tem que ser um botão para abrir uma tela e assim adicionar o valor.
 
 Quando terminar isso tudo, pensar em melhorar a tela de cupons, para que fique menor como se fosse um kanban, assim os cupons viriam de forma pequena e ao clicar em cima, abriria o cupon inteiro.
 

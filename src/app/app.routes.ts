@@ -7,6 +7,7 @@ import { CuponsComponent } from './gerente/cupons/cupons.component';
 import { CuponsCiopComponent } from './ciop/cupons-ciop/cupons-ciop.component';
 import { UsuariosGerenteComponent } from './gerente/usuarios-gerente/usu-gerente.component';
 import { CarteiraComponent } from './ciop/carteira/carteira.component';
+import { DashCarteiraComponent } from './ciop/dashboard-carteira/dash-carteira.component';
 
 
 export const routes: Routes = [
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'usuarios', component: UsuariosComponent },
   { path: 'cupons-ciop', component: CuponsCiopComponent },
   { path: 'carteira', component: CarteiraComponent },
+  { path: 'dash-carteira', component: DashCarteiraComponent },
   {
     path: 'colaborador',
     loadChildren: () => import('./colaborador/colaborador.module').then(m => m.ColaboradorModule)

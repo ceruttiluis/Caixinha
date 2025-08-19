@@ -1,0 +1,108 @@
+<app-header></app-header>
+<app-sidebar-ciop></app-sidebar-ciop>
+<div class="dashboard-container">
+  <div class="cards-resumo">
+    <div class="card">
+      <span class="icon"></span>
+      <p>LIMITE TOTAL</p>
+      <h3 class="limite">{{ saldoTotal | currency:'BRL'}}</h3>
+    </div>
+    <div class="card">
+      <span class="icon"></span>
+      <p>TOTAL DE GASTOS</p>
+      <h3 class="gastos">{{ totalGasto | currency:'BRL' }}</h3>
+    </div>
+    <div class="card">
+      <span class="icon"></span>
+      <p>SALDO ATUAL</p>
+      <h3 [ngClass]="{
+            'verde': saldoAtual > 0,
+            'vermelho': saldoAtual < 0,
+            'azul': saldoAtual === 0
+          }" class="saldo">{{ saldoAtual | currency:'BRL'}}</h3>
+    </div>
+    <div class="card">
+      <span class="icon"></span>
+      <p>TOTAL EXTRA</p>
+      <h3 class="extra">{{ totalAdicoes | currency:'BRL'}}</h3>
+    </div>
+  </div>
+
+  <div class="historicos">
+    <div class="tabela-titulo">
+      <h2>Histórico de Gastos</h2>
+      <div class="historico-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Usuário</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cupom of cupons">
+            <td>{{ cupom.data }}</td>
+            <td>{{ cupom.usuario }}</td>
+            <td>{{ cupom.tipo }}</td>
+            <td class="negativo">{{ cupom.valor | currency:'BRL' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+    <div class="tabela-titulo">
+        <h2>Histórico de Adições</h2>
+       <div class="historico-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Usuário</th>
+            <th>Valor</th>
+            <th>Observação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let adicao of adicoes">
+            <td>{{ adicao.data }}</td>
+            <td>{{ adicao.usuario }}</td>
+            <td class="positivo">+R$ {{ adicao.valor }},00</td>
+            <td>{{ adicao.observacao }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+  <div class="charts-container">
+      <div class="grafico">
+        <canvas
+          baseChart
+          [data]="{
+            labels: barChartLabels,
+            datasets: barChartDatasets
+          }"
+          [options]="barChartOptions"
+          [type]="'bar'">
+        </canvas>
+      </div>
+    <div class="grafico">
+        <canvas
+          baseChart
+          [data]="{
+            labels: barChartLabels,
+            datasets: barChartDatasets
+          }"
+          [options]="barChartOptions"
+          [type]="'bar'">
+        </canvas>
+    </div>
+</div>
+  <button class="btn-flutuante">
+    <a routerLink="/carteira" routerLinkActive="active">
+        <img class="icon-add" src="assets/Add.png" alt="Filiais">
+      </a>
+  </button>
+</div>
