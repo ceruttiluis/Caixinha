@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { LancarCupomComponent } from './lancar-cupom/lancar-cupom.component';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MinhasSolicitacoesComponent } from '../../app/colaborador/solicitacoes/minhas-solicitacoes.component';
 import { COLABORADOR_ROUTES } from './colaborador.routes';
+import { DashColaboradorComponent } from './dash-colaborador/dash-colaborador.component';
 
 @NgModule({
   declarations: [],
@@ -13,7 +13,7 @@ import { COLABORADOR_ROUTES } from './colaborador.routes';
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    MinhasSolicitacoesComponent,
+    DashColaboradorComponent,
     LancarCupomComponent
   ]
 })

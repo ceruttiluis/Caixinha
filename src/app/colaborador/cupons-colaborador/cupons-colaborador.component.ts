@@ -4,17 +4,14 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
-import { SharedModule } from '../../shared/shared.module';
 import { environment } from '../../../environments/environment';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
+import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.component';
+import { SharedModule } from "../../shared/shared.module";
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
 interface Cupom {
   id: number;
-  usuarioID: string;
   usuario: string;
   data: Date;
   tipo: string;
@@ -25,23 +22,24 @@ interface Cupom {
   exceDeficit: number;
   descontar?: boolean;
   observacoes: string;
+  aprovacao: string;
   link: string;
 }
 
 @Component({
-  selector: 'app-cupons',
-  templateUrl: './cupons.component.html',
-  styleUrls: ['./cupons.component.scss'],
+  selector: 'app-cupons-colaborador',
+  templateUrl: './cupons-colaborador.component.html',
+  styleUrls: ['./cupons-colaborador.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
     NgFor,
     CommonModule,
-    SidebarGerenteComponent,
+    SidebarColaboradorComponent,
     SharedModule
-  ]
+]
 })
-export class CuponsComponent {
+export class CuponsColaboradorComponent {
   supabase: SupabaseClient;
   filialId: string | null = null;
   filialSelecionada: string = '';
@@ -86,7 +84,6 @@ export class CuponsComponent {
 
       return {
         id: c.id,
-        usuarioID: c.profiles?.id,
         usuario: c.usuario_nome,
         data: c.data_nota,
         tipo: c.tipo_gasto,
@@ -97,6 +94,7 @@ export class CuponsComponent {
         diferenca,
         exceDeficit,
         observacoes: c.observacoes,
+        aprovacao: c.aprovado_por_nome
       };
     });
     this.separarListas();
@@ -105,62 +103,6 @@ export class CuponsComponent {
     this.cuponsPendentes = this.cupons.filter(c => c.status === 'PENDENTE');
     this.cuponsAprovados = this.cupons.filter(c => c.status === 'APROVADO');
     this.cuponsReprovados = this.cupons.filter(c => c.status === 'DESCONTADO');
-  }
-
-   async atualizarStatusCupom(cupom: Cupom, novoStatus: CupomStatus) {
-    const { data, error } = await this.supabase
-      .from('cupons')
-      .update({ status: novoStatus })
-      .eq('id', Number(cupom.id))
-      .select('*')
-      .maybeSingle();
-
-    if (error) {
-      console.error(`Erro ao atualizar cupom #${cupom.id}:`, error.message);
-      return;
-    }
-    if (!data) {
-    console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
-    return;
-    }
-    if (novoStatus === 'APROVADO' || novoStatus === 'DESCONTADO') {
-
-    const usuarioId = cupom.usuarioID; 
-
-    const { data: usuario, error: usuarioError } = await this.supabase
-      .from('profiles')
-      .select('carteira, filial_id, name')
-      .eq('id', usuarioId)
-      .maybeSingle();
-
-    if (usuarioError || !usuario) {
-      console.error(`Usuário não encontrado: ${usuarioId}`);
-      return;
-    }
-
-    const novoSaldo = (usuario.carteira || 0) - (cupom.valor || 0);
-
-    const { error: updateError } = await this.supabase
-      .from('profiles')
-      .update({ carteira: novoSaldo })
-      .eq('id', usuarioId);
-
-    if (updateError) {
-      console.error('Erro ao atualizar saldo: ' + updateError.message);
-      return;
-    }
-  }
-  
-  console.log(`Cupom atualizado no banco:`, data);
-
-    this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);
-    this.cuponsAprovados = this.cuponsAprovados.filter(c => c.id !== cupom.id);
-    this.cuponsReprovados = this.cuponsReprovados.filter(c => c.id !== cupom.id);
-
-    cupom.status = novoStatus;
-    if (novoStatus === 'APROVADO') this.cuponsAprovados.push(cupom);
-    else if (novoStatus === 'DESCONTADO') this.cuponsReprovados.push(cupom);
-    else this.cuponsPendentes.push(cupom);
   }
 
   private getValorBase(tipo: string): number {
@@ -197,38 +139,17 @@ export class CuponsComponent {
 
     return publicUrl;
   }
-  
-
-isTooltipOpen(id: number | string): boolean {
+  isTooltipOpen(id: number | string): boolean {
   return this.tooltipOpenId === String(id);
 }
 
-toggleTooltip(id: number | string) {
-  const key = String(id);
-  this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
-}
+  toggleTooltip(id: number | string) {
+    const key = String(id);
+    this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
+  }
 
-@HostListener('document:click')
-closeTooltip() {
-  this.tooltipOpenId = null;
-}
-exportarParaExcel() {
-      const exportData = this.cupons.map(cupom => ({
-        ID: cupom.id,
-        Colaborador: cupom.usuario_nome,
-        Data: cupom.data_nota,
-        Tipo: cupom.tipo_gasto,
-        Valor: cupom.valor,
-        Excedente: cupom.diferenca,
-        Status: cupom.status,
-        separarListas(cupons : Cupom[]) {}
-      }));
-  
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
-      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-      const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-      FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
-    }
+  @HostListener('document:click')
+  closeTooltip() {
+    this.tooltipOpenId = null;
+  }
 }

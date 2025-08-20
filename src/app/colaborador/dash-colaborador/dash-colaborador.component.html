@@ -1,39 +1,25 @@
-<router-outlet></router-outlet>
-
 <app-header></app-header>
 
 <main class="dashboard">
-  <app-sidebar-ciop></app-sidebar-ciop>
+  <app-sidebar-colaborador></app-sidebar-colaborador>
   <section class="content animate-fade-in">
     <div class="Description">
-      <h2>Filial</h2>
     <h2>Colaborador</h2>
     </div>
     <div class="filters">
-  <input 
-    type="text" 
-    [(ngModel)]="filialSelecionada" 
-    (ngModelChange)="onFilialChange()" 
-    placeholder="Filial..."
-    list="listaFiliais">
-  <datalist id="listaFiliais">
-    <option *ngFor="let filial of filiais" [value]="filial.nome"></option>
-  </datalist>
-
-  <input 
-    type="text" 
-    [(ngModel)]="colaboradorSelecionado" 
-    (ngModelChange)="onColaboradorChange()"
-    placeholder="Colaborador..."
-    list="listaColaboradores">
-  <datalist id="listaColaboradores">
-    <option *ngFor="let colaborador of usuario" [value]="colaborador.nome"></option>
-  </datalist>
-</div>
+      <input 
+        type="text" 
+        (ngModelChange)="onColaboradorChange()"
+        placeholder="Colaborador..."
+        list="listaColaboradores">
+        <datalist id="listaColaboradores">
+        <option *ngFor="let colaborador of usuario" [value]="colaborador.nome"></option>
+        </datalist>
+    </div>
 
     <div class="cards">
       <div class="card total">
-        <div class="label">Orçamento Realizado</div>
+        <div class="label">Total Gasto</div>
       <img src="assets/$.png" alt="Logo" class="coin">
         <div class="value">{{ totalGasto | currency:'BRL' }}</div>
       </div>

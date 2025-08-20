@@ -1,13 +1,12 @@
-MAKE THE SAME UPDATE OS FILIAIS
+
 CRIAR BOTÃO PARA O GERENTE EXCLUIR O CUPOM 
-DASHBOARD DE VISUALIZAÇÃO
 
 Caso o gerente, tenha que mudar a sua decisão, de aprovado para recusado, ou vice e versa, terá de ter um campo de observação para justificar a sua ação.
 Após o gerente reprovar o cupom, e será descontado do usuario o valor, terá de ter um campo para que anexe imagem do documento, para ter o historico. 
 CIOP, também pode aprovar e reprovar o cupom.
 
-O usuario, ter um saldo de valor, e a cada valor adicionado dos cupons, exemplo gastei 40 reais, já debitar do saldo que o usuario tem. O ciop, no caso o joao ter um acesso para adicionar saldo para o usuario, quando ele solicitar. Assim, no gerenciamento do usuario, terá de ter esse "caixa" para que possa adicionar valor e debitar de acordo com os cupons. Esses valores terão de ser adicionados no banco.
-Esse adicionar saldo, tem que ser um botão para abrir uma tela e assim adicionar o valor.
+Tela para solicitação de recarga, com o historico de recarga, com botão para aprovar, quando aprovar, ele faz um update na carteira do colaborador, já com a quantidade certa. O valor da recarga será sempre pela solicitação de credito.
+quando tem solicitação de recarga extra, vai primeiro para o gerente aprovar, ele aprova e vem para a tela do ciop, fazer outra aprovação.
 
 Quando terminar isso tudo, pensar em melhorar a tela de cupons, para que fique menor como se fosse um kanban, assim os cupons viriam de forma pequena e ao clicar em cima, abriria o cupon inteiro.
 

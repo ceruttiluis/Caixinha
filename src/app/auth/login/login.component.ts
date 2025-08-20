@@ -56,7 +56,7 @@ export class LoginComponent {
       this.router.navigate(['/home']);
       break;
     case 'COLABORADOR':
-      this.router.navigate(['/colaborador']);
+      this.router.navigate(['/home']);
       break;
     default:
       this.errorMessage = 'Tipo de usuário não reconhecido.';

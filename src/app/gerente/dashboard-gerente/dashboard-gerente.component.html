@@ -62,7 +62,7 @@
             </thead>
           <tr *ngFor="let item of rankingGastos">
             <td>{{ item.nome }} </td>
-            <td>Toledo</td>
+            <td>{{ item.filial }}</td>
             <td>{{ item.total | currency:'BRL' }}</td>
           </tr>
         </table>
@@ -85,7 +85,7 @@
             </thead>
           <tr *ngFor="let item of rankingExtrapolo">
             <td>{{ item.nome }} </td>
-            <td>Toledo</td>
+            <td>{{ item.filial }}</td>
             <td>{{ item.diferenca | currency:'BRL' }}</td>
           </tr>
         </table>

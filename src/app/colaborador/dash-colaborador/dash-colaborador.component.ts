@@ -8,12 +8,12 @@ import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { RouterModule, Router } from '@angular/router';
-import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
+import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.component';
 
 @Component({
-  selector: 'app-dashboard-gerente',
-  templateUrl: './dashboard-gerente.component.html',
-  styleUrls: ['./dashboard-gerente.component.scss'],
+  selector: 'app-dash-colaborador',
+  templateUrl: './dash-colaborador.component.html',
+  styleUrls: ['./dash-colaborador.component.scss'],
   standalone: true,
   imports: [
         CommonModule,
@@ -21,10 +21,10 @@ import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
         RouterModule,
         FormsModule,
         SharedModule,
-        SidebarGerenteComponent
+        SidebarColaboradorComponent
   ]
 })
-export class DashboardGerenteComponent implements OnInit {
+export class DashColaboradorComponent implements OnInit {
   supabase: SupabaseClient;
     cupons: any[] = [];
     filialId: string | null = null;
@@ -181,7 +181,7 @@ export class DashboardGerenteComponent implements OnInit {
       }
     }
   
-     gerarRankings() {
+    gerarRankings() {
     const gastosPorUsuario: Record<string, { total: number, filialNome: string }> = {};
     const excedentePorUsuario: Record<string, { diferenca: number, filialNome: string }> = {};
 
@@ -220,7 +220,7 @@ export class DashboardGerenteComponent implements OnInit {
         .update({ status })
         .eq('id', id);
   
-      await this.carregarDados(); // refresh
+      await this.carregarDados(); 
     }
   
   

@@ -127,6 +127,7 @@ if (c.url_imagem) {
       url_imagem: publicUrl,
       imagem: c.url_imagem,
       status: c.status,
+      filial: c.filial_nome,
       diferenca,
       exceDeficit,
       descontar: c.descontar
@@ -172,26 +173,34 @@ getValorBase(tipo: string) {
   }
 
   gerarRankings() {
-    const gastosPorUsuario: Record<string, number> = {};
-    const excedentePorUsuario: Record<string, number> = {};
+    const gastosPorUsuario: Record<string, { total: number, filialNome: string }> = {};
+    const excedentePorUsuario: Record<string, { diferenca: number, filialNome: string }> = {};
 
     for (const cupom of this.cupons) {
       const nome = cupom.usuario;
       const filial = cupom.filial_id;
-      gastosPorUsuario[nome] = (gastosPorUsuario[nome] || 0) + cupom.valor;
+      const filialNome = cupom.filial;
+
+       if (!gastosPorUsuario[nome]) {
+      gastosPorUsuario[nome] = { total: 0, filialNome };
+    }
+    gastosPorUsuario[nome].total += cupom.valor;
 
       if (cupom.diferenca > 0) {
-        excedentePorUsuario[nome] = (excedentePorUsuario[nome] || 0) + cupom.diferenca;
+      if (!excedentePorUsuario[nome]) {
+        excedentePorUsuario[nome] = { diferenca: 0, filialNome };
       }
+      excedentePorUsuario[nome].diferenca += cupom.diferenca;
+    }
     }
 
-    this.rankingGastos = Object.entries(gastosPorUsuario)
-      .map(([nome, total]) => ({ nome, total }))
+    this.rankingGastos = Object.entries(gastosPorUsuario)    
+      .map(([nome, dados ]) => ({ nome, total: dados.total, filial: dados.filialNome }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 5);
 
     this.rankingExtrapolo = Object.entries(excedentePorUsuario) 
-      .map(([nome, diferenca]) => ({ nome, diferenca }))
+      .map(([nome, dados]) => ({ nome, diferenca: dados.diferenca, filial: dados.filialNome }))
       .sort((a, b) => b.diferenca - a.diferenca)
       .slice(0, 5);
   }
@@ -202,9 +211,8 @@ getValorBase(tipo: string) {
       .update({ status })
       .eq('id', id);
 
-    await this.carregarDados(); // refresh
+    await this.carregarDados(); 
   }
-
 
   exportarParaExcel() {
     const exportData = this.cupons.map(cupom => ({
