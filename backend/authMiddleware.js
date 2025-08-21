@@ -10,10 +10,8 @@ async function authenticateToken(req, res, next) {
   if (!token) return res.status(401).json({ error: 'Token não fornecido' });
 
   try {
-    // Decodifica e verifica assinatura com chave do Supabase
     const decoded = jwt.verify(token, supabaseJwtSecret);
 
-    // Opcional: buscar usuário no banco e anexar no request
     const { data: usuario, error } = await supabase
       .from('profiles')
       .select('*')
@@ -24,7 +22,7 @@ async function authenticateToken(req, res, next) {
       return res.status(403).json({ error: 'Usuário inválido' });
     }
 
-    req.user = profile; // Anexa usuário no request
+    req.user = profile; 
     next();
   } catch (err) {
     return res.status(403).json({ error: 'Token inválido ou expirado' });

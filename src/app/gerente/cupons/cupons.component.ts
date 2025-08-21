@@ -71,7 +71,7 @@ export class CuponsComponent {
     if (filtro) {
       query = query.eq('filial_id', filtro);
     }
-
+   
     const { data, error } = await query;
 
     if (error) {

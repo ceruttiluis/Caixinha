@@ -3,27 +3,41 @@
 <div class="container">
 <h1>Gerenciar Usuários</h1>
 
-<form (submit)="criarUsuario(); $event.preventDefault()">
-  <input [(ngModel)]="novoUsuario.name" name="nome" placeholder="Nome" required />
-  <input [(ngModel)]="novoUsuario.email" name="email" placeholder="Email" required />
-  <select [(ngModel)]="novoUsuario.role" name="role">
-    <option value="colaborador">Colaborador</option>
-    <option value="gerente">Gerente</option>
+<form [formGroup]="profileForm" (ngSubmit)="criarUsuario()">
+  <input type="text" formControlName="name" placeholder="Nome" required />
+  <input type="text" formControlName="email" placeholder="Email" required />
+  <input type="text" formControlName="password" placeholder="Senha" required />
+  <select formControlName="role" required>
+        <option value="CIOP">admin</option>
+        <option value="GERENTE">moderator</option>
+        <option value="COLABORADOR">user</option>
   </select>
-  <input [(ngModel)]="novoUsuario.filial_nome" name="filial_id" placeholder="ID da Filial" required />
-  <button type="submit">Criar Usuário</button>
+
+  <select  formControlName="gerente" placeholder="Selecione o Gerente" required>
+        <option *ngFor="let g of gerentes" [value]="g.id">
+          {{ g.name }}
+        </option>
+  </select>
+
+  <select  formControlName="filial" required>
+        <option *ngFor="let filial of Filiais" [value]="filial.id">
+          {{ filial.nome}}
+        </option>
+  </select>
+  <button type="submit" [disabled]="uploading">Criar Usuário</button>
 </form>
 
 <table>
   <thead>
-    <tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Filial</th><th>Ações</th></tr>
+    <tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Filial</th><th>Gerente</th><th>Ações</th></tr>
   </thead>
   <tbody>
     <tr *ngFor="let user of usuarios">
       <td>{{ user.name }}</td>
       <td>{{ user.email }}</td>
       <td>{{ user.role }}</td>
-      <td>{{ user.filial_nome }}</td>
+      <td>{{ user.filial?.nome }}</td>
+      <td>{{ user.gerente?.name }}</td>
       <td><button (click)="excluirUsuario(user.id)">Excluir</button></td>
     </tr>
   </tbody>

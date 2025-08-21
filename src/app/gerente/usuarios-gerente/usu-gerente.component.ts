@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-usuarios',
@@ -17,22 +19,20 @@ import { SharedModule } from '../../shared/shared.module';
 export class UsuariosGerenteComponent implements OnInit {
   supabase: SupabaseClient;
   usuarios: any[] = [];
-  novoUsuario = { name: '', email: '', role: 'colaborador', filial_nome: '' };
+  filialId: string | null = null;
+  novoUsuario = { name: '', email: '', role: '', filial_nome: '' };
 
-  constructor() {
+  constructor(private auth: AuthService, private router: Router) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
-    const { data } = await this.supabase
-    .from('profiles')
-     .select(`
-        name,
-        email,
-        role,
-        filiais (nome)
-      `);
-    this.usuarios = data || [];
+    this.filialId = this.auth.getFilialId();
+    this.carregarDados();
   }
 
+  async carregarDados() {
+    const { data } = await this.supabase.from('profiles_info').select('*');
+    this.usuarios = data || [];
+  }
 }

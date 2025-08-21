@@ -29,8 +29,9 @@ export class DashboardCiopComponent implements OnInit {
   supabase: SupabaseClient;
   cupons: any[] = [];
   filialId: string | null = null;
-  filiais: any[] = [];
   usuario: any[] = [];
+  profiles: any[] = [];
+  filiais: any[] = [];
   rankingGastos: any[] = [];
   rankingExtrapolo: any[] = [];
   filialSelecionada: string = '';
@@ -52,19 +53,11 @@ export class DashboardCiopComponent implements OnInit {
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
-    await this.carregarColaboradores()
     await this.carregarDados();
+    await this.carregarProfiles();
+    await this.carregarFiliais();
   }
 
-   async carregarColaboradores() {
-    const { data, error } = await this.supabase
-      .from('profiles')
-      .select('id, name');
-
-    if (!error && data) {
-      this.usuario = data;
-    }
-  }
   onFilialChange() {
     console.log('Filial selecionada:', this.filialSelecionada);
   }
@@ -98,39 +91,39 @@ export class DashboardCiopComponent implements OnInit {
 
   let publicUrl = '';
 
-if (c.url_imagem) {
-    let filePath = c.url_imagem.trim();
+  if (c.url_imagem) {
+      let filePath = c.url_imagem.trim();
 
-    if (filePath.startsWith('http')) {
-      const match = filePath.match(/cupons\/(.+)$/);
-      if (match) {
-        filePath = match[1];
+      if (filePath.startsWith('http')) {
+        const match = filePath.match(/cupons\/(.+)$/);
+        if (match) {
+          filePath = match[1];
+        }
+      }
+
+      const { data: pu } = this.supabase.storage
+        .from('cupons')
+        .getPublicUrl(filePath);
+
+      publicUrl = pu?.publicUrl || '';
+
+      if (publicUrl) {
+        publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
       }
     }
-
-    const { data: pu } = this.supabase.storage
-      .from('cupons')
-      .getPublicUrl(filePath);
-
-    publicUrl = pu?.publicUrl || '';
-
-    if (publicUrl) {
-      publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-    }
-  }
-    return {
-      id: c.id,
-      usuario: c.usuario_nome,
-      data: c.data_nota,
-      tipo: c.tipo_gasto,
-      valor: c.valor,
-      url_imagem: publicUrl,
-      imagem: c.url_imagem,
-      status: c.status,
-      filial: c.filial_nome,
-      diferenca,
-      exceDeficit,
-      descontar: c.descontar
+      return {
+        id: c.id,
+        usuario: c.usuario_nome,
+        data: c.data_nota,
+        tipo: c.tipo_gasto,
+        valor: c.valor,
+        url_imagem: publicUrl,
+        imagem: c.url_imagem,
+        status: c.status,
+        filial: c.filial_nome,
+        diferenca,
+        exceDeficit,
+        descontar: c.descontar
     };
   });
 
@@ -212,6 +205,52 @@ getValorBase(tipo: string) {
       .eq('id', id);
 
     await this.carregarDados(); 
+  }
+
+    async carregarProfiles() {
+      const filtro = this.filialSelecionada || this.filialId;
+
+      let query = this.supabase
+        .from('profiles')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (filtro) {
+        query = query.eq('filial_id', filtro);
+    }
+
+      const { data, error } = await query;
+
+      this.profiles = (data || []).map((p: any) => {
+        return {
+          id: p.id,
+          nome: p.name,
+        }
+      }
+    );
+  }
+
+  async carregarFiliais() {
+      const filtro = this.filialSelecionada || this.filialId;
+
+      let query = this.supabase
+        .from('filiais')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (filtro) {
+        query = query.eq('filial_id', filtro);
+    }
+
+      const { data, error } = await query;
+
+      this.filiais = (data || []).map((f: any) => {
+        return {
+          id: f.id,
+          nome: f.nome,
+        }
+      }
+    );
   }
 
   exportarParaExcel() {

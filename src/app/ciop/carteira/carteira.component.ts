@@ -59,7 +59,6 @@ export class CarteiraComponent implements OnInit {
     else this.users = data || [];
   }
 
-
   async atualizarCarteira(user: User) {
     if (!user.incremento || user.incremento === 0) {
       this.showMessage('Informe um valor para atualizar o saldo!', true);

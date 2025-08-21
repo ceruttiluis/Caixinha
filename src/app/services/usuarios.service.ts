@@ -14,22 +14,19 @@ export interface Usuario {
   providedIn: 'root'
 })
 export class UsuariosService {
-  private apiUrl = '/api/usuarios'; // ou só '/api/usuarios' se usar proxy
+  private apiUrl = 'http://localhost:3000/usuarios';
 
   constructor(private http: HttpClient) {}
 
-  // GET - listar usuários
-  getUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(this.apiUrl);
+  criarUsuario(usuario: any): Observable<any> {
+    return this.http.post(this.apiUrl, usuario);
   }
 
-  // POST - criar novo usuário
-  criarUsuario(usuario: Usuario): Observable<Usuario> {
-    return this.http.post<Usuario>(this.apiUrl, usuario);
+  listarUsuarios(): Observable<any> {
+    return this.http.get(this.apiUrl);
   }
 
-  // DELETE - remover usuário por ID
-  deletarUsuario(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  excluirUsuario(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

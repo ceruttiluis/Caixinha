@@ -1,6 +1,6 @@
 .container {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 0%, #a8aca9 50%, #4caf50 100%);
+ background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 53%, #4caf50 90%);
   margin-left: 110px;
   margin-top: 0;
   padding: 2rem;
@@ -22,7 +22,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       flex: 1;
-      min-width: 200px;
+      min-width: 100px;
     }
 
     button {

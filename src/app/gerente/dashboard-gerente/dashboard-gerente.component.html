@@ -1,5 +1,4 @@
 <app-header></app-header>
-
 <main class="dashboard">
   <app-sidebar-gerente></app-sidebar-gerente>
   <section class="content animate-fade-in">
@@ -16,7 +15,6 @@
         <option *ngFor="let colaborador of usuario" [value]="colaborador.nome"></option>
         </datalist>
     </div>
-
     <div class="cards">
       <div class="card total">
         <div class="label">Total Gasto</div>
@@ -44,7 +42,6 @@
         <div class="value">{{ totalExcedenteAprovado | currency:'BRL' }}</div>
       </div>
     </div>
-
     <div class="rankings">
       <div class="ranking">
           <div class="Title">
@@ -68,7 +65,6 @@
         </table>
           </div>
       </div>
-
       <div class="ranking">
          <div class="Title">
             <img src="assets/Logo.png" alt="Logo" class="Logo">
@@ -92,6 +88,7 @@
           </div>
       </div>
     </div>
+<!---
     <div class="tabela-lancamentos">
   <div class="list-lancamento">
     <h2>Lista de Lançamento</h2>
@@ -136,5 +133,6 @@
     </tbody>
   </table>
 </div>
+-->
   </section>
 </main>

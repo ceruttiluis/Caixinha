@@ -29,6 +29,7 @@ export class DashboardGerenteComponent implements OnInit {
     cupons: any[] = [];
     filialId: string | null = null;
     filiais: any[] = [];
+    profiles: any[] = [];
     usuario: any[] = [];
     rankingGastos: any[] = [];
     rankingExtrapolo: any[] = [];
@@ -51,29 +52,10 @@ export class DashboardGerenteComponent implements OnInit {
   
     async ngOnInit() {
       this.filialId = this.auth.getFilialId();
-      await this.carregarFiliais();
-      await this.carregarColaboradores()
+      await this.carregarProfiles()
       await this.carregarDados();
     }
   
-    async carregarFiliais() {
-          const { data, error } = await this.supabase
-        .from('filiais')
-        .select('id, nome');
-  
-      if (!error && data) {
-        this.filiais = data;
-      }
-    }
-     async carregarColaboradores() {
-      const { data, error } = await this.supabase
-        .from('profiles')
-        .select('id, name');
-  
-      if (!error && data) {
-        this.usuario = data;
-      }
-    }
     onFilialChange() {
       console.log('Filial selecionada:', this.filialSelecionada);
     }
@@ -222,6 +204,28 @@ export class DashboardGerenteComponent implements OnInit {
   
       await this.carregarDados(); // refresh
     }
+  async carregarProfiles() {
+      const filtro = this.filialSelecionada || this.filialId;
+
+      let query = this.supabase
+        .from('profiles')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (filtro) {
+        query = query.eq('filial_id', filtro);
+    }
+
+      const { data, error } = await query;
+
+      this.profiles = (data || []).map((p: any) => {
+        return {
+          id: p.id,
+          nome: p.name,
+        }
+      }
+    );
+  }
   
   
     exportarParaExcel() {
