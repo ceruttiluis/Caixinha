@@ -116,12 +116,10 @@ export class CuponsCiopComponent {
       return;
     }
 
-    // Remove das listas atuais
     this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);
     this.cuponsAprovados = this.cuponsAprovados.filter(c => c.id !== cupom.id);
     this.cuponsReprovados = this.cuponsReprovados.filter(c => c.id !== cupom.id);
-
-    // Atualiza o objeto e insere na lista correta
+    
     cupom.status = novoStatus;
     if (novoStatus === 'APROVADO') this.cuponsAprovados.push(cupom);
     else if (novoStatus === 'DESCONTADO') this.cuponsReprovados.push(cupom);

@@ -45,7 +45,6 @@ export class LoginComponent {
     console.log('Role detectada:', userData.role);
 
     const redirectUrl = `/${userData.role.toLowerCase()}`;
-    console.log('Redirecionando para:', redirectUrl);
 
    setTimeout(() => {
   switch(userData.role) {

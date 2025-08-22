@@ -14,7 +14,7 @@ export interface Usuario {
   providedIn: 'root'
 })
 export class UsuariosService {
-  private apiUrl = 'http://localhost:3000/usuarios';
+  private apiUrl = 'http://localhost:3000/profiles';
 
   constructor(private http: HttpClient) {}
 

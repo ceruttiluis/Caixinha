@@ -42,26 +42,26 @@ export class HomeComponent {
   const role = this.currentUser?.role; 
 
   if (option === 'dashboard') {
-    if (role === 'COLABORADOR') {
+    if (role === 'user') {
       this.router.navigate(['/dash-colaborador']);
     } else if (role === 'moderator') {
       this.router.navigate(['/gerente']);
-    } else if (role === 'CIOP') {
+    } else if (role === 'admin') {
       this.router.navigate(['/ciop']);
     }
   } 
   
     else if (option === 'cupon') {
-      if (role === 'COLABORADOR') {
+      if (role === 'user') {
         this.router.navigate(['/colaborador']);
-      } else if (role === 'GERENTE') {
+      } else if (role === 'moderator') {
         this.router.navigate(['/colaborador']);
       }
     }
      else if (option === 'recarga') {
-      if (role === 'COLABORADOR') {
+      if (role === 'user') {
         this.router.navigate(['/solicitacao']);
-      } else if (role === 'GERENTE') {
+      } else if (role === 'moderator') {
         this.router.navigate(['/solicitacao']);
       }
     }

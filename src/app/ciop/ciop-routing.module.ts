@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-// Standalone components
 import { DashboardCiopComponent } from './dashboard-ciop/dashboard-ciop.component';
 import { UsuariosComponent } from './usuarios/usuarios.component';
 import { CiopGuard } from '../guards/ciop.guard';

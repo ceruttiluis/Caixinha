@@ -11,6 +11,6 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes),
-    AuthInterceptor // importante registrar o interceptor!
+    AuthInterceptor 
   ]
 });

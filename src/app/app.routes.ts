@@ -19,7 +19,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'solicitacao', component: SolicitacaoComponent },
   {
     path: 'ciop',
     loadChildren: () => import('./ciop/ciop.module').then(m => m.CiopModule)
@@ -37,6 +36,7 @@ export const routes: Routes = [
   { path: 'lancar-cupom', component: LancarCupomComponent },
   { path: 'dash-colaborador', component: DashColaboradorComponent },
   { path: 'cupons-colaborador', component: CuponsColaboradorComponent },
+  { path: 'solicitacao', component: SolicitacaoComponent },
   {
     path: 'gerente',
     loadChildren: () => import('./gerente/gerente.module').then(m => m.GerenteModule)

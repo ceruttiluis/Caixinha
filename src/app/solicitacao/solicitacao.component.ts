@@ -68,7 +68,7 @@ async enviarCupom(): Promise<void> {
     if (insertError) {
       alert('Erro ao salvar cupom: ' + insertError.message);
     } else {
-      alert('Cupom enviado com sucesso!');
+      alert('Solicitação enviado com sucesso!');
       this.solicitacaoForm.reset({
         tipo: '',
         observacoes: '',

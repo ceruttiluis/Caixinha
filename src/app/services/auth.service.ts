@@ -62,7 +62,7 @@ localStorage.setItem('user', JSON.stringify(userData));
 return userData;
 }
 async signUp(email: string, password: string) {
-  // 1. Registrar no Auth
+
   const { data: authData, error: authError } = await this.supabase.auth.signUp({
     email,
     password
@@ -70,13 +70,13 @@ async signUp(email: string, password: string) {
 
   if (authError) throw authError;
 
-  // 2. Criar perfil com role padrão
+
   const { error: profileError } = await this.supabase
     .from('profiles')
     .insert([{
       id: authData.user?.id,
       email,
-      role: 'user' // Valor padrão
+      role: 'user' 
     }]);
 
   if (profileError) throw profileError;

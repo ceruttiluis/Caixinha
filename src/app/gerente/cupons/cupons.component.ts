@@ -66,7 +66,7 @@ export class CuponsComponent {
 
     let query = this.supabase
       .from('cupons_com_usuario')
-      .select('*');
+      .select(` * , profiles ( id, name )`);
 
     if (filtro) {
       query = query.eq('filial_id', filtro);
@@ -86,7 +86,7 @@ export class CuponsComponent {
 
       return {
         id: c.id,
-        usuarioID: c.profiles?.id,
+        usuarioID: c.usuario_id,
         usuario: c.usuario_nome,
         data: c.data_nota,
         tipo: c.tipo_gasto,
@@ -107,7 +107,7 @@ export class CuponsComponent {
     this.cuponsReprovados = this.cupons.filter(c => c.status === 'DESCONTADO');
   }
 
-   async atualizarStatusCupom(cupom: Cupom, novoStatus: CupomStatus) {
+   async atualizarStatusCarteira(cupom: Cupom, novoStatus: CupomStatus) {
     const { data, error } = await this.supabase
       .from('cupons')
       .update({ status: novoStatus })
@@ -125,11 +125,11 @@ export class CuponsComponent {
     }
     if (novoStatus === 'APROVADO' || novoStatus === 'DESCONTADO') {
 
-    const usuarioId = cupom.usuarioID; 
-
+    const usuarioId = cupom.usuarioID;
+    
     const { data: usuario, error: usuarioError } = await this.supabase
       .from('profiles')
-      .select('carteira, filial_id, name')
+      .select('carteira, filial_id, name, id')
       .eq('id', usuarioId)
       .maybeSingle();
 
@@ -150,6 +150,35 @@ export class CuponsComponent {
       return;
     }
   }
+  
+  console.log(`Cupom atualizado no banco:`, data);
+
+    this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);
+    this.cuponsAprovados = this.cuponsAprovados.filter(c => c.id !== cupom.id);
+    this.cuponsReprovados = this.cuponsReprovados.filter(c => c.id !== cupom.id);
+
+    cupom.status = novoStatus;
+    if (novoStatus === 'APROVADO') this.cuponsAprovados.push(cupom);
+    else if (novoStatus === 'DESCONTADO') this.cuponsReprovados.push(cupom);
+    else this.cuponsPendentes.push(cupom);
+  }
+
+  async atualizarStatusCupom(cupom: Cupom, novoStatus: CupomStatus) {
+    const { data, error } = await this.supabase
+      .from('cupons')
+      .update({ status: novoStatus })
+      .eq('id', Number(cupom.id))
+      .select('*')
+      .maybeSingle();
+
+    if (error) {
+      console.error(`Erro ao atualizar cupom #${cupom.id}:`, error.message);
+      return;
+    }
+    if (!data) {
+    console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
+    return;
+    }
   
   console.log(`Cupom atualizado no banco:`, data);
 
