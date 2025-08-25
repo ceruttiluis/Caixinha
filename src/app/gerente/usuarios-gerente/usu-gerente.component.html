@@ -1,23 +1,23 @@
 <app-header></app-header>
 <app-sidebar-gerente></app-sidebar-gerente>
 <div class="container">
-<h1>Gerenciar Usuários</h1>
-<table>
-  <thead>
-    <tr>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Perfil</th>
-        <th>Filial</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of usuarios">
-      <td>{{ user.name }}</td>
-      <td>{{ user.email }}</td>
-      <td>{{ user.role }}</td>
-      <td>{{ user.filial_nome }}</td>
-    </tr>
-  </tbody>
-</table>
+  <h1>Gerenciar Usuários</h1>
+  <table>
+    <thead>
+      <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Perfil</th>
+          <th>Filial</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of usuarios">
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.filial_nome }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

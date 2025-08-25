@@ -24,14 +24,14 @@ interface User {
 }
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-dash-carteira',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    RouterModule, 
-    SidebarCiopComponent, 
-    SharedModule, 
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    SidebarCiopComponent,
+    SharedModule,
     NgChartsModule],
   templateUrl: './dash-carteira.component.html',
   styleUrls: ['./dash-carteira.component.scss']
@@ -64,111 +64,145 @@ export class DashCarteiraComponent {
     const filtro = this.filialSelecionada || this.filialId;
 
     let query = this.supabase
-        .from('cupons_com_usuario')
-        .select('*');
+      .from('cupons_com_usuario')
+      .select('*');
 
     if (filtro) {
-        query = query.eq('filial_id', filtro);
+      query = query.eq('filial_id', filtro);
     }
 
     const { data, error } = await query;
 
     if (error) {
-        console.error('Erro ao buscar cupons:', error.message);
-        return;
+      console.error('Erro ao buscar cupons:', error.message);
+      return;
     }
 
     this.cupons = (data || []).map((c: any) => {
 
-        return {
+      return {
         usuario: c.usuario_nome,
         data: c.data_nota,
         tipo: c.tipo_gasto,
         valor: c.valor,
-        };
+      };
     });
     this.processarIndicadores();
-    }
+  }
 
-     async carregarAdicoes() {
+  async carregarAdicoes() {
     const filtro = this.filialSelecionada || this.filialId;
 
     let query = this.supabase
-        .from('carteira')
-        .select('profile_id, criado_em, observacoes, valor_add, profiles (name)');
+      .from('carteira')
+      .select('profile_id, criado_em, observacoes, tipo_recarga,  valor_add, profiles (name)');
 
     if (filtro) {
-        query = query.eq('filial_id', filtro);
+      query = query.eq('filial_id', filtro);
     }
 
     const { data, error } = await query;
 
     if (error) {
-        console.error('Erro ao buscar adicoes:', error.message);
-        return;
+      console.error('Erro ao buscar adicoes:', error.message);
+      return;
     }
 
     this.adicoes = (data || []).map((a: any) => {
 
-        return {
+      return {
         usuario: a.profiles?.name || 'Sem nome',
         data: a.criado_em,
+        tipo: a.tipo_recarga,
         observacao: a.observacoes,
         valor: a.valor_add,
-        };
+      };
     });
     this.processarIndicadores();
-    }
+  }
 
-    async carregarCarteira() {
+  async carregarCarteira() {
     const filtro = this.filialSelecionada || this.filialId;
 
     let query = this.supabase
-        .from('profiles')
-        .select('*');
+      .from('profiles')
+      .select('*');
 
     if (filtro) {
-        query = query.eq('filial_id', filtro);
+      query = query.eq('filial_id', filtro);
     }
 
     const { data, error } = await query;
 
     if (error) {
-        console.error('Erro ao buscar adicoes:', error.message);
-        return;
+      console.error('Erro ao buscar adicoes:', error.message);
+      return;
     }
 
     this.carteira = (data || []).map((ca: any) => {
 
-        return {
+      return {
         valor: ca.carteira,
-        };
+      };
     });
     this.processarIndicadores();
-    }
-    processarIndicadores() {
-        this.totalGasto = 0;
-        this.totalAdicoes = 0;
-        this.saldoTotal = 0;
-
-        for (const carteira of this.carteira) {
-        this.saldoTotal += carteira.valor;
-        }
-        for (const cupom of this.cupons) {
-        this.totalGasto += cupom.valor;
-        }
-        for (const adicao of this.adicoes) {
-        this.totalAdicoes += adicao.valor;
-        }
-        this.saldoAtual = this.saldoTotal - this.totalGasto;
   }
-  barChartOptions = {
-    responsive: true,
+  processarIndicadores() {
+    this.totalGasto = 0;
+    this.totalAdicoes = 0;
+    this.saldoTotal = 0;
+
+    for (const carteira of this.carteira) {
+      this.saldoTotal += carteira.valor;
+    }
+    for (const cupom of this.cupons) {
+      this.totalGasto += cupom.valor;
+    }
+    for (const adicao of this.adicoes) {
+      this.totalAdicoes += adicao.valor;
+
+      if (adicao.tipo === 'Recarga Extra'){
+        this.extra += adicao.valor;
+      }
+    }
+    this.saldoAtual = this.saldoTotal - this.totalGasto;
+  }
+  public barChartData: ChartConfiguration<'bar'>['data'] = {
+    labels: ['Rüdiger', 'Toni Kross', 'Courtois', 'Camavinga'],
+    datasets: [
+      {
+        label: 'Gastos (R$)',
+        data: [225, 90, 0, 0],
+        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+      },
+      {
+        label: 'Adições (R$)',
+        data: [0, 2300, 4000, 2000],
+        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+      }
+    ]
   };
 
-  barChartLabels = ['Café', 'Almoço', 'Janta', 'Hospedagem'];
-  barChartDatasets: ChartData<'bar'>['datasets'] =  [
-    { data: [150, 350, 200, 800], label: 'Gastos' },
-    { data: [300, 400, 250, 900], label: 'Limite' }
-  ];
+  public barChartOptions: ChartConfiguration<'bar'>['options'] = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+      },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `R$ ${ctx.formattedValue}`
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => `R$ ${value}`
+        }
+      }
+    }
+  };
 }

@@ -64,37 +64,37 @@
     justify-content: flex-end;
     margin-top: 1rem;
 
-    button {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      background: #4caf50;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.3s ease;
-
-      &:hover {
-        background: #45a049;
-        transform: translateY(-1px);
-      }
-
-      &:disabled {
-        background: #cccccc;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      &.btn-cancel {
-        background: #f44336;
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        background: #4caf50;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.3s ease;
 
         &:hover {
-          background: #d32f2f;
+          background: #45a049;
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          background: #cccccc;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        &.btn-cancel {
+          background: #f44336;
+
+          &:hover {
+            background: #d32f2f;
+          }
         }
       }
     }
   }
-}
 
   .tabela-usuarios {
     margin-top: 2rem;
@@ -160,7 +160,6 @@
           }
         }
       }
-
       .no-data {
         text-align: center;
         padding: 1.5rem;

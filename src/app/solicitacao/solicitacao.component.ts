@@ -33,37 +33,37 @@ export class SolicitacaoComponent {
     });
   }
 
-async enviarCupom(): Promise<void> {
-  if (this.solicitacaoForm.invalid) {
-    alert('Preencha todos os campos obrigatórios!');
-    return;
-  }
+  async enviarCupom(): Promise<void> {
+    if (this.solicitacaoForm.invalid) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
+    }
 
-  this.uploading = true;
-  const { tipo, observacoes, data, valor } = this.solicitacaoForm.value;
+    this.uploading = true;
+    const { tipo, observacoes, data, valor } = this.solicitacaoForm.value;
 
-   const { data: perfil, error: perfilError } = await this.supabase
-    .from('profiles')
-    .select('filial_id')
-    .eq('id', this.auth.getUserId())
-    .single();
+    const { data: perfil, error: perfilError } = await this.supabase
+      .from('profiles')
+      .select('filial_id')
+      .eq('id', this.auth.getUserId())
+      .single();
 
-  if (perfilError || !perfil?.filial_id) {
-    alert('Erro: não foi possível encontrar a filial do usuário.');
-    this.uploading = false;
-    return;
-  }
+    if (perfilError || !perfil?.filial_id) {
+      alert('Erro: não foi possível encontrar a filial do usuário.');
+      this.uploading = false;
+      return;
+    }
 
-  const { error: insertError } = await this.supabase
-    .from('solicitacao')
-    .insert({
-      profile_id: this.auth.getUserId(),
-      filial_id: perfil.filial_id, 
-      tipo_recarga: tipo,
-      observacoes: observacoes,
-      data_solicitacao: data,
-      valor: parseFloat(valor)
-    });
+    const { error: insertError } = await this.supabase
+      .from('solicitacao')
+      .insert({
+        profile_id: this.auth.getUserId(),
+        filial_id: perfil.filial_id,
+        tipo_recarga: tipo,
+        observacoes: observacoes,
+        data_solicitacao: data,
+        valor: parseFloat(valor)
+      });
 
     if (insertError) {
       alert('Erro ao salvar cupom: ' + insertError.message);

@@ -180,7 +180,7 @@ export class CuponsComponent {
     return;
     }
   
-  console.log(`Cupom atualizado no banco:`, data);
+    console.log(`Cupom atualizado no banco:`, data);
 
     this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);
     this.cuponsAprovados = this.cuponsAprovados.filter(c => c.id !== cupom.id);
@@ -196,7 +196,7 @@ export class CuponsComponent {
     const valores: Record<string, number> = {
       'Almoço': 35,
       'Janta': 35,
-      'Cafe da Manhã': 15,
+      'Café da Manhã': 15,
       'Hospedagem': 130
     };
     return valores[tipo] ?? 0;
@@ -228,36 +228,36 @@ export class CuponsComponent {
   }
   
 
-isTooltipOpen(id: number | string): boolean {
-  return this.tooltipOpenId === String(id);
-}
+  isTooltipOpen(id: number | string): boolean {
+    return this.tooltipOpenId === String(id);
+  }
 
-toggleTooltip(id: number | string) {
-  const key = String(id);
-  this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
-}
+  toggleTooltip(id: number | string) {
+    const key = String(id);
+    this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
+  }
 
-@HostListener('document:click')
-closeTooltip() {
-  this.tooltipOpenId = null;
-}
-exportarParaExcel() {
-      const exportData = this.cupons.map(cupom => ({
-        ID: cupom.id,
-        Colaborador: cupom.usuario_nome,
-        Data: cupom.data_nota,
-        Tipo: cupom.tipo_gasto,
-        Valor: cupom.valor,
-        Excedente: cupom.diferenca,
-        Status: cupom.status,
-        separarListas(cupons : Cupom[]) {}
-      }));
+  @HostListener('document:click')
+  closeTooltip() {
+    this.tooltipOpenId = null;
+  }
+  exportarParaExcel() {
+    const exportData = this.cupons.map(cupom => ({
+      ID: cupom.id,
+      Colaborador: cupom.usuario,
+      Data: cupom.data,
+      Tipo: cupom.tipo,
+      Valor: cupom.valor,
+      Excedente: cupom.diferenca,
+      Status: cupom.status,
+      Observacoes: cupom.observacoes,
+    }));
   
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
-      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   
-      const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-      FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
-    }
+    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
+  }
 }

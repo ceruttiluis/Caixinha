@@ -1,45 +1,45 @@
 <app-header></app-header>
 <app-sidebar-ciop></app-sidebar-ciop>
 <div class="container">
-<h1>Gerenciar Usuários</h1>
+  <h1>Gerenciar Usuários</h1>
 
-<form [formGroup]="profileForm" (ngSubmit)="criarUsuario()">
-  <input type="text" formControlName="name" placeholder="Nome" required />
-  <input type="text" formControlName="email" placeholder="Email" required />
-  <input type="text" formControlName="password" placeholder="Senha" required />
-  <select formControlName="role" required>
-        <option value="CIOP">admin</option>
-        <option value="GERENTE">moderator</option>
-        <option value="COLABORADOR">user</option>
-  </select>
+  <form [formGroup]="profileForm" (ngSubmit)="criarUsuario()">
+    <input type="text" formControlName="name" placeholder="Nome" required />
+    <input type="text" formControlName="email" placeholder="Email" required />
+    <input type="text" formControlName="password" placeholder="Senha" required />
+    <select formControlName="role" required>
+          <option value="CIOP">admin</option>
+          <option value="GERENTE">moderator</option>
+          <option value="COLABORADOR">user</option>
+    </select>
 
-  <select  formControlName="gerente" placeholder="Selecione o Gerente" required>
-        <option *ngFor="let g of gerentes" [value]="g.id">
-          {{ g.name }}
-        </option>
-  </select>
+    <select  formControlName="gerente" placeholder="Selecione o Gerente" required>
+          <option *ngFor="let g of gerentes" [value]="g.id">
+            {{ g.name }}
+          </option>
+    </select>
 
-  <select  formControlName="filial" required>
-        <option *ngFor="let filial of Filiais" [value]="filial.id">
-          {{ filial.nome}}
-        </option>
-  </select>
-  <button type="submit" [disabled]="uploading">Criar Usuário</button>
-</form>
+    <select  formControlName="filial" required>
+          <option *ngFor="let filial of Filiais" [value]="filial.id">
+            {{ filial.nome}}
+          </option>
+    </select>
+    <button type="submit" [disabled]="uploading">Criar Usuário</button>
+  </form>
 
-<table>
-  <thead>
-    <tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Filial</th><th>Gerente</th><th>Ações</th></tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of usuarios">
-      <td>{{ user.name }}</td>
-      <td>{{ user.email }}</td>
-      <td>{{ user.role }}</td>
-      <td>{{ user.filial?.nome }}</td>
-      <td>{{ user.gerente?.name }}</td>
-      <td><button (click)="excluirUsuario(user.id)">Excluir</button></td>
-    </tr>
-  </tbody>
-</table>
+  <table>
+    <thead>
+      <tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Filial</th><th>Gerente</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of usuarios">
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.filial?.nome }}</td>
+        <td>{{ user.gerente?.name }}</td>
+        <td><button (click)="excluirUsuario(user.id)">Excluir</button></td>
+      </tr>
+    </tbody>
+  </table>
 </div>

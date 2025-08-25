@@ -16,63 +16,62 @@ import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
   styleUrls: ['./dashboard-gerente.component.scss'],
   standalone: true,
   imports: [
-        CommonModule,
-        NgFor,
-        RouterModule,
-        FormsModule,
-        SharedModule,
-        SidebarGerenteComponent
+    CommonModule,
+    NgFor,
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SidebarGerenteComponent
   ]
 })
 export class DashboardGerenteComponent implements OnInit {
   supabase: SupabaseClient;
-    cupons: any[] = [];
-    filialId: string | null = null;
-    filiais: any[] = [];
-    profiles: any[] = [];
-    usuario: any[] = [];
-    rankingGastos: any[] = [];
-    rankingExtrapolo: any[] = [];
-    filialSelecionada: string = '';
-    colaboradorSelecionado: string = '';
+  cupons: any[] = [];
+  filialId: string | null = null;
+  filiais: any[] = [];
+  profiles: any[] = [];
+  usuario: any[] = [];
+  rankingGastos: any[] = [];
+  rankingExtrapolo: any[] = [];
+  filialSelecionada: string = '';
+  colaboradorSelecionado: string = '';
+  totalGasto = 0;
+  totalOrcamento = 0;
+  totalDeficit = 0;
+  totalDescontado = 0;
+  totalExcedenteAprovado = 0;
   
-    totalGasto = 0;
-    totalOrcamento = 0;
-    totalDeficit = 0;
-    totalDescontado = 0;
-    totalExcedenteAprovado = 0;
-  
-    constructor(private auth: AuthService, private router: Router) {
-      this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-    }
-     logout() {
-      this.auth.logout();
-      this.router.navigate(['/login']);
-    }
-  
-    async ngOnInit() {
-      this.filialId = this.auth.getFilialId();
-      await this.carregarProfiles()
-      await this.carregarDados();
-    }
-  
-    onFilialChange() {
-      console.log('Filial selecionada:', this.filialSelecionada);
-    }
-  
-    onColaboradorChange() {
-      console.log('Colaborador selecionado:', this.colaboradorSelecionado);
-    }
-  
-    async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
+  constructor(private auth: AuthService, private router: Router) {
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+  }
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+  async ngOnInit() {
+    this.filialId = this.auth.getFilialId();
+    await this.carregarDados();
+    await this.carregarProfiles()
+  }
+  onColaboradorChange() {
+    const colaborador = this.profiles.find(c => c.nome === this.colaboradorSelecionado);
+    this.colaboradorSelecionado = colaborador ? colaborador.id : null;
+    console.log('Usuario selecionado:', this.colaboradorSelecionado);
+    this.carregarDados();
+  }
+  async carregarDados() {
+    const filtroFilial = this.filialSelecionada || this.filialId;
+    const filtroColaborador = this.colaboradorSelecionado;
   
     let query = this.supabase
       .from('cupons_com_usuario') 
       .select('*');
   
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+    if (filtroFilial) {
+    query = query.eq('filial_id', filtroFilial);
+    }
+    if (filtroColaborador) {
+    query = query.eq('usuario_id', filtroColaborador); 
     }
   
     const { data, error } = await query;
@@ -82,23 +81,20 @@ export class DashboardGerenteComponent implements OnInit {
       return;
     }
   
-   this.cupons = (data || []).map((c: any) => {
-    const valorBase = this.getValorBase(c.tipo_gasto);
-    const diferenca = Number((c.valor - valorBase).toFixed(2));
-    const exceDeficit = Number((valorBase - c.valor).toFixed(2));
-  
-    let publicUrl = '';
-  
-  if (c.url_imagem) {
+    this.cupons = (data || []).map((c: any) => {
+      const valorBase = this.getValorBase(c.tipo_gasto);
+      const diferenca = Number((c.valor - valorBase).toFixed(2));
+      const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+    
+      let publicUrl = '';
+    if (c.url_imagem) {
       let filePath = c.url_imagem.trim();
-  
       if (filePath.startsWith('http')) {
         const match = filePath.match(/cupons\/(.+)$/);
         if (match) {
           filePath = match[1];
         }
       }
-  
       const { data: pu } = this.supabase.storage
         .from('cupons')
         .getPublicUrl(filePath);
@@ -132,38 +128,36 @@ export class DashboardGerenteComponent implements OnInit {
     const valores: Record<string, number> = {
       'Almoço': 35,
       'Janta': 35,
-      'Cafe da Manhã': 15,
+      'Café da Manhã': 15,
       'Hospedagem': 130,
     };
     return valores[tipo] ?? 0;
   }
   
-    processarIndicadores() {
-      this.totalGasto = 0;
-      this.totalOrcamento = 0;
-      this.totalDeficit = 0;
-      this.totalDescontado = 0;
-      this.totalExcedenteAprovado = 0;
+  processarIndicadores() {
+    this.totalGasto = 0;
+    this.totalOrcamento = 0;
+    this.totalDeficit = 0;
+    this.totalDescontado = 0;
+    this.totalExcedenteAprovado = 0;
   
-      for (const cupom of this.cupons) {
-        this.totalGasto += cupom.valor;
-        this.totalOrcamento += this.getValorBase(cupom.tipo || 0)
+    for (const cupom of this.cupons) {
+      this.totalGasto += cupom.valor;
+      this.totalOrcamento += this.getValorBase(cupom.tipo || 0)
   
-        const excedente = cupom.diferenca || 0;
-  
+      const excedente = cupom.diferenca || 0;
         if (excedente > 0) {
           this.totalDeficit += excedente;
-  
-          if (cupom.descontar) {
+          if (cupom.status === 'DESCONTADO') {
             this.totalDescontado += excedente;
-          } else {
+          } else if(cupom.status === 'APROVADO') {
             this.totalExcedenteAprovado += excedente;
           }
         }
       }
     }
   
-     gerarRankings() {
+  gerarRankings() {
     const gastosPorUsuario: Record<string, { total: number, filialNome: string }> = {};
     const excedentePorUsuario: Record<string, { diferenca: number, filialNome: string }> = {};
 
@@ -172,17 +166,17 @@ export class DashboardGerenteComponent implements OnInit {
       const filial = cupom.filial_id;
       const filialNome = cupom.filial;
 
-       if (!gastosPorUsuario[nome]) {
-      gastosPorUsuario[nome] = { total: 0, filialNome };
-    }
-    gastosPorUsuario[nome].total += cupom.valor;
+      if (!gastosPorUsuario[nome]) {
+        gastosPorUsuario[nome] = { total: 0, filialNome };
+      }
+      gastosPorUsuario[nome].total += cupom.valor;
 
       if (cupom.diferenca > 0) {
-      if (!excedentePorUsuario[nome]) {
-        excedentePorUsuario[nome] = { diferenca: 0, filialNome };
+        if (!excedentePorUsuario[nome]) {
+          excedentePorUsuario[nome] = { diferenca: 0, filialNome };
+        }
+        excedentePorUsuario[nome].diferenca += cupom.diferenca;
       }
-      excedentePorUsuario[nome].diferenca += cupom.diferenca;
-    }
     }
 
     this.rankingGastos = Object.entries(gastosPorUsuario)    
@@ -196,38 +190,37 @@ export class DashboardGerenteComponent implements OnInit {
       .slice(0, 5);
   }
   
-    async updateStatus(id: number, status: string) {
-      await this.supabase
-        .from('cupons')
-        .update({ status })
-        .eq('id', id);
+  async updateStatus(id: number, status: string) {
+    await this.supabase
+      .from('cupons')
+      .update({ status })
+      .eq('id', id);
   
-      await this.carregarDados(); // refresh
-    }
+    await this.carregarDados();
+  }
   async carregarProfiles() {
-      const filtro = this.filialSelecionada || this.filialId;
+    const filtro = this.filialSelecionada || this.filialId;
 
-      let query = this.supabase
-        .from('profiles')
-        .select('*')
-        .order('id', { ascending: false });
+    let query = this.supabase
+      .from('profiles')
+      .select('*')
+      .order('id', { ascending: false });
 
       if (filtro) {
         query = query.eq('filial_id', filtro);
-    }
+      }
 
       const { data, error } = await query;
-
-      this.profiles = (data || []).map((p: any) => {
-        return {
-          id: p.id,
-          nome: p.name,
-        }
+      
+      if (error) {
+        console.error('Erro ao buscar usuarios:', error.message);
+        return;
       }
-    );
+      this.profiles = (data || []).map((p: any) => ({
+        id: p.id,
+        nome: p.name,
+      }));
   }
-  
-  
     exportarParaExcel() {
       const exportData = this.cupons.map(cupom => ({
         ID: cupom.id,

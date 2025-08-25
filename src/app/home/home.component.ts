@@ -38,18 +38,16 @@ export class HomeComponent {
     this.router.navigate(['/login']);
   }
   selectOption(option: string): void {
-
-  const role = this.currentUser?.role; 
-
-  if (option === 'dashboard') {
-    if (role === 'user') {
-      this.router.navigate(['/dash-colaborador']);
-    } else if (role === 'moderator') {
-      this.router.navigate(['/gerente']);
-    } else if (role === 'admin') {
-      this.router.navigate(['/ciop']);
-    }
-  } 
+    const role = this.currentUser?.role; 
+    if (option === 'dashboard') {
+      if (role === 'user') {
+        this.router.navigate(['/dash-colaborador']);
+      } else if (role === 'moderator') {
+        this.router.navigate(['/gerente']);
+      } else if (role === 'admin') {
+        this.router.navigate(['/ciop']);
+      }
+    } 
   
     else if (option === 'cupon') {
       if (role === 'user') {

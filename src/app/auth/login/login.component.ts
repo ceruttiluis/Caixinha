@@ -20,10 +20,7 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private fb: FormBuilder
-  )
-  
-  
-  {
+  ){
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -39,32 +36,33 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
 
     try {
-    const userData = await this.authService.login(email, password);
-    console.log('[Login] Login bem-sucedido:', userData);
-    const role = await this.authService.getRoleSync();
-    console.log('Role detectada:', userData.role);
+      const userData = await this.authService.login(email, password);
+      console.log('[Login] Login bem-sucedido:', userData);
+      const role = await this.authService.getRoleSync();
+      console.log('Role detectada:', userData.role);
 
-    const redirectUrl = `/${userData.role.toLowerCase()}`;
+      const redirectUrl = `/${userData.role.toLowerCase()}`;
 
-   setTimeout(() => {
-  switch(userData.role) {
-    case 'CIOP':
-      this.router.navigate(['/ciop']);
-      break;
-    case 'GERENTE':
-      this.router.navigate(['/home']);
-      break;
-    case 'COLABORADOR':
-      this.router.navigate(['/home']);
-      break;
-    default:
-      this.errorMessage = 'Tipo de usuário não reconhecido.';
-  }
-}, 100);} catch (error: any) {
-    console.error('Erro completo:', error);
-    this.errorMessage = error.message || 'Credenciais inválidas ou erro no servidor';
-  } finally {
-    this.loading = false;
-  }
+      setTimeout(() => {
+        switch(userData.role) {
+          case 'CIOP':
+            this.router.navigate(['/ciop']);
+            break;
+          case 'GERENTE':
+            this.router.navigate(['/home']);
+            break;
+          case 'COLABORADOR':
+            this.router.navigate(['/home']);
+            break;
+          default:
+            this.errorMessage = 'Tipo de usuário não reconhecido.';
+        }
+      }, 100);
+    } catch (error: any) {
+      console.error('Erro completo:', error);
+      this.errorMessage = error.message || 'Credenciais inválidas ou erro no servidor';
+    } finally {
+      this.loading = false;
+    }
   }
 }

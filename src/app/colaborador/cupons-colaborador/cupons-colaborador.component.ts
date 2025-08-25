@@ -99,6 +99,7 @@ export class CuponsColaboradorComponent {
     });
     this.separarListas();
   }
+
   separarListas() {
     this.cuponsPendentes = this.cupons.filter(c => c.status === 'PENDENTE');
     this.cuponsAprovados = this.cupons.filter(c => c.status === 'APROVADO');
@@ -109,7 +110,7 @@ export class CuponsColaboradorComponent {
     const valores: Record<string, number> = {
       'Almoço': 35,
       'Janta': 35,
-      'Cafe da Manhã': 15,
+      'Café da Manhã': 15,
       'Hospedagem': 130
     };
     return valores[tipo] ?? 0;
@@ -141,7 +142,7 @@ export class CuponsColaboradorComponent {
   }
   isTooltipOpen(id: number | string): boolean {
   return this.tooltipOpenId === String(id);
-}
+  }
 
   toggleTooltip(id: number | string) {
     const key = String(id);

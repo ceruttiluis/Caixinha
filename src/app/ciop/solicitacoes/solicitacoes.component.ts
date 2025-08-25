@@ -110,53 +110,52 @@ export class SolicitacoesComponent {
       return;
     }
     if (!data) {
-    console.warn(`Nenhuma solicitacao encontrado ou permitido para atualização: #${solicitacoes.id}`);
-    return;
+      console.warn(`Nenhuma solicitacao encontrado ou permitido para atualização: #${solicitacoes.id}`);
+      return;
     }
 
     if (novoStatus === 'APROVADO') {
-    const usuarioId = solicitacoes.usuarioID; 
+      const usuarioId = solicitacoes.usuarioID; 
 
-    const { data: usuario, error: usuarioError } = await this.supabase
-      .from('profiles')
-      .select('carteira, filial_id, name')
-      .eq('id', usuarioId)
-      .maybeSingle();
+      const { data: usuario, error: usuarioError } = await this.supabase
+        .from('profiles')
+        .select('carteira, filial_id, name')
+        .eq('id', usuarioId)
+        .maybeSingle();
 
-    if (usuarioError || !usuario) {
-      console.error(`Usuário não encontrado: ${usuarioId}`);
-      return;
+      if (usuarioError || !usuario) {
+        console.error(`Usuário não encontrado: ${usuarioId}`);
+        return;
+      }
+
+      const novoSaldo = (usuario.carteira || 0) + (solicitacoes.valor || 0);
+
+      const { error: updateError } = await this.supabase
+        .from('profiles')
+        .update({ carteira: novoSaldo })
+        .eq('id', usuarioId);
+
+      if (updateError) {
+        console.error('Erro ao atualizar saldo: ' + updateError.message);
+        return;
+      }
+      const historicoData = {
+        profile_id: usuarioId,
+        filial_id: usuario.filial_id,
+        observacoes: solicitacoes.observacoes || 'Recarga aprovada',
+        valor_add: solicitacoes.valor,
+        criado_em: new Date().toISOString(),
+        tipo_recarga: solicitacoes.tipo,
+      };
+
+      const { error: insertError } = await this.supabase
+        .from('carteira')
+        .insert(historicoData);
+
+      if (insertError) {
+        console.error('Erro ao registrar histórico: ' + insertError.message);
+      }
     }
-
-    const novoSaldo = (usuario.carteira || 0) + (solicitacoes.valor || 0);
-
-    const { error: updateError } = await this.supabase
-      .from('profiles')
-      .update({ carteira: novoSaldo })
-      .eq('id', usuarioId);
-
-    if (updateError) {
-      console.error('Erro ao atualizar saldo: ' + updateError.message);
-      return;
-    }
-    const historicoData = {
-      profile_id: usuarioId,
-      filial_id: usuario.filial_id,
-      observacoes: solicitacoes.observacoes || 'Recarga aprovada',
-      valor_add: solicitacoes.valor,
-      criado_em: new Date().toISOString(),
-      tipo_recarga: solicitacoes.tipo,
-    };
-
-    const { error: insertError } = await this.supabase
-      .from('carteira')
-      .insert(historicoData);
-
-    if (insertError) {
-      console.error('Erro ao registrar histórico: ' + insertError.message);
-    }
-    
-  }
 
     this.solicitacoesPendentes = this.solicitacoesPendentes.filter(s => s.id !== solicitacoes.id);
     this.solicitacoesAprovados = this.solicitacoesAprovados.filter(s => s.id !== solicitacoes.id);
@@ -168,36 +167,35 @@ export class SolicitacoesComponent {
     else this.solicitacoesPendentes.push(solicitacoes);
   }
 
-isTooltipOpen(id: number | string): boolean {
-  return this.tooltipOpenId === String(id);
-}
+  isTooltipOpen(id: number | string): boolean {
+    return this.tooltipOpenId === String(id);
+  }
 
-toggleTooltip(id: number | string) {
-  const key = String(id);
-  this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
-}
+  toggleTooltip(id: number | string) {
+    const key = String(id);
+    this.tooltipOpenId = this.tooltipOpenId === key ? null : key;
+  }
 
-@HostListener('document:click')
-closeTooltip() {
-  this.tooltipOpenId = null;
-}
-exportarParaExcel() {
-      const exportData = this.solicitacoes.map(solicitacoes => ({
-        ID: solicitacoes.id,
-        Colaborador: solicitacoes.usuario_nome,
-        Data: solicitacoes.data_nota,
-        Tipo: solicitacoes.tipo_gasto,
-        Valor: solicitacoes.valor,
-        Excedente: solicitacoes.diferenca,
-        Status: solicitacoes.status,
-        separarListas(solicitacoes : Solicitacoes[]) {}
-      }));
-  
+  @HostListener('document:click')
+  closeTooltip() {
+    this.tooltipOpenId = null;
+  }
+  exportarParaExcel() {
+    const exportData = this.solicitacoes.map(solicitacoes => ({
+    ID: solicitacoes.id,
+    Colaborador: solicitacoes.usuario,
+    Filial: solicitacoes.filial,
+    Data: solicitacoes.data,
+    Tipo: solicitacoes.tipo,
+    Valor: solicitacoes.valor,
+    Status: solicitacoes.status,
+    Observacoes: solicitacoes.observacoes,
+    }));
       const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
       const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   
       const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-      FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
-    }
+      FileSaver.saveAs(data, 'relatorio_aprovações.xlsx');
+  }
 }

@@ -3,7 +3,6 @@
 <div class="container">
   <div class="content">
     <h1>Gerenciamento de Carteira</h1>
-    
     <form [formGroup]="carteiraForm" (ngSubmit)="enviarSaldo()">
       <div class="form-carteira">
       <div class="form-group">
@@ -27,7 +26,6 @@
       </div>
       
       <div class="form-actions">
-       <!--- <button type="submit" (click)="atualizarCarteira(novoUsuario)">Atualizar</button> --->
         <button type="submit" [disabled]="uploading">Adicionar</button>
         <button type="button" class="btn-cancel" *ngIf="editando" (click)="cancelarEdicao()">
           Cancelar

@@ -7,7 +7,7 @@ export class ColaboradorGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    const role = this.authService.getRoleSync(); // novo método
+    const role = this.authService.getRoleSync();
     console.log('[ColaboradorGuard] Role detectada:', role);
     if (role === 'COLABORADOR') return true;
 

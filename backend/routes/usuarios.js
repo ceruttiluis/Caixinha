@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
     email,
     password,
     email_confirm: true,
-    user_metadata: { name, role,},
+    user_metadata: { name, role, },
   });
 
   if (authError) return res.status(500).json({ error: authError.message });

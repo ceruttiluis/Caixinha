@@ -16,30 +16,29 @@ import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.compo
   styleUrls: ['./dash-colaborador.component.scss'],
   standalone: true,
   imports: [
-        CommonModule,
-        NgFor,
-        RouterModule,
-        FormsModule,
-        SharedModule,
-        SidebarColaboradorComponent
+    CommonModule,
+    NgFor,
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SidebarColaboradorComponent
   ]
 })
 export class DashColaboradorComponent implements OnInit {
   supabase: SupabaseClient;
-    cupons: any[] = [];
-    filialId: string | null = null;
-    filiais: any[] = [];
-    usuario: any[] = [];
-    rankingGastos: any[] = [];
-    rankingExtrapolo: any[] = [];
-    filialSelecionada: string = '';
-    colaboradorSelecionado: string = '';
-  
-    totalGasto = 0;
-    totalOrcamento = 0;
-    totalDeficit = 0;
-    totalDescontado = 0;
-    totalExcedenteAprovado = 0;
+  cupons: any[] = [];
+  filialId: string | null = null;
+  filiais: any[] = [];
+  usuario: any[] = [];
+  rankingGastos: any[] = [];
+  rankingExtrapolo: any[] = [];
+  filialSelecionada: string = '';
+  colaboradorSelecionado: string = '';
+  totalGasto = 0;
+  totalOrcamento = 0;
+  totalDeficit = 0;
+  totalDescontado = 0;
+  totalExcedenteAprovado = 0;
   
     constructor(private auth: AuthService, private router: Router) {
       this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
@@ -83,78 +82,78 @@ export class DashColaboradorComponent implements OnInit {
     }
   
     async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
-  
-    let query = this.supabase
-      .from('cupons_com_usuario') 
-      .select('*');
-  
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
-    }
-  
-    const { data, error } = await query;
-  
-    if (error) {
-      console.error('Erro ao buscar cupons:', error.message);
-      return;
-    }
-  
-   this.cupons = (data || []).map((c: any) => {
-    const valorBase = this.getValorBase(c.tipo_gasto);
-    const diferenca = Number((c.valor - valorBase).toFixed(2));
-    const exceDeficit = Number((valorBase - c.valor).toFixed(2));
-  
-    let publicUrl = '';
-  
-  if (c.url_imagem) {
-      let filePath = c.url_imagem.trim();
-  
-      if (filePath.startsWith('http')) {
-        const match = filePath.match(/cupons\/(.+)$/);
-        if (match) {
-          filePath = match[1];
+      const filtro = this.filialSelecionada || this.filialId;
+    
+      let query = this.supabase
+        .from('cupons_com_usuario') 
+        .select('*');
+    
+      if (filtro) {
+        query = query.eq('filial_id', filtro);
+      }
+    
+      const { data, error } = await query;
+    
+      if (error) {
+        console.error('Erro ao buscar cupons:', error.message);
+        return;
+      }
+    
+      this.cupons = (data || []).map((c: any) => {
+        const valorBase = this.getValorBase(c.tipo_gasto);
+        const diferenca = Number((c.valor - valorBase).toFixed(2));
+        const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+      
+        let publicUrl = '';
+      
+        if (c.url_imagem) {
+          let filePath = c.url_imagem.trim();
+        
+          if (filePath.startsWith('http')) {
+            const match = filePath.match(/cupons\/(.+)$/);
+            if (match) {
+              filePath = match[1];
+            }
+          }
+        
+          const { data: pu } = this.supabase.storage
+            .from('cupons')
+            .getPublicUrl(filePath);
+        
+          publicUrl = pu?.publicUrl || '';
+        
+          if (publicUrl) {
+            publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+          }
         }
-      }
-  
-      const { data: pu } = this.supabase.storage
-        .from('cupons')
-        .getPublicUrl(filePath);
-  
-      publicUrl = pu?.publicUrl || '';
-  
-      if (publicUrl) {
-        publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-      }
+        return {
+            id: c.id,
+            usuario: c.usuario_nome,
+            data: c.data_nota,
+            tipo: c.tipo_gasto,
+            valor: c.valor,
+            url_imagem: publicUrl,
+            imagem: c.url_imagem,
+            status: c.status,
+            filial: c.filial_nome,
+            diferenca,
+            exceDeficit,
+            descontar: c.descontar ?? true
+          };
+      });
+    
+      this.processarIndicadores();
+      this.gerarRankings();
     }
-      return {
-        id: c.id,
-        usuario: c.usuario_nome,
-        data: c.data_nota,
-        tipo: c.tipo_gasto,
-        valor: c.valor,
-        url_imagem: publicUrl,
-        imagem: c.url_imagem,
-        status: c.status,
-        filial: c.filial_nome,
-        diferenca,
-        exceDeficit,
-        descontar: c.descontar ?? true
+    getValorBase(tipo: string) {
+      const valores: Record<string, number> = {
+        'Almoço': 35,
+        'Janta': 35,
+        'Café da Manhã': 15,
+        'Hospedagem': 130,
       };
-    });
-  
-    this.processarIndicadores();
-    this.gerarRankings();
-  }
-  getValorBase(tipo: string) {
-    const valores: Record<string, number> = {
-      'Almoço': 35,
-      'Janta': 35,
-      'Cafe da Manhã': 15,
-      'Hospedagem': 130,
-    };
-    return valores[tipo] ?? 0;
-  }
+      return valores[tipo] ?? 0;
+    }
   
     processarIndicadores() {
       this.totalGasto = 0;
@@ -170,11 +169,11 @@ export class DashColaboradorComponent implements OnInit {
         const excedente = cupom.diferenca || 0;
   
         if (excedente > 0) {
-          this.totalDeficit += excedente;
-  
-          if (cupom.descontar) {
+        this.totalDeficit += excedente;
+
+          if (cupom.status === 'DESCONTADO') {
             this.totalDescontado += excedente;
-          } else {
+          } else if(cupom.status === 'APROVADO') {
             this.totalExcedenteAprovado += excedente;
           }
         }
@@ -212,7 +211,7 @@ export class DashColaboradorComponent implements OnInit {
       .map(([nome, dados]) => ({ nome, diferenca: dados.diferenca, filial: dados.filialNome }))
       .sort((a, b) => b.diferenca - a.diferenca)
       .slice(0, 5);
-  }
+    }
   
     async updateStatus(id: number, status: string) {
       await this.supabase

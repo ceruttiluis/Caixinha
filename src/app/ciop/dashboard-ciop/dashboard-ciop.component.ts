@@ -35,7 +35,7 @@ export class DashboardCiopComponent implements OnInit {
   rankingGastos: any[] = [];
   rankingExtrapolo: any[] = [];
   filialSelecionada: string = '';
-  colaboradorSelecionado: string = '';
+  colaboradorSelecionado: string | null = null;
 
   totalGasto = 0;
   totalOrcamento = 0;
@@ -52,65 +52,74 @@ export class DashboardCiopComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.filialId = this.auth.getFilialId();
     await this.carregarDados();
     await this.carregarProfiles();
     await this.carregarFiliais();
   }
 
   onFilialChange() {
+    const filial = this.filiais.find(f => f.nome === this.filialSelecionada);
+    this.filialId = filial ? filial.id : null;
+
+    console.log("Selecionada:", this.filialSelecionada, "-> id:", this.filialId);
     console.log('Filial selecionada:', this.filialSelecionada);
+    this.carregarProfiles();
+    this.carregarDados();
   }
 
   onColaboradorChange() {
-    console.log('Colaborador selecionado:', this.colaboradorSelecionado);
+    const colaborador = this.profiles.find(c => c.nome === this.colaboradorSelecionado);
+    this.colaboradorSelecionado = colaborador ? colaborador.id : null;
+    console.log('Usuario selecionado:', this.colaboradorSelecionado);
+    this.carregarDados();
   }
 
   async carregarDados() {
-  const filtro = this.filialSelecionada || this.filialId;
 
   let query = this.supabase
     .from('cupons_com_usuario')
     .select('*');
 
-  if (filtro) {
-    query = query.eq('filial_id', filtro);
-  }
+    if (this.filialSelecionada) {
+      query = query.eq('filial_id', this.filialSelecionada);
+    }
+    if (this.colaboradorSelecionado) {
+      query = query.eq('usuario_id', this.colaboradorSelecionado);
+    }
 
-  const { data, error } = await query;
+    const { data, error } = await query;
 
-  if (error) {
-    console.error('Erro ao buscar cupons:', error.message);
-    return;
-  }
+    if (error) {
+      console.error('Erro ao buscar cupons:', error.message);
+      return;
+    }
 
- this.cupons = (data || []).map((c: any) => {
-  const valorBase = this.getValorBase(c.tipo_gasto);
-  const diferenca = Number((c.valor - valorBase).toFixed(2));
-  const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+  this.cupons = (data || []).map((c: any) => {
+    const valorBase = this.getValorBase(c.tipo_gasto);
+    const diferenca = Number((c.valor - valorBase).toFixed(2));
+    const exceDeficit = Number((valorBase - c.valor).toFixed(2));
 
-  let publicUrl = '';
+    let publicUrl = '';
 
-  if (c.url_imagem) {
-      let filePath = c.url_imagem.trim();
+      if (c.url_imagem) {
+        let filePath = c.url_imagem.trim();
 
-      if (filePath.startsWith('http')) {
-        const match = filePath.match(/cupons\/(.+)$/);
-        if (match) {
-          filePath = match[1];
+        if (filePath.startsWith('http')) {
+          const match = filePath.match(/cupons\/(.+)$/);
+            if (match) {
+              filePath = match[1];
+            } 
+        }
+        const { data: pu } = this.supabase.storage
+          .from('cupons')
+          .getPublicUrl(filePath);
+
+        publicUrl = pu?.publicUrl || '';
+
+        if (publicUrl) {
+          publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
         }
       }
-
-      const { data: pu } = this.supabase.storage
-        .from('cupons')
-        .getPublicUrl(filePath);
-
-      publicUrl = pu?.publicUrl || '';
-
-      if (publicUrl) {
-        publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-      }
-    }
       return {
         id: c.id,
         usuario: c.usuario_nome,
@@ -127,18 +136,18 @@ export class DashboardCiopComponent implements OnInit {
     };
   });
 
-  this.processarIndicadores();
-  this.gerarRankings();
-}
-getValorBase(tipo: string) {
-  const valores: Record<string, number> = {
-    'Almoço': 35,
-    'Janta': 35,
-    'Café da Manhã': 15,
-    'Hospedagem': 130,
-  };
-  return valores[tipo] ?? 0;
-}
+    this.processarIndicadores();
+    this.gerarRankings();
+  }
+  getValorBase(tipo: string) {
+    const valores: Record<string, number> = {
+      'Almoço': 35,
+      'Janta': 35,
+      'Café da Manhã': 15,
+      'Hospedagem': 130,
+    };
+    return valores[tipo] ?? 0;
+  }
 
   processarIndicadores() {
     this.totalGasto = 0;
@@ -174,17 +183,17 @@ getValorBase(tipo: string) {
       const filial = cupom.filial_id;
       const filialNome = cupom.filial;
 
-       if (!gastosPorUsuario[nome]) {
-      gastosPorUsuario[nome] = { total: 0, filialNome };
-    }
-    gastosPorUsuario[nome].total += cupom.valor;
+      if (!gastosPorUsuario[nome]) {
+         gastosPorUsuario[nome] = { total: 0, filialNome };
+      }
+      gastosPorUsuario[nome].total += cupom.valor;
 
       if (cupom.diferenca > 0) {
-      if (!excedentePorUsuario[nome]) {
-        excedentePorUsuario[nome] = { diferenca: 0, filialNome };
+        if (!excedentePorUsuario[nome]) {
+          excedentePorUsuario[nome] = { diferenca: 0, filialNome };
+        }
+        excedentePorUsuario[nome].diferenca += cupom.diferenca;
       }
-      excedentePorUsuario[nome].diferenca += cupom.diferenca;
-    }
     }
 
     this.rankingGastos = Object.entries(gastosPorUsuario)    
@@ -207,50 +216,42 @@ getValorBase(tipo: string) {
     await this.carregarDados(); 
   }
 
-    async carregarProfiles() {
-      const filtro = this.filialSelecionada || this.filialId;
-
-      let query = this.supabase
-        .from('profiles')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (filtro) {
-        query = query.eq('filial_id', filtro);
-    }
-
-      const { data, error } = await query;
-
-      this.profiles = (data || []).map((p: any) => {
-        return {
-          id: p.id,
-          nome: p.name,
-        }
+  async carregarProfiles() {
+    let query = this.supabase
+      .from('profiles')
+      .select('*')
+      if (this.filialSelecionada) {
+        query = query.eq('filial_id', this.filialSelecionada);
       }
-    );
+
+      const { data, error } = await await query;
+
+      if (error) {
+        console.error('Erro ao buscar usuarios:', error.message);
+        return;
+      }
+
+      this.profiles = (data || []).map((p: any) => ({
+        id: p.id,
+        nome: p.name,
+      }));
   }
 
   async carregarFiliais() {
-      const filtro = this.filialSelecionada || this.filialId;
+    const { data, error } = await this.supabase
+      .from('filiais')
+      .select('*')
+      .order('id', { ascending: false });
 
-      let query = this.supabase
-        .from('filiais')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (filtro) {
-        query = query.eq('filial_id', filtro);
-    }
-
-      const { data, error } = await query;
-
-      this.filiais = (data || []).map((f: any) => {
-        return {
-          id: f.id,
-          nome: f.nome,
-        }
+      if (error) {
+        console.error('Erro ao buscar filiais:', error.message);
+        return;
       }
-    );
+
+      this.filiais = (data || []).map((f: any) => ({
+        id: f.id,
+        nome: f.nome,
+      }));
   }
 
   exportarParaExcel() {

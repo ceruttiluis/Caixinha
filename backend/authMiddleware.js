@@ -6,7 +6,7 @@ const supabaseJwtSecret = 'RbgNi6kjKY/f8Im025nLPMEuvgjYyQ7E/n5mUfY6NFVl2BC6L6Mim
 async function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];
-  
+
   if (!token) return res.status(401).json({ error: 'Token não fornecido' });
 
   try {
@@ -22,7 +22,7 @@ async function authenticateToken(req, res, next) {
       return res.status(403).json({ error: 'Usuário inválido' });
     }
 
-    req.user = profile; 
+    req.user = profile;
     next();
   } catch (err) {
     return res.status(403).json({ error: 'Token inválido ou expirado' });

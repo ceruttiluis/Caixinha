@@ -57,33 +57,31 @@ export class UsuariosComponent implements OnInit {
 
   async carregarUsuarios() {
     const { data, error } = await this.supabase
-        .from('profiles')
-        .select('id, name, email, role, filial:filial_id ( id, nome, cidade ), gerente:gerente_id ( id, name )')
-        .order('id', { ascending: false });
-
-        if (error) console.error(error);
-        else this.usuarios = data || [];
+      .from('profiles')
+      .select('id, name, email, role, filial:filial_id ( id, nome, cidade ), gerente:gerente_id ( id, name )')
+      .order('id', { ascending: false });
+      if (error) console.error(error);
+      else this.usuarios = data || [];
   }
 
   async carregarFiliais() {
     const { data, error } = await this.supabase
-        .from('filiais')
-        .select('id, nome, cidade')
-        .order('id', { ascending: false });
-
-        if (error) console.error(error);
-        else this.Filiais = data || [];
+      .from('filiais')
+      .select('id, nome, cidade')
+      .order('id', { ascending: false });
+      if (error) console.error(error);
+      else this.Filiais = data || [];
   }
 
   async carregarGerentes() {
-  const { data, error } = await this.supabase
-    .from('profiles')
-    .select('id, name, role')
-    .eq('role', 'moderator');
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .select('id, name, role')
+      .eq('role', 'moderator');
 
-  if (error) console.error(error);
-  else this.gerentes = data || [];
-}
+    if (error) console.error(error);
+    else this.gerentes = data || [];
+  }
   
   async criarUsuario(): Promise<void>{
     this.uploading = true;
@@ -94,13 +92,13 @@ export class UsuariosComponent implements OnInit {
     email,
     password, 
     email_confirm: true,
-  });
+    });
 
-  if (authError) {
-    console.error('Erro ao criar usuário no Auth:', authError.message);
-    this.uploading = false;
-    return;
-  }
+    if (authError) {
+      console.error('Erro ao criar usuário no Auth:', authError.message);
+      this.uploading = false;
+      return;
+    }
 
     const novoUsuario = {
       id: authUser.user.id, 
@@ -116,14 +114,14 @@ export class UsuariosComponent implements OnInit {
       .from('profiles')
       .insert(novoUsuario);
 
-     if (error) {
-    console.error('Erro ao registrar novo usuario: ' + error.message);
-  } else {
-    console.log('Usuário criado com sucesso!');
-    this.carregarUsuarios();
-  }
+    if (error) {
+      console.error('Erro ao registrar novo usuario: ' + error.message);
+    } else {
+      console.log('Usuário criado com sucesso!');
+      this.carregarUsuarios();
+    }
 
-  this.uploading = false;
+    this.uploading = false;
   }
 
   async excluirUsuario(id: string) {

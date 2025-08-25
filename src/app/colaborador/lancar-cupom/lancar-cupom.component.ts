@@ -35,81 +35,80 @@ export class LancarCupomComponent {
     });
   }
 
-onFileChange(event: any): void {
-  const file = event.target.files[0];
-  if (!file) return;
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  this.cupomForm.patchValue({ imagem: file });
-  this.cupomForm.get('imagem')?.updateValueAndValidity();
+    this.cupomForm.patchValue({ imagem: file });
+    this.cupomForm.get('imagem')?.updateValueAndValidity();
 
-  const reader = new FileReader();
-  reader.onload = () => (this.preview = reader.result as string);
-  reader.readAsDataURL(file);
-}
-
-async enviarCupom(): Promise<void> {
-  if (this.cupomForm.invalid) {
-    alert('Preencha todos os campos obrigatórios!');
-    return;
+    const reader = new FileReader();
+    reader.onload = () => (this.preview = reader.result as string);
+    reader.readAsDataURL(file);
   }
 
-  this.uploading = true;
-  const file: File = this.cupomForm.value.imagem;
-  const filePath = `cupons/${Date.now()}-${file.name}`;
-
-  const { error: uploadError } = await this.supabase
-    .storage
-    .from('cupons')
-    .upload(filePath, file);
-
-  if (uploadError) {
-    alert('Erro ao enviar imagem: ' + uploadError.message);
-    this.uploading = false;
-    return;
-  }
-
-  const imageUrl = `${environment.supabaseUrl}/storage/v1/object/public/cupons/${filePath}`;
-
-  const { tipo, observacoes, data, valor } = this.cupomForm.value;
-
-   const { data: perfil, error: perfilError } = await this.supabase
-    .from('profiles')
-    .select('filial_id')
-    .eq('id', this.auth.getUserId())
-    .single();
-
-  if (perfilError || !perfil?.filial_id) {
-    alert('Erro: não foi possível encontrar a filial do usuário.');
-    this.uploading = false;
-    return;
-  }
-
-  const { error: insertError } = await this.supabase
-    .from('cupons')
-    .insert({
-      usuario_id: this.auth.getUserId(),
-      filial_id: perfil.filial_id, 
-      tipo_gasto: tipo,
-      observacoes: observacoes,
-      data_nota: data,
-      valor: parseFloat(valor),
-      url_imagem: imageUrl
-    });
-
-    if (insertError) {
-      alert('Erro ao salvar cupom: ' + insertError.message);
-    } else {
-      alert('Cupom enviado com sucesso!');
-      this.cupomForm.reset({
-        tipo: '',
-        observacoes: '',
-        data: new Date().toISOString().split('T')[0],
-        valor: '',
-        imagem: null
-      });
-      this.preview = '';
+  async enviarCupom(): Promise<void> {
+    if (this.cupomForm.invalid) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
     }
 
-    this.uploading = false;
+    this.uploading = true;
+    const file: File = this.cupomForm.value.imagem;
+    const filePath = `cupons/${Date.now()}-${file.name}`;
+
+    const { error: uploadError } = await this.supabase
+      .storage
+      .from('cupons')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      alert('Erro ao enviar imagem: ' + uploadError.message);
+      this.uploading = false;
+      return;
+    }
+
+    const imageUrl = `${environment.supabaseUrl}/storage/v1/object/public/cupons/${filePath}`;
+
+    const { tipo, observacoes, data, valor } = this.cupomForm.value;
+
+    const { data: perfil, error: perfilError } = await this.supabase
+      .from('profiles')
+      .select('filial_id')
+      .eq('id', this.auth.getUserId())
+      .single();
+
+    if (perfilError || !perfil?.filial_id) {
+      alert('Erro: não foi possível encontrar a filial do usuário.');
+      this.uploading = false;
+      return;
+    }
+
+    const { error: insertError } = await this.supabase
+      .from('cupons')
+      .insert({
+        usuario_id: this.auth.getUserId(),
+        filial_id: perfil.filial_id, 
+        tipo_gasto: tipo,
+        observacoes: observacoes,
+        data_nota: data,
+        valor: parseFloat(valor),
+        url_imagem: imageUrl
+      });
+
+      if (insertError) {
+        alert('Erro ao salvar cupom: ' + insertError.message);
+      } else {
+        alert('Cupom enviado com sucesso!');
+        this.cupomForm.reset({
+          tipo: '',
+          observacoes: '',
+          data: new Date().toISOString().split('T')[0],
+          valor: '',
+          imagem: null
+        });
+        this.preview = '';
+      }
+      this.uploading = false;
   }
 }

@@ -158,15 +158,14 @@ export class CarteiraComponent implements OnInit {
     }
   }
 
-
   editarCarteira(users: User) {
     this.editando = users;
     this.novoUsuario = { ...users };
   }
 
   cancelarEdicao() {
-  this.editando = null;
-  this.novoUsuario = { name: '', email: '', carteira: 0 };
+    this.editando = null;
+    this.novoUsuario = { name: '', email: '', carteira: 0 };
   }
 
   private showMessage(msg: string, isError: boolean = false): void {

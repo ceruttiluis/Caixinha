@@ -44,12 +44,15 @@
 
   button {
     width: 100%;
-    padding: 0.75rem;
-    background: #007bff;
+    font-weight: bold;
+    font-size: 25px;
+    padding: 0.5rem;
+    background: #1dac48;
     color: white;
     border: none;
     cursor: pointer;
     margin-top: 1rem;
+    border-radius: 10px;
   }
 
   .error {

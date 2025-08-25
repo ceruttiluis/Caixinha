@@ -7,7 +7,7 @@ export class CiopGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    const role = this.authService.getRoleSync(); // novo método
+    const role = this.authService.getRoleSync();
     console.log('[CiopGuard] Role detectada:', role);
     if (role === 'CIOP') return true;
 

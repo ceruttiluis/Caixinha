@@ -4,9 +4,10 @@
   <section class="content animate-fade-in">
     <div class="Description">
       <h2>Aprovação de Cupons</h2>
+      <button (click)="exportarParaExcel()">Exportar Excel</button>
     </div>
     <div class="tables-cupons">
-       <div class="tabela-lancamentos">
+      <div class="tabela-lancamentos">
         <h2>Cupons Pendentes</h2>
         <div class="list-lancamento">
           <table>
@@ -58,11 +59,10 @@
               </tr>
             </tbody>
           </table>
-         </div>
         </div>
-
-        <div class="tabela-lancamentos">
-          <h2>Cupons Aprovados</h2>
+      </div>
+      <div class="tabela-lancamentos">
+        <h2>Cupons Aprovados</h2>
         <div class="list-lancamento">
           <table>
             <thead>
@@ -114,58 +114,57 @@
           </table>
         </div>
       </div>
-
       <div class="tabela-lancamentos">
         <h2>Cupons Reprovados</h2>
         <div class="list-lancamento">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Usuário</th>
-              <th>Data</th>
-              <th>Tipo</th>
-              <th>Valor</th>
-              <th>Imagem</th>
-              <th>Excedente/Deficit</th>
-              <th>Observações</th>
-              <th>Aprovação</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let cupom of cuponsReprovados">
-              <td>{{ cupom.id }}</td>
-              <td>{{ cupom.usuario }}</td>
-              <td>{{ cupom.data | date:'shortDate' }}</td>
-              <td>{{ cupom.tipo }}</td>
-              <td>{{ cupom.valor | currency:'BRL' }}</td>
-              <td>
-                <a [href]="cupom.link " target="_blank">
-                  <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
-                </a>
-              </td>
-              <td [ngClass]="{
-                    'verde': cupom.exceDeficit > 0,
-                    'vermelho': cupom.exceDeficit < 0,
-                    'azul': cupom.exceDeficit === 0
-                  }">
-                {{ cupom.exceDeficit | currency:'BRL' }}
-              </td>
-              <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
-                <span class="obs-preview">{{ cupom.observacoes }}</span>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Imagem</th>
+                <th>Excedente/Deficit</th>
+                <th>Observações</th>
+                <th>Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cuponsReprovados">
+                <td>{{ cupom.id }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td>{{ cupom.valor | currency:'BRL' }}</td>
+                <td>
+                  <a [href]="cupom.link " target="_blank">
+                    <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
+                  </a>
+                </td>
+                <td [ngClass]="{
+                      'verde': cupom.exceDeficit > 0,
+                      'vermelho': cupom.exceDeficit < 0,
+                      'azul': cupom.exceDeficit === 0
+                    }">
+                  {{ cupom.exceDeficit | currency:'BRL' }}
+                </td>
+                <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+                  <span class="obs-preview">{{ cupom.observacoes }}</span>
 
-                <div class="tooltip-observacao"
-                    *ngIf="isTooltipOpen(cupom.id)"
-                    (click)="$event.stopPropagation()">
-                  {{ cupom.observacoes }}
-                </div>
-              </td>
-              <td class="actions">
-                <button class="approve" (click)="atualizarStatusCupom(cupom, 'APROVADO')">Aprovar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <div class="tooltip-observacao"
+                      *ngIf="isTooltipOpen(cupom.id)"
+                      (click)="$event.stopPropagation()">
+                    {{ cupom.observacoes }}
+                  </div>
+                </td>
+                <td class="actions">
+                  <button class="approve" (click)="atualizarStatusCupom(cupom, 'APROVADO')">Aprovar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

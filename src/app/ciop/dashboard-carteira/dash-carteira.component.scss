@@ -19,7 +19,7 @@
       padding: 20px;
       border-radius: 12px;
       text-align: center;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
       transition: transform 0.2s;
 
       &:hover {
@@ -34,23 +34,36 @@
 
       h3 {
         font-size: 2rem;
-        margin: 0;       
-        &.limite { color: #18af18; }
-        &.extra { color: #c62828; }
-        &.gastos { color: #8f8f8c; } 
+        margin: 0;
+
+        &.limite {
+          color: #18af18;
+        }
+
+        &.extra {
+          color: #c62828;
+        }
+
+        &.gastos {
+          color: #8f8f8c;
+        }
       }
+
       .verde {
-        color: #2e7d32; 
+        color: #2e7d32;
         font-weight: bold;
       }
+
       .vermelho {
         color: #c62828;
         font-weight: bold;
       }
+
       .azul {
         color: #1565c0;
         font-weight: bold;
       }
+
       p {
         font-size: 1.5rem;
         font-weight: bold;
@@ -65,11 +78,12 @@
     display: flex;
     gap: 1rem;
     width: 100%;
+    max-height: 350px;
 
     .tabela-titulo {
+      max-height: 350px;
       margin-top: 0;
       margin: 0;
-      max-height: 280px;
       width: 45%;
       background: #ffffff;
       border-radius: 12px;
@@ -81,79 +95,113 @@
         top: 0;
         z-index: 2;
       }
-    
-    .historico-card {
-      margin-top: 0;
-      overflow-y: auto;   
-      max-height: 200px;
-      width: 100%;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 
-
-      table {
+      .historico-card {
+        margin-top: 0;
+        overflow-y: auto;
+        max-height: 200px;
         width: 100%;
-        border-collapse: collapse;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 
-         thead {
-          position: sticky;
-          top: 0;
-          z-index: 2;
-        }
 
-        th {
-          text-align: left;
-          padding: 2px;
-          background: #e8f5e9;
-        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
 
-        td {
-          padding: 5px;
-          border-top: 1px solid #ddd;
-        }
+          thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+          }
 
-        .positivo {
-          color: green;
-          font-weight: bold;
-        }
+          th {
+            text-align: left;
+            padding: 2px;
+            background: #e8f5e9;
+          }
 
-        .negativo {
-          color: red;
-          font-weight: bold;
+          td {
+            padding: 5px;
+            border-top: 1px solid #ddd;
+          }
+
+          .positivo {
+            color: green;
+            font-weight: bold;
+          }
+
+          .negativo {
+            color: red;
+            font-weight: bold;
+          }
         }
       }
     }
   }
-  }
-  .charts-container {
-  display: flex;
-  align-items: top;
-  justify-content: center;
-  max-height: 270px;
-  padding: 10px;
-  border-radius: 12px;
-  margin-top: 0.5rem;
-  gap: 1rem;
-  width: 100%;
 
-    .grafico {
-      margin-top: 0;
-      margin: 0;
-      max-height: 280px;
-      width: 45%;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
-      padding: 2px;
+  .grafico {
+    margin-left: 90px;
+    display: flex;
+    max-width: 45%;
+    max-height: 300px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+
+    :host {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .charts-container {
+      display: flex;
+      width: 100%;
+      height: 270px;
+      max-width: 700px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
       canvas {
-        width: 100%;
-        height: 280px;
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+
+    .chart-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    ::ng-deep .chartjs-render-monitor {
+      border-radius: 12px;
+    }
+
+    ::ng-deep .chart-legend {
+      display: flex !important;
+      justify-content: center;
+      margin-top: 1rem;
+
+      li {
+        margin: 0 10px;
+        font-size: 0.9rem;
+        color: #4a5568;
+
+        span {
+          border-radius: 6px !important;
+        }
       }
     }
   }
+
   .btn-flutuante {
     position: fixed;
     display: flex;
@@ -169,13 +217,14 @@
     height: 60px;
     font-size: 28px;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s;
 
     &:hover {
       transform: scale(1.1);
       background: #1b5e20;
     }
+
     .icon-add {
       display: flex;
       width: 40px;
