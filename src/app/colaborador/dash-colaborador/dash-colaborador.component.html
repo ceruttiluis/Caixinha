@@ -5,16 +5,6 @@
     <div class="Description">
     <h2>Colaborador</h2>
     </div>
-    <div class="filters">
-      <input 
-        type="text" 
-        (ngModelChange)="onColaboradorChange()"
-        placeholder="Colaborador..."
-        list="listaColaboradores">
-        <datalist id="listaColaboradores">
-        <option *ngFor="let colaborador of usuario" [value]="colaborador.nome"></option>
-        </datalist>
-    </div>
     <div class="cards">
       <div class="card total">
         <div class="label">Total Gasto</div>

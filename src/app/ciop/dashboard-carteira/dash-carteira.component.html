@@ -1,6 +1,17 @@
 <app-header></app-header>
 <app-sidebar-ciop></app-sidebar-ciop>
 <div class="dashboard-container">
+  <div class="filters">
+      <select 
+        type="text" 
+        [(ngModel)]="filialSelecionada" 
+        (ngModelChange)="onFilialChange()" 
+        placeholder="Filial..."
+        list="listaFiliais">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
+      </select>
+    </div>
   <div class="cards-resumo">
     <div class="card">
       <span class="icon"></span>
@@ -78,8 +89,14 @@
   </div>
   <div class="grafico">
     <div class="charts-container">
-      <div >
-        <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="'bar'">
+      <div class="chart-card">
+        <canvas baseChart [data]="barChartGastos" [type]="'bar'" [options]="barChartOptions">
+        </canvas>
+      </div>
+    </div>
+    <div class="charts-container">
+      <div class="chart-card">
+        <canvas baseChart [data]="barChartAdicoes" [type]="'bar'" [options]="barChartOptions">
         </canvas>
       </div>
     </div>
