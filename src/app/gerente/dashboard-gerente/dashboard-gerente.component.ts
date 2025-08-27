@@ -3,12 +3,11 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
-import { CommonModule, NgFor,} from '@angular/common'; 
+import { CommonModule, NgFor, } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { RouterModule, Router } from '@angular/router';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
+import { SharedService } from '../../shared/shared.service';
 
 @Component({
   selector: 'app-dashboard-gerente',
@@ -34,14 +33,14 @@ export class DashboardGerenteComponent implements OnInit {
   rankingGastos: any[] = [];
   rankingExtrapolo: any[] = [];
   filialSelecionada: string = '';
-  colaboradorSelecionado: string = '';
+  colaboradorSelecionado: string | null = null;
   totalGasto = 0;
   totalOrcamento = 0;
   totalDeficit = 0;
   totalDescontado = 0;
   totalExcedenteAprovado = 0;
-  
-  constructor(private auth: AuthService, private router: Router) {
+
+  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
   logout() {
@@ -51,7 +50,8 @@ export class DashboardGerenteComponent implements OnInit {
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
     await this.carregarDados();
-    await this.carregarProfiles()
+    await this.carregarProfiles();
+    this.processarIndicadoresGerente();
   }
   onColaboradorChange() {
     const colaborador = this.profiles.find(c => c.nome === this.colaboradorSelecionado);
@@ -61,50 +61,50 @@ export class DashboardGerenteComponent implements OnInit {
   }
   async carregarDados() {
     const filtroFilial = this.filialSelecionada || this.filialId;
-    const filtroColaborador = this.colaboradorSelecionado;
-  
+
     let query = this.supabase
-      .from('cupons_com_usuario') 
+      .from('cupons_com_usuario')
       .select('*');
-  
+
     if (filtroFilial) {
-    query = query.eq('filial_id', filtroFilial);
+      query = query.eq('filial_id', filtroFilial);
     }
-    if (filtroColaborador) {
-    query = query.eq('usuario_id', filtroColaborador); 
+    if (this.colaboradorSelecionado) {
+      query = query.eq('usuario_id', this.colaboradorSelecionado);
     }
-  
+
+
     const { data, error } = await query;
-  
+
     if (error) {
       console.error('Erro ao buscar cupons:', error.message);
       return;
     }
-  
+
     this.cupons = (data || []).map((c: any) => {
-      const valorBase = this.getValorBase(c.tipo_gasto);
+      const valorBase = this.sharedService.getValorBase(c.tipo_gasto);
       const diferenca = Number((c.valor - valorBase).toFixed(2));
       const exceDeficit = Number((valorBase - c.valor).toFixed(2));
-    
+
       let publicUrl = '';
-    if (c.url_imagem) {
-      let filePath = c.url_imagem.trim();
-      if (filePath.startsWith('http')) {
-        const match = filePath.match(/cupons\/(.+)$/);
-        if (match) {
-          filePath = match[1];
+      if (c.url_imagem) {
+        let filePath = c.url_imagem.trim();
+        if (filePath.startsWith('http')) {
+          const match = filePath.match(/cupons\/(.+)$/);
+          if (match) {
+            filePath = match[1];
+          }
+        }
+        const { data: pu } = this.supabase.storage
+          .from('cupons')
+          .getPublicUrl(filePath);
+
+        publicUrl = pu?.publicUrl || '';
+
+        if (publicUrl) {
+          publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
         }
       }
-      const { data: pu } = this.supabase.storage
-        .from('cupons')
-        .getPublicUrl(filePath);
-  
-      publicUrl = pu?.publicUrl || '';
-  
-      if (publicUrl) {
-        publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-      }
-    }
       return {
         id: c.id,
         usuario: c.usuario_nome,
@@ -117,85 +117,32 @@ export class DashboardGerenteComponent implements OnInit {
         filial: c.filial_nome,
         diferenca,
         exceDeficit,
-        descontar: c.descontar ?? true
+        descontar: c.descontar
       };
     });
-  
-    this.processarIndicadores();
-    this.gerarRankings();
+    this.processarIndicadoresGerente();
   }
-  getValorBase(tipo: string) {
-    const valores: Record<string, number> = {
-      'Almoço': 35,
-      'Janta': 35,
-      'Café da Manhã': 15,
-      'Hospedagem': 130,
-    };
-    return valores[tipo] ?? 0;
+
+  async processarIndicadoresGerente() {
+
+    const indicadores = this.sharedService.processarIndicadores(this.cupons);
+    this.totalGasto = indicadores.totalGasto;
+    this.totalOrcamento = indicadores.totalOrcamento;
+    this.totalDeficit = indicadores.totalDeficit;
+    this.totalDescontado = indicadores.totalDescontado;
+    this.totalExcedenteAprovado = indicadores.totalExcedenteAprovado;
+
+    const rankings = this.sharedService.gerarRankings(this.cupons);
+    this.rankingGastos = rankings.rankingGastos;
+    this.rankingExtrapolo = rankings.rankingExtrapolo;
   }
-  
-  processarIndicadores() {
-    this.totalGasto = 0;
-    this.totalOrcamento = 0;
-    this.totalDeficit = 0;
-    this.totalDescontado = 0;
-    this.totalExcedenteAprovado = 0;
-  
-    for (const cupom of this.cupons) {
-      this.totalGasto += cupom.valor;
-      this.totalOrcamento += this.getValorBase(cupom.tipo || 0)
-  
-      const excedente = cupom.diferenca || 0;
-        if (excedente > 0) {
-          this.totalDeficit += excedente;
-          if (cupom.status === 'DESCONTADO') {
-            this.totalDescontado += excedente;
-          } else if(cupom.status === 'APROVADO') {
-            this.totalExcedenteAprovado += excedente;
-          }
-        }
-      }
-    }
-  
-  gerarRankings() {
-    const gastosPorUsuario: Record<string, { total: number, filialNome: string }> = {};
-    const excedentePorUsuario: Record<string, { diferenca: number, filialNome: string }> = {};
 
-    for (const cupom of this.cupons) {
-      const nome = cupom.usuario;
-      const filial = cupom.filial_id;
-      const filialNome = cupom.filial;
-
-      if (!gastosPorUsuario[nome]) {
-        gastosPorUsuario[nome] = { total: 0, filialNome };
-      }
-      gastosPorUsuario[nome].total += cupom.valor;
-
-      if (cupom.diferenca > 0) {
-        if (!excedentePorUsuario[nome]) {
-          excedentePorUsuario[nome] = { diferenca: 0, filialNome };
-        }
-        excedentePorUsuario[nome].diferenca += cupom.diferenca;
-      }
-    }
-
-    this.rankingGastos = Object.entries(gastosPorUsuario)    
-      .map(([nome, dados ]) => ({ nome, total: dados.total, filial: dados.filialNome }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
-
-    this.rankingExtrapolo = Object.entries(excedentePorUsuario) 
-      .map(([nome, dados]) => ({ nome, diferenca: dados.diferenca, filial: dados.filialNome }))
-      .sort((a, b) => b.diferenca - a.diferenca)
-      .slice(0, 5);
-  }
-  
   async updateStatus(id: number, status: string) {
     await this.supabase
       .from('cupons')
       .update({ status })
       .eq('id', id);
-  
+
     await this.carregarDados();
   }
   async carregarProfiles() {
@@ -206,37 +153,19 @@ export class DashboardGerenteComponent implements OnInit {
       .select('*')
       .order('id', { ascending: false });
 
-      if (filtro) {
-        query = query.eq('filial_id', filtro);
-      }
-
-      const { data, error } = await query;
-      
-      if (error) {
-        console.error('Erro ao buscar usuarios:', error.message);
-        return;
-      }
-      this.profiles = (data || []).map((p: any) => ({
-        id: p.id,
-        nome: p.name,
-      }));
-  }
-    exportarParaExcel() {
-      const exportData = this.cupons.map(cupom => ({
-        ID: cupom.id,
-        Colaborador: cupom.usuario_nome,
-        Data: cupom.data_nota,
-        Tipo: cupom.tipo_gasto,
-        Valor: cupom.valor,
-        Excedente: cupom.excedente,
-        Status: cupom.status
-      }));
-  
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
-      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-      const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-      FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
+    if (filtro) {
+      query = query.eq('filial_id', filtro);
     }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Erro ao buscar usuarios:', error.message);
+      return;
+    }
+    this.profiles = (data || []).map((p: any) => ({
+      id: p.id,
+      nome: p.name,
+    }));
   }
+}

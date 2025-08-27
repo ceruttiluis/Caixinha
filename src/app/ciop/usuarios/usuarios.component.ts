@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
+import { SharedService } from '../../shared/shared.service';
 
 interface User {
   id?: number;
@@ -33,10 +34,10 @@ export class UsuariosComponent implements OnInit {
   uploading = false;
   usuarios: any[] = [];
   profiles: User[] = [];
-  Filiais: Filial[] = [];
+  filiais: Filial[] = [];
   gerentes: any[] = [];
 
-  constructor(private fb: FormBuilder, private auth: AuthService) {
+  constructor(private fb: FormBuilder, private auth: AuthService, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
     this.profileForm = this.fb.group({
@@ -65,12 +66,7 @@ export class UsuariosComponent implements OnInit {
   }
 
   async carregarFiliais() {
-    const { data, error } = await this.supabase
-      .from('filiais')
-      .select('id, nome, cidade')
-      .order('id', { ascending: false });
-      if (error) console.error(error);
-      else this.Filiais = data || [];
+    this.filiais = await this.sharedService.carregarFiliais();
   }
 
   async carregarGerentes() {

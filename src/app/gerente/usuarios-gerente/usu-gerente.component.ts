@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 export class UsuariosGerenteComponent implements OnInit {
   supabase: SupabaseClient;
   usuarios: any[] = [];
+  filialSelecionada: string = '';
   filialId: string | null = null;
   novoUsuario = { name: '', email: '', role: '', filial_nome: '' };
 
@@ -28,11 +29,17 @@ export class UsuariosGerenteComponent implements OnInit {
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
-    this.carregarDados();
+    this.carregarUsuarios();
   }
 
-  async carregarDados() {
-    const { data } = await this.supabase.from('profiles_info').select('*');
-    this.usuarios = data || [];
+  async carregarUsuarios() {
+    const filtro = this.filialSelecionada || this.filialId;
+
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .select('id, name, email, role, filial:filial_id ( id, nome, cidade ), gerente:gerente_id ( id, name )')
+      .order('id', { ascending: false });
+      if (error) console.error(error);
+      else this.usuarios = data || [];
   }
 }

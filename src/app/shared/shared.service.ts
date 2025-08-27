@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Injectable({
   providedIn: 'root'
@@ -95,6 +97,44 @@ export class SharedService {
       default: return 0;
     }
   }
+  async carregarFiliais(): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('filiais')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) {
+      console.error('Erro ao buscar filiais:', error.message);
+      return [];
+    }
+
+    return data || [];
+  }
+  exportarParaExcel(cupons: any[], nomeArquivo: string = 'relatorio_cupons.xlsx'): void {
+    if (!cupons || cupons.length === 0) {
+      console.warn('Nenhum dado para exportar');
+      return;
+    }
+
+    const exportData = cupons.map(cupom => ({
+      ID: cupom.id,
+      Colaborador: cupom.usuario || cupom.usuario_nome,
+      Data: cupom.data,
+      Tipo: cupom.tipo,
+      Valor: cupom.valor,
+      Excedente: cupom.excedente ?? cupom.diferenca ?? 0,
+      Status: cupom.status,
+      Filial: cupom.filial ?? cupom.filial_nome ?? ''
+    }));
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(data, nomeArquivo);
+  }
+
 
   async carregarCuponsCIOP(filialId?: string, colaboradorId?: string): Promise<any[]> {
     let query = this.supabase

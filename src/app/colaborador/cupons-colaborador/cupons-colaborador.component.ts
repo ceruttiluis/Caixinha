@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
+import { SharedService } from '../../shared/shared.service';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -37,7 +38,7 @@ interface Cupom {
     CommonModule,
     SidebarColaboradorComponent,
     SharedModule
-]
+  ]
 })
 export class CuponsColaboradorComponent {
   supabase: SupabaseClient;
@@ -50,7 +51,7 @@ export class CuponsColaboradorComponent {
   cuponsReprovados: Cupom[] = [];
   cupons: any[] = [];
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
@@ -77,7 +78,7 @@ export class CuponsColaboradorComponent {
       return;
     }
 
-   this.cupons = (data || []).map((c: any) => {
+    this.cupons = (data || []).map((c: any) => {
       const valorBase = this.getValorBase(c.tipo_gasto);
       const diferenca = Number((c.valor - valorBase).toFixed(2));
       const exceDeficit = Number((valorBase - c.valor).toFixed(2));
@@ -141,7 +142,7 @@ export class CuponsColaboradorComponent {
     return publicUrl;
   }
   isTooltipOpen(id: number | string): boolean {
-  return this.tooltipOpenId === String(id);
+    return this.tooltipOpenId === String(id);
   }
 
   toggleTooltip(id: number | string) {
@@ -152,5 +153,8 @@ export class CuponsColaboradorComponent {
   @HostListener('document:click')
   closeTooltip() {
     this.tooltipOpenId = null;
+  }
+  exportarParaExcel() {
+    this.sharedService.exportarParaExcel(this.cupons)
   }
 }

@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { createClient } from '@supabase/supabase-js';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { NgFor, NgIf, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
+import { SharedService } from '../../shared/shared.service';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 interface Filial {
   id?: number;
@@ -28,8 +31,11 @@ interface Filial {
 ]
 })
 export class FiliaisComponent implements OnInit {
-  supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
+   constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+  }
+  supabase: SupabaseClient;
   filiais: Filial[] = [];
   novaFilial: Filial = { nome: '', cidade: '' };
   editando: Filial | null = null;
@@ -39,15 +45,8 @@ export class FiliaisComponent implements OnInit {
   }
 
   async carregarFiliais() {
-    const { data, error } = await this.supabase
-      .from('filiais')
-      .select('*')
-      .order('id', { ascending: false });
-
-    if (error) console.error(error);
-    else this.filiais = data || [];
+    this.filiais = await this.sharedService.carregarFiliais();
   }
-
   async salvarFilial() {
     if (this.editando) {
       const { error } = await this.supabase

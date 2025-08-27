@@ -4,12 +4,12 @@ import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
-import { CommonModule, NgFor,} from '@angular/common'; 
+import { CommonModule, NgFor, } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { RouterModule, Router } from '@angular/router';
-import { url } from 'inspector';
+import { SharedService } from '../../shared/shared.service';
 
 @Component({
   selector: 'app-dashboard-ciop',
@@ -23,7 +23,7 @@ import { url } from 'inspector';
     RouterModule,
     FormsModule,
     SharedModule,
-]
+  ]
 })
 export class DashboardCiopComponent implements OnInit {
   supabase: SupabaseClient;
@@ -43,10 +43,10 @@ export class DashboardCiopComponent implements OnInit {
   totalDescontado = 0;
   totalExcedenteAprovado = 0;
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
-   logout() {
+  logout() {
     this.auth.logout();
     this.router.navigate(['/login']);
   }
@@ -55,13 +55,13 @@ export class DashboardCiopComponent implements OnInit {
     await this.carregarDados();
     await this.carregarProfiles();
     await this.carregarFiliais();
+    this.processarIndicadorCiop();
   }
 
   onFilialChange() {
     const filial = this.filiais.find(f => f.nome === this.filialSelecionada);
     this.filialId = filial ? filial.id : null;
 
-    console.log("Selecionada:", this.filialSelecionada, "-> id:", this.filialId);
     console.log('Filial selecionada:', this.filialSelecionada);
     this.carregarProfiles();
     this.carregarDados();
@@ -76,9 +76,9 @@ export class DashboardCiopComponent implements OnInit {
 
   async carregarDados() {
 
-  let query = this.supabase
-    .from('cupons_com_usuario')
-    .select('*');
+    let query = this.supabase
+      .from('cupons_com_usuario')
+      .select('*');
 
     if (this.filialSelecionada) {
       query = query.eq('filial_id', this.filialSelecionada);
@@ -94,21 +94,21 @@ export class DashboardCiopComponent implements OnInit {
       return;
     }
 
-  this.cupons = (data || []).map((c: any) => {
-    const valorBase = this.getValorBase(c.tipo_gasto);
-    const diferenca = Number((c.valor - valorBase).toFixed(2));
-    const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+    this.cupons = (data || []).map((c: any) => {
+      const valorBase = this.sharedService.getValorBase(c.tipo_gasto);
+      const diferenca = Number((c.valor - valorBase).toFixed(2));
+      const exceDeficit = Number((valorBase - c.valor).toFixed(2));
 
-    let publicUrl = '';
+      let publicUrl = '';
 
       if (c.url_imagem) {
         let filePath = c.url_imagem.trim();
 
         if (filePath.startsWith('http')) {
           const match = filePath.match(/cupons\/(.+)$/);
-            if (match) {
-              filePath = match[1];
-            } 
+          if (match) {
+            filePath = match[1];
+          }
         }
         const { data: pu } = this.supabase.storage
           .from('cupons')
@@ -133,78 +133,24 @@ export class DashboardCiopComponent implements OnInit {
         diferenca,
         exceDeficit,
         descontar: c.descontar
-    };
-  });
+      };
+    });
 
-    this.processarIndicadores();
-    this.gerarRankings();
-  }
-  getValorBase(tipo: string) {
-    const valores: Record<string, number> = {
-      'Almoço': 35,
-      'Janta': 35,
-      'Café da Manhã': 15,
-      'Hospedagem': 130,
-    };
-    return valores[tipo] ?? 0;
+    this.processarIndicadorCiop();
   }
 
-  processarIndicadores() {
-    this.totalGasto = 0;
-    this.totalOrcamento = 0;
-    this.totalDeficit = 0;
-    this.totalDescontado = 0;
-    this.totalExcedenteAprovado = 0;
+  async processarIndicadorCiop() {
 
-    for (const cupom of this.cupons) {
-      this.totalGasto += cupom.valor;
-      this.totalOrcamento += this.getValorBase(cupom.tipo || 0)
+    const indicadores = this.sharedService.processarIndicadores(this.cupons);
+    this.totalGasto = indicadores.totalGasto;
+    this.totalOrcamento = indicadores.totalOrcamento;
+    this.totalDeficit = indicadores.totalDeficit;
+    this.totalDescontado = indicadores.totalDescontado;
+    this.totalExcedenteAprovado = indicadores.totalExcedenteAprovado;
 
-      const excedente = cupom.diferenca || 0;
-
-      if (excedente > 0) {
-        this.totalDeficit += excedente;
-
-        if (cupom.status === 'DESCONTADO') {
-          this.totalDescontado += excedente;
-        } else if(cupom.status === 'APROVADO') {
-          this.totalExcedenteAprovado += excedente;
-        }
-      }
-    }
-  }
-
-  gerarRankings() {
-    const gastosPorUsuario: Record<string, { total: number, filialNome: string }> = {};
-    const excedentePorUsuario: Record<string, { diferenca: number, filialNome: string }> = {};
-
-    for (const cupom of this.cupons) {
-      const nome = cupom.usuario;
-      const filial = cupom.filial_id;
-      const filialNome = cupom.filial;
-
-      if (!gastosPorUsuario[nome]) {
-         gastosPorUsuario[nome] = { total: 0, filialNome };
-      }
-      gastosPorUsuario[nome].total += cupom.valor;
-
-      if (cupom.diferenca > 0) {
-        if (!excedentePorUsuario[nome]) {
-          excedentePorUsuario[nome] = { diferenca: 0, filialNome };
-        }
-        excedentePorUsuario[nome].diferenca += cupom.diferenca;
-      }
-    }
-
-    this.rankingGastos = Object.entries(gastosPorUsuario)    
-      .map(([nome, dados ]) => ({ nome, total: dados.total, filial: dados.filialNome }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
-
-    this.rankingExtrapolo = Object.entries(excedentePorUsuario) 
-      .map(([nome, dados]) => ({ nome, diferenca: dados.diferenca, filial: dados.filialNome }))
-      .sort((a, b) => b.diferenca - a.diferenca)
-      .slice(0, 5);
+    const rankings = this.sharedService.gerarRankings(this.cupons);
+    this.rankingGastos = rankings.rankingGastos;
+    this.rankingExtrapolo = rankings.rankingExtrapolo;
   }
 
   async updateStatus(id: number, status: string) {
@@ -213,63 +159,31 @@ export class DashboardCiopComponent implements OnInit {
       .update({ status })
       .eq('id', id);
 
-    await this.carregarDados(); 
+    await this.carregarDados();
   }
 
   async carregarProfiles() {
     let query = this.supabase
       .from('profiles')
       .select('*')
-      if (this.filialSelecionada) {
-        query = query.eq('filial_id', this.filialSelecionada);
-      }
+    if (this.filialSelecionada) {
+      query = query.eq('filial_id', this.filialSelecionada);
+    }
 
-      const { data, error } = await await query;
+    const { data, error } = await await query;
 
-      if (error) {
-        console.error('Erro ao buscar usuarios:', error.message);
-        return;
-      }
+    if (error) {
+      console.error('Erro ao buscar usuarios:', error.message);
+      return;
+    }
 
-      this.profiles = (data || []).map((p: any) => ({
-        id: p.id,
-        nome: p.name,
-      }));
+    this.profiles = (data || []).map((p: any) => ({
+      id: p.id,
+      nome: p.name,
+    }));
   }
 
   async carregarFiliais() {
-    const { data, error } = await this.supabase
-      .from('filiais')
-      .select('*')
-      .order('id', { ascending: false });
-
-      if (error) {
-        console.error('Erro ao buscar filiais:', error.message);
-        return;
-      }
-
-      this.filiais = (data || []).map((f: any) => ({
-        id: f.id,
-        nome: f.nome,
-      }));
-  }
-
-  exportarParaExcel() {
-    const exportData = this.cupons.map(cupom => ({
-      ID: cupom.id,
-      Colaborador: cupom.usuario_nome,
-      Data: cupom.data_nota,
-      Tipo: cupom.tipo_gasto,
-      Valor: cupom.valor,
-      Excedente: cupom.excedente,
-      Status: cupom.status
-    }));
-
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-
-    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
+    this.filiais = await this.sharedService.carregarFiliais();
   }
 }

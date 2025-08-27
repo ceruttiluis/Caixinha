@@ -7,8 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { environment } from '../../../environments/environment';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
+import { SharedService } from '../../shared/shared.service';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -52,13 +51,13 @@ export class CuponsComponent {
   cuponsReprovados: Cupom[] = [];
   cupons: any[] = [];
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
-    await this.carregarDados();
+    this.carregarDados();
   }
 
   async carregarDados() {
@@ -80,7 +79,7 @@ export class CuponsComponent {
     }
 
    this.cupons = (data || []).map((c: any) => {
-      const valorBase = this.getValorBase(c.tipo_gasto);
+      const valorBase = this.sharedService.getValorBase(c.tipo_gasto);
       const diferenca = Number((c.valor - valorBase).toFixed(2));
       const exceDeficit = Number((valorBase - c.valor).toFixed(2));
 
@@ -110,7 +109,7 @@ export class CuponsComponent {
    async atualizarStatusCarteira(cupom: Cupom, novoStatus: CupomStatus) {
     const { data, error } = await this.supabase
       .from('cupons')
-      .update({ status: novoStatus })
+      .update({ status: novoStatus, aprovado_por: this.auth.getUserId()})
       .eq('id', Number(cupom.id))
       .select('*')
       .maybeSingle();
@@ -166,7 +165,7 @@ export class CuponsComponent {
   async atualizarStatusCupom(cupom: Cupom, novoStatus: CupomStatus) {
     const { data, error } = await this.supabase
       .from('cupons')
-      .update({ status: novoStatus })
+      .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
       .eq('id', Number(cupom.id))
       .select('*')
       .maybeSingle();
@@ -190,16 +189,6 @@ export class CuponsComponent {
     if (novoStatus === 'APROVADO') this.cuponsAprovados.push(cupom);
     else if (novoStatus === 'DESCONTADO') this.cuponsReprovados.push(cupom);
     else this.cuponsPendentes.push(cupom);
-  }
-
-  private getValorBase(tipo: string): number {
-    const valores: Record<string, number> = {
-      'Almoço': 35,
-      'Janta': 35,
-      'Café da Manhã': 15,
-      'Hospedagem': 130
-    };
-    return valores[tipo] ?? 0;
   }
 
   private getPublicImageUrl(path?: string): string {
@@ -242,22 +231,6 @@ export class CuponsComponent {
     this.tooltipOpenId = null;
   }
   exportarParaExcel() {
-    const exportData = this.cupons.map(cupom => ({
-      ID: cupom.id,
-      Colaborador: cupom.usuario,
-      Data: cupom.data,
-      Tipo: cupom.tipo,
-      Valor: cupom.valor,
-      Excedente: cupom.diferenca,
-      Status: cupom.status,
-      Observacoes: cupom.observacoes,
-    }));
-  
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    FileSaver.saveAs(data, 'relatorio_cupons.xlsx');
+    this.sharedService.exportarParaExcel(this.cupons)
   }
 }

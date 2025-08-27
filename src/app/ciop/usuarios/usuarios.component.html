@@ -20,7 +20,7 @@
     </select>
 
     <select  formControlName="filial" required>
-          <option *ngFor="let filial of Filiais" [value]="filial.id">
+          <option *ngFor="let filial of filiais" [value]="filial.id">
             {{ filial.nome}}
           </option>
     </select>
