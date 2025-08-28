@@ -8,28 +8,35 @@
     <input type="text" formControlName="email" placeholder="Email" required />
     <input type="text" formControlName="password" placeholder="Senha" required />
     <select formControlName="role" required>
-          <option value="CIOP">admin</option>
-          <option value="GERENTE">moderator</option>
-          <option value="COLABORADOR">user</option>
+      <option value="CIOP">admin</option>
+      <option value="GERENTE">moderator</option>
+      <option value="COLABORADOR">user</option>
     </select>
 
-    <select  formControlName="gerente" placeholder="Selecione o Gerente" required>
-          <option *ngFor="let g of gerentes" [value]="g.id">
-            {{ g.name }}
-          </option>
+    <select formControlName="gerente" placeholder="Selecione o Gerente" required>
+      <option *ngFor="let g of gerentes" [value]="g.id">
+        {{ g.name }}
+      </option>
     </select>
 
-    <select  formControlName="filial" required>
-          <option *ngFor="let filial of filiais" [value]="filial.id">
-            {{ filial.nome}}
-          </option>
+    <select formControlName="filial" required>
+      <option *ngFor="let filial of filiais" [value]="filial.id">
+        {{ filial.nome}}
+      </option>
     </select>
     <button type="submit" [disabled]="uploading">Criar Usuário</button>
   </form>
 
   <table>
     <thead>
-      <tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Filial</th><th>Gerente</th><th>Ações</th></tr>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Perfil</th>
+        <th>Filial</th>
+        <th>Gerente</th>
+        <th>Ações</th>
+      </tr>
     </thead>
     <tbody>
       <tr *ngFor="let user of usuarios">

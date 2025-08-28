@@ -61,43 +61,13 @@ export class CuponsColaboradorComponent {
   }
 
   async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
+    try {
+      this.cupons = await this.sharedService.carregarCuponsColaborador();
 
-    let query = this.supabase
-      .from('cupons_com_usuario')
-      .select('*');
-
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+      console.log('Cupons carregados:', this.cupons);
+    } catch (error) {
+      console.error('Erro ao carregar cupons:', error);
     }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Erro ao buscar cupons:', error.message);
-      return;
-    }
-
-    this.cupons = (data || []).map((c: any) => {
-      const valorBase = this.getValorBase(c.tipo_gasto);
-      const diferenca = Number((c.valor - valorBase).toFixed(2));
-      const exceDeficit = Number((valorBase - c.valor).toFixed(2));
-
-      return {
-        id: c.id,
-        usuario: c.usuario_nome,
-        data: c.data_nota,
-        tipo: c.tipo_gasto,
-        valor: c.valor,
-        imagem: this.getPublicImageUrl(c.url_imagem),
-        link: c.url_imagem,
-        status: c.status,
-        diferenca,
-        exceDeficit,
-        observacoes: c.observacoes,
-        aprovacao: c.aprovado_por_nome
-      };
-    });
     this.separarListas();
   }
 
@@ -107,15 +77,6 @@ export class CuponsColaboradorComponent {
     this.cuponsReprovados = this.cupons.filter(c => c.status === 'DESCONTADO');
   }
 
-  private getValorBase(tipo: string): number {
-    const valores: Record<string, number> = {
-      'Almoço': 35,
-      'Janta': 35,
-      'Café da Manhã': 15,
-      'Hospedagem': 130
-    };
-    return valores[tipo] ?? 0;
-  }
 
   private getPublicImageUrl(path?: string): string {
     if (!path) return '';

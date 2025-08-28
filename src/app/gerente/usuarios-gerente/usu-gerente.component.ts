@@ -39,7 +39,7 @@ export class UsuariosGerenteComponent implements OnInit {
       .from('profiles')
       .select('id, name, email, role, filial:filial_id ( id, nome, cidade ), gerente:gerente_id ( id, name )')
       .order('id', { ascending: false });
-      if (error) console.error(error);
-      else this.usuarios = data || [];
+    if (error) console.error(error);
+    else this.usuarios = data || [];
   }
 }

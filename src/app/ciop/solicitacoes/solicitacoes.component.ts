@@ -7,8 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { environment } from '../../../environments/environment';
-import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
+import { SharedService } from '../../shared/shared.service';
 
 type SolicitacoesStatus = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
 
@@ -41,6 +40,9 @@ export class SolicitacoesComponent {
   supabase: SupabaseClient;
   filialId: string | null = null;
   filialSelecionada: string = '';
+  colaboradorSelecionado?: string;
+  profiles: any[] = [];
+  filiais: any[] = [];
   tooltipOpenId: string | null = null;
 
   solicitacoesPendentes: Solicitacoes[] = [];
@@ -48,34 +50,63 @@ export class SolicitacoesComponent {
   solicitacoesReprovados: Solicitacoes[] = [];
   solicitacoes: any[] = [];
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
-    this.filialId = this.auth.getFilialId();
     await this.carregarDados();
+    await this.carregarUsuarios();
+    await this.carregarFiliais();
+    this.carregarComFiltros();
+  }
+
+  onFilialChange() {
+    console.log('Filial selecionada:', this.filialSelecionada);
+    this.carregarUsuarios();
+    this.carregarDados();
+  }
+  async carregarFiliais() {
+    this.filiais = await this.sharedService.carregarFiliais();
+  }
+
+  onColaboradorChange() {
+    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    this.carregarDados();
+  }
+  async carregarUsuarios() {
+    this.profiles = await this.sharedService.carregarProfiles(
+      this.filialSelecionada || this.filialId
+    );
+  }
+  async carregarComFiltros(filialId?: string, colaboradorId?: string) {
+    this.solicitacoes = await this.sharedService.carregarCuponsCiop(
+      filialId,
+      colaboradorId
+    );
   }
 
   async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
 
     let query = this.supabase
       .from('solicitacao')
       .select('id, profile_id, tipo_recarga, status, valor, data_solicitacao, observacoes, profiles (name), filiais (nome)');
 
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+    if (this.filialSelecionada) {
+      query = query.eq('filial_id', this.filialSelecionada);
+    }
+    if (this.colaboradorSelecionado) {
+      query = query.eq('profile_id', this.colaboradorSelecionado);
     }
 
     const { data, error } = await query;
 
     if (error) {
-      console.error('Erro ao buscar cupons:', error.message);
+      console.error('Erro ao buscar solicitacoes:', error.message);
       return;
     }
 
-   this.solicitacoes = (data || []).map((s: any) => {
+    this.solicitacoes = (data || []).map((s: any) => {
 
       return {
         id: s.id,
@@ -97,14 +128,14 @@ export class SolicitacoesComponent {
     this.solicitacoesReprovados = this.solicitacoes.filter(s => s.status === 'DESCONTADO');
   }
 
-   async atualizarStatusCupom(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
+  async atualizarStatusCupom(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
     const { data, error } = await this.supabase
       .from('solicitacao')
       .update({ status: novoStatus })
       .eq('id', Number(solicitacoes.id))
       .select('*')
       .maybeSingle();
-        
+
     if (error) {
       console.error(`Erro ao atualizar cupom #${solicitacoes.id}:`, error.message);
       return;
@@ -115,7 +146,7 @@ export class SolicitacoesComponent {
     }
 
     if (novoStatus === 'APROVADO') {
-      const usuarioId = solicitacoes.usuarioID; 
+      const usuarioId = solicitacoes.usuarioID;
 
       const { data: usuario, error: usuarioError } = await this.supabase
         .from('profiles')
@@ -180,22 +211,7 @@ export class SolicitacoesComponent {
   closeTooltip() {
     this.tooltipOpenId = null;
   }
-  exportarParaExcel() {
-    const exportData = this.solicitacoes.map(solicitacoes => ({
-    ID: solicitacoes.id,
-    Colaborador: solicitacoes.usuario,
-    Filial: solicitacoes.filial,
-    Data: solicitacoes.data,
-    Tipo: solicitacoes.tipo,
-    Valor: solicitacoes.valor,
-    Status: solicitacoes.status,
-    Observacoes: solicitacoes.observacoes,
-    }));
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook: XLSX.WorkBook = { Sheets: { 'Cupons': worksheet }, SheetNames: ['Cupons'] };
-      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-      const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-      FileSaver.saveAs(data, 'relatorio_aprovações.xlsx');
+  exportarExcelRecargas() {
+    this.sharedService.exportarExcelRecargas(this.solicitacoes)
   }
 }

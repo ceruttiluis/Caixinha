@@ -6,6 +6,13 @@
       <h2>Aprovação de Cupons</h2>
       <button (click)="exportarParaExcel()">Exportar Excel</button>
     </div>
+    <div class="filters">
+      <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
+        placeholder="Colaborador..." list="listaColaboradores">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
+      </select>
+    </div>
     <div class="tables-cupons">
       <div class="tabela-lancamentos">
         <h2>Cupons Pendentes</h2>
@@ -46,9 +53,7 @@
                 <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
                   <span class="obs-preview">{{ cupom.observacoes }}</span>
 
-                  <div class="tooltip-observacao"
-                      *ngIf="isTooltipOpen(cupom.id)"
-                      (click)="$event.stopPropagation()">
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
                     {{ cupom.observacoes }}
                   </div>
                 </td>
@@ -100,9 +105,7 @@
                 <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
                   <span class="obs-preview">{{ cupom.observacoes }}</span>
 
-                  <div class="tooltip-observacao"
-                      *ngIf="isTooltipOpen(cupom.id)"
-                      (click)="$event.stopPropagation()">
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
                     {{ cupom.observacoes }}
                   </div>
                 </td>
@@ -153,9 +156,7 @@
                 <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
                   <span class="obs-preview">{{ cupom.observacoes }}</span>
 
-                  <div class="tooltip-observacao"
-                      *ngIf="isTooltipOpen(cupom.id)"
-                      (click)="$event.stopPropagation()">
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
                     {{ cupom.observacoes }}
                   </div>
                 </td>

@@ -41,6 +41,21 @@
     }
   }
 
+  .filters {
+    margin-top: 0;
+    padding: 0;
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 1rem;
+
+    select {
+      padding: 0.5rem;
+      border: 1px solid #a5d6a7;
+      border-radius: 4px;
+      width: 200px;
+    }
+  }
+
   .tables-cupons {
     margin-top: 0.5rem;
     align-items: center;

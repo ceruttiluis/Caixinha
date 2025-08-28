@@ -3,7 +3,7 @@
   background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 53%, #4caf50 90%);
   margin-left: 90px;
   min-height: 98vh;
-  
+
   .content {
     flex-grow: 1;
     padding: 3rem;
@@ -16,53 +16,54 @@
   }
 
   .form-carteira {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  background-color: #f5fffa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background-color: #f5fffa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
-  .form-group {
-    flex: 1;
-    min-width: 200px;
+    .form-group {
+      flex: 1;
+      min-width: 200px;
 
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: #333;
-    }
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+      }
 
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
+      input,
+      select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
 
-      &:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+          box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+      }
+
+      select {
+        background: white;
+        cursor: pointer;
       }
     }
 
-    select {
-      background: white;
-      cursor: pointer;
-    }
-  }
-
-  .form-actions {
-    display: flex;
-    gap: 1rem;
-    align-self: flex-end;
-    width: 100%;
-    justify-content: flex-end;
-    margin-top: 1rem;
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      align-self: flex-end;
+      width: 100%;
+      justify-content: flex-end;
+      margin-top: 1rem;
 
       button {
         padding: 0.75rem 1.5rem;
@@ -101,13 +102,14 @@
     background-color: #f5fffa;
     border-radius: 8px;
     padding: 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
     table {
       width: 100%;
       border-collapse: collapse;
 
-      th, td {
+      th,
+      td {
         padding: 0.75rem;
         border: 1px solid #ddd;
         text-align: left;
@@ -160,6 +162,7 @@
           }
         }
       }
+
       .no-data {
         text-align: center;
         padding: 1.5rem;
@@ -170,6 +173,11 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

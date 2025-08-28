@@ -1,5 +1,5 @@
 .container {
-   display: flex;
+  display: flex;
   align-items: center;
   flex-direction: column;
   gap: 4rem;
@@ -9,14 +9,14 @@
   background-color: #e8f5e9;
   color: #1b1b1b;
   min-height: 98vh;
- background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 53%, #4caf50 90%);
+  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 53%, #4caf50 90%);
 }
 
 .Logo {
   margin-top: 5rem;
   width: 600px;
   height: 150px;
-  }
+}
 
 .form-container {
   max-height: 400px;
@@ -24,7 +24,7 @@
   padding: 2rem;
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 
   h2 {
@@ -38,7 +38,8 @@
     text-align: left;
   }
 
-  input, select {
+  input,
+  select {
     width: 100%;
     padding: 0.5rem;
     margin-top: 0.25rem;

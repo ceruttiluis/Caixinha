@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [RouterModule]
 })
 export class SidebarColaboradorComponent {
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) { }
 
   logout() {
     this.auth.logout();

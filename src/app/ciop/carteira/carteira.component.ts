@@ -13,7 +13,7 @@ interface User {
   name: string;
   email: string;
   carteira: number;
-  incremento?: number; 
+  incremento?: number;
 }
 
 @Component({
@@ -26,24 +26,24 @@ interface User {
 export class CarteiraComponent implements OnInit {
   supabase: SupabaseClient;
   users: User[] = [];
-  novoUsuario: User = { name: '', email: '', carteira: 0};
+  novoUsuario: User = { name: '', email: '', carteira: 0 };
   selectedUser: User | null = null;
   editando: User | null = null;
   message: string = '';
   isError: boolean = false;
   carteiraForm: FormGroup;
-   uploading = false;
+  uploading = false;
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService) 
-    { this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-      this.carteiraForm = this.fb.group({
+    private auth: AuthService) {
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+    this.carteiraForm = this.fb.group({
       usuarioId: ['', Validators.required],
       observacoes: [''],
       valor: ['', [Validators.required, Validators.min(0.01)]]
     });
-    }
+  }
 
   async ngOnInit() {
     this.carregarUsuarios();
@@ -90,7 +90,7 @@ export class CarteiraComponent implements OnInit {
     }
 
     this.uploading = true;
-    
+
     const { usuarioId, observacoes, valor } = this.carteiraForm.value;
     const valorNumerico = parseFloat(valor);
 
@@ -129,7 +129,7 @@ export class CarteiraComponent implements OnInit {
       };
 
       const { error: insertError } = await this.supabase
-        .from('carteira') 
+        .from('carteira')
         .insert(historicoData);
 
       if (insertError) {
@@ -146,7 +146,7 @@ export class CarteiraComponent implements OnInit {
         observacoes: '',
         valor: ''
       });
-      
+
       this.selectedUser = null;
       this.showMessage(`Saldo de R$ ${valorNumerico.toFixed(2)} adicionado com sucesso para o usuário!`);
 
@@ -174,4 +174,3 @@ export class CarteiraComponent implements OnInit {
     setTimeout(() => this.message = '', 4000);
   }
 }
-    

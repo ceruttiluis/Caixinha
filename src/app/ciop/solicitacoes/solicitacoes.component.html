@@ -4,7 +4,20 @@
   <section class="content animate-fade-in">
     <div class="Description">
       <h2>Aprovação de Recargas</h2>
-      <button (click)="exportarParaExcel()">Exportar Excel</button>
+      <button (click)="exportarExcelRecargas()">Exportar Excel</button>
+      <div class="filters">
+        <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial..."
+          list="listaFiliais">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
+        </select>
+
+        <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
+          placeholder="Colaborador..." list="listaColaboradores">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
+        </select>
+      </div>
     </div>
     <div class="tabela-lancamentos">
       <div class="list-lancamento">
@@ -33,9 +46,7 @@
             <td>{{ solicitacao.valor | currency:'BRL' }}</td>
             <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
               <span class="obs-preview">{{ solicitacao.observacoes }}</span>
-              <div class="tooltip-observacao"
-                  *ngIf="isTooltipOpen(solicitacao.id)"
-                  (click)="$event.stopPropagation()">
+              <div class="tooltip-observacao" *ngIf="isTooltipOpen(solicitacao.id)" (click)="$event.stopPropagation()">
                 {{ solicitacao.observacoes }}
               </div>
             </td>
@@ -75,9 +86,7 @@
             <td>{{ solicitacao.valor | currency:'BRL' }}</td>
             <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
               <span class="obs-preview">{{ solicitacao.observacoes }}</span>
-              <div class="tooltip-observacao"
-                  *ngIf="isTooltipOpen(solicitacao.id)"
-                  (click)="$event.stopPropagation()">
+              <div class="tooltip-observacao" *ngIf="isTooltipOpen(solicitacao.id)" (click)="$event.stopPropagation()">
                 {{ solicitacao.observacoes }}
               </div>
             </td>
@@ -116,9 +125,7 @@
             <td>{{ solicitacao.valor | currency:'BRL' }}</td>
             <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
               <span class="obs-preview">{{ solicitacao.observacoes }}</span>
-              <div class="tooltip-observacao"
-                  *ngIf="isTooltipOpen(solicitacao.id)"
-                  (click)="$event.stopPropagation()">
+              <div class="tooltip-observacao" *ngIf="isTooltipOpen(solicitacao.id)" (click)="$event.stopPropagation()">
                 {{ solicitacao.observacoes }}
               </div>
             </td>

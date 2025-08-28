@@ -1,17 +1,22 @@
 <app-header></app-header>
 <app-sidebar-ciop></app-sidebar-ciop>
 <div class="dashboard-container">
-  <div class="filters">
-      <select 
-        type="text" 
-        [(ngModel)]="filialSelecionada" 
-        (ngModelChange)="onFilialChange()" 
-        placeholder="Filial..."
+  <div class="Description">
+    <h2>Aprovação de Cupons</h2>
+    <div class="filters">
+      <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial..."
         list="listaFiliais">
         <option [ngValue]="null">Todos</option>
         <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
       </select>
+
+      <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
+        placeholder="Colaborador..." list="listaColaboradores">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
+      </select>
     </div>
+  </div>
   <div class="cards-resumo">
     <div class="card">
       <span class="icon"></span>

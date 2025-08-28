@@ -88,7 +88,7 @@ export class LancarCupomComponent {
       .from('cupons')
       .insert({
         usuario_id: this.auth.getUserId(),
-        filial_id: perfil.filial_id, 
+        filial_id: perfil.filial_id,
         tipo_gasto: tipo,
         observacoes: observacoes,
         data_nota: data,
@@ -96,19 +96,19 @@ export class LancarCupomComponent {
         url_imagem: imageUrl
       });
 
-      if (insertError) {
-        alert('Erro ao salvar cupom: ' + insertError.message);
-      } else {
-        alert('Cupom enviado com sucesso!');
-        this.cupomForm.reset({
-          tipo: '',
-          observacoes: '',
-          data: new Date().toISOString().split('T')[0],
-          valor: '',
-          imagem: null
-        });
-        this.preview = '';
-      }
-      this.uploading = false;
+    if (insertError) {
+      alert('Erro ao salvar cupom: ' + insertError.message);
+    } else {
+      alert('Cupom enviado com sucesso!');
+      this.cupomForm.reset({
+        tipo: '',
+        observacoes: '',
+        data: new Date().toISOString().split('T')[0],
+        valor: '',
+        imagem: null
+      });
+      this.preview = '';
+    }
+    this.uploading = false;
   }
 }

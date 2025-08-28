@@ -44,6 +44,9 @@ export class CuponsCiopComponent {
   supabase: SupabaseClient;
   filialId: string | null = null;
   filialSelecionada: string = '';
+  filiais: any[] = [];
+  profiles: any[] = [];
+  colaboradorSelecionado?: string;
   tooltipOpenId: string | null = null;
 
   cuponsPendentes: Cupom[] = [];
@@ -56,50 +59,49 @@ export class CuponsCiopComponent {
   }
 
   async ngOnInit() {
-    this.filialId = this.auth.getFilialId();
     await this.carregarDados();
+    await this.carregarUsuarios();
+    await this.carregarFiliais();
+    this.carregarComFiltros();
+  }
+
+  onFilialChange() {
+    console.log('Filial selecionada:', this.filialSelecionada);
+    this.carregarUsuarios();
+    this.carregarDados();
+  }
+  async carregarFiliais() {
+    this.filiais = await this.sharedService.carregarFiliais();
+  }
+
+  onColaboradorChange() {
+    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    this.carregarDados();
+  }
+  async carregarUsuarios() {
+    this.profiles = await this.sharedService.carregarProfiles(
+      this.filialSelecionada || this.filialId
+    );
+  }
+  async carregarComFiltros(filialId?: string, colaboradorId?: string) {
+    this.cupons = await this.sharedService.carregarCuponsCiop(
+      filialId,
+      colaboradorId
+    );
   }
 
   async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
-
-    let query = this.supabase
-      .from('cupons')
-      .select('*');
-
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+    try {
+      this.cupons = await this.sharedService.carregarCuponsCiop(
+        this.filialSelecionada,
+        this.colaboradorSelecionado
+      );
+    } catch (error) {
+      console.error('Erro ao carregar cupons do gerente:', error);
     }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Erro ao buscar cupons:', error.message);
-      return;
-    }
-
-    this.cupons = (data || []).map((c: any) => {
-      const valorBase = this.sharedService.getValorBase(c.tipo_gasto);
-      const diferenca = Number((c.valor - valorBase).toFixed(2));
-      const exceDeficit = Number((valorBase - c.valor).toFixed(2));
-
-      return {
-        id: c.id,
-        usuario: c.usuario_nome,
-        data: c.data_nota,
-        tipo: c.tipo_gasto,
-        valor: c.valor,
-        imagem: this.getPublicImageUrl(c.url_imagem),
-        link: c.url_imagem,
-        status: c.status,
-        diferenca,
-        exceDeficit,
-        observacoes: c.observacoes,
-        aprovacao: c.aprovado_por_nome
-      };
-    });
     this.separarListas();
   }
+
   separarListas() {
     this.cuponsPendentes = this.cupons.filter(c => c.status === 'PENDENTE');
     this.cuponsAprovados = this.cupons.filter(c => c.status === 'APROVADO');
@@ -127,30 +129,6 @@ export class CuponsCiopComponent {
     else this.cuponsPendentes.push(cupom);
   }
 
-  private getPublicImageUrl(path?: string): string {
-    if (!path) return '';
-
-    let filePath = path.trim();
-
-    if (filePath.startsWith('http')) {
-      const match = filePath.match(/cupons\/(.+)$/);
-      if (match) {
-        filePath = match[1];
-      }
-    }
-
-    const { data: pu } = this.supabase.storage
-      .from('cupons')
-      .getPublicUrl(filePath);
-
-    let publicUrl = pu?.publicUrl || '';
-
-    if (publicUrl) {
-      publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-    }
-
-    return publicUrl;
-  }
   isTooltipOpen(id: number | string): boolean {
     return this.tooltipOpenId === String(id);
   }

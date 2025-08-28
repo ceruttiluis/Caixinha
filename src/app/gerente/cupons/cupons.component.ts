@@ -43,8 +43,10 @@ interface Cupom {
 export class CuponsComponent {
   supabase: SupabaseClient;
   filialId: string | null = null;
-  filialSelecionada: string = '';
+  filialSelecionada?: string;
   tooltipOpenId: string | null = null;
+  profiles: any[] = [];
+  colaboradorSelecionado?: string;
 
   cuponsPendentes: Cupom[] = [];
   cuponsAprovados: Cupom[] = [];
@@ -58,47 +60,35 @@ export class CuponsComponent {
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
     this.carregarDados();
+    await this.carregarUsuarios();
+    this.carregarComFiltros();
   }
 
+  onColaboradorChange() {
+    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    this.carregarDados();
+  }
+  async carregarUsuarios() {
+    this.profiles = await this.sharedService.carregarProfiles(
+      this.filialSelecionada || this.filialId
+    );
+  }
   async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
-
-    let query = this.supabase
-      .from('cupons_com_usuario')
-      .select(` * , profiles ( id, name )`);
-
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+    try {
+      this.cupons = await this.sharedService.carregarCuponsGerente(
+        this.filialSelecionada || this.filialId,
+        this.colaboradorSelecionado
+      );
+    } catch (error) {
+      console.error('Erro ao carregar cupons do gerente:', error);
     }
-   
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Erro ao buscar cupons:', error.message);
-      return;
-    }
-
-   this.cupons = (data || []).map((c: any) => {
-      const valorBase = this.sharedService.getValorBase(c.tipo_gasto);
-      const diferenca = Number((c.valor - valorBase).toFixed(2));
-      const exceDeficit = Number((valorBase - c.valor).toFixed(2));
-
-      return {
-        id: c.id,
-        usuarioID: c.usuario_id,
-        usuario: c.usuario_nome,
-        data: c.data_nota,
-        tipo: c.tipo_gasto,
-        valor: c.valor,
-        imagem: this.getPublicImageUrl(c.url_imagem),
-        link: c.url_imagem,
-        status: c.status,
-        diferenca,
-        exceDeficit,
-        observacoes: c.observacoes,
-      };
-    });
     this.separarListas();
+  }
+  async carregarComFiltros(filialId?: string, colaboradorId?: string) {
+    this.cupons = await this.sharedService.carregarCuponsColaborador(
+      filialId,
+      colaboradorId
+    );
   }
   separarListas() {
     this.cuponsPendentes = this.cupons.filter(c => c.status === 'PENDENTE');
@@ -106,10 +96,10 @@ export class CuponsComponent {
     this.cuponsReprovados = this.cupons.filter(c => c.status === 'DESCONTADO');
   }
 
-   async atualizarStatusCarteira(cupom: Cupom, novoStatus: CupomStatus) {
+  async atualizarStatusCarteira(cupom: Cupom, novoStatus: CupomStatus) {
     const { data, error } = await this.supabase
       .from('cupons')
-      .update({ status: novoStatus, aprovado_por: this.auth.getUserId()})
+      .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
       .eq('id', Number(cupom.id))
       .select('*')
       .maybeSingle();
@@ -119,38 +109,38 @@ export class CuponsComponent {
       return;
     }
     if (!data) {
-    console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
-    return;
+      console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
+      return;
     }
     if (novoStatus === 'APROVADO' || novoStatus === 'DESCONTADO') {
 
-    const usuarioId = cupom.usuarioID;
-    
-    const { data: usuario, error: usuarioError } = await this.supabase
-      .from('profiles')
-      .select('carteira, filial_id, name, id')
-      .eq('id', usuarioId)
-      .maybeSingle();
+      const usuarioId = cupom.usuarioID;
 
-    if (usuarioError || !usuario) {
-      console.error(`Usuário não encontrado: ${usuarioId}`);
-      return;
+      const { data: usuario, error: usuarioError } = await this.supabase
+        .from('profiles')
+        .select('carteira, filial_id, name, id')
+        .eq('id', usuarioId)
+        .maybeSingle();
+
+      if (usuarioError || !usuario) {
+        console.error(`Usuário não encontrado: ${usuarioId}`);
+        return;
+      }
+
+      const novoSaldo = (usuario.carteira || 0) - (cupom.valor || 0);
+
+      const { error: updateError } = await this.supabase
+        .from('profiles')
+        .update({ carteira: novoSaldo })
+        .eq('id', usuarioId);
+
+      if (updateError) {
+        console.error('Erro ao atualizar saldo: ' + updateError.message);
+        return;
+      }
     }
 
-    const novoSaldo = (usuario.carteira || 0) - (cupom.valor || 0);
-
-    const { error: updateError } = await this.supabase
-      .from('profiles')
-      .update({ carteira: novoSaldo })
-      .eq('id', usuarioId);
-
-    if (updateError) {
-      console.error('Erro ao atualizar saldo: ' + updateError.message);
-      return;
-    }
-  }
-  
-  console.log(`Cupom atualizado no banco:`, data);
+    console.log(`Cupom atualizado no banco:`, data);
 
     this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);
     this.cuponsAprovados = this.cuponsAprovados.filter(c => c.id !== cupom.id);
@@ -175,10 +165,10 @@ export class CuponsComponent {
       return;
     }
     if (!data) {
-    console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
-    return;
+      console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
+      return;
     }
-  
+
     console.log(`Cupom atualizado no banco:`, data);
 
     this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);
@@ -190,32 +180,6 @@ export class CuponsComponent {
     else if (novoStatus === 'DESCONTADO') this.cuponsReprovados.push(cupom);
     else this.cuponsPendentes.push(cupom);
   }
-
-  private getPublicImageUrl(path?: string): string {
-    if (!path) return '';
-
-    let filePath = path.trim();
-
-    if (filePath.startsWith('http')) {
-      const match = filePath.match(/cupons\/(.+)$/);
-      if (match) {
-        filePath = match[1];
-      }
-    }
-
-    const { data: pu } = this.supabase.storage
-      .from('cupons')
-      .getPublicUrl(filePath);
-
-    let publicUrl = pu?.publicUrl || '';
-
-    if (publicUrl) {
-      publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-    }
-
-    return publicUrl;
-  }
-  
 
   isTooltipOpen(id: number | string): boolean {
     return this.tooltipOpenId === String(id);

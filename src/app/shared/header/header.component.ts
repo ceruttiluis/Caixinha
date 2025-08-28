@@ -9,7 +9,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: false,
 })
 export class HeaderComponent {
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) { }
 
   logout(): void {
     this.auth.logout();

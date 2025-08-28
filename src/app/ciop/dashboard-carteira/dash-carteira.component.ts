@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
+import { SharedService } from '../../shared/shared.service';
 
 interface Adicao {
   data: string;
@@ -46,72 +47,79 @@ export class DashCarteiraComponent implements OnInit {
   carteira: any[] = [];
   users: User[] = [];
   filiais: any[] = [];
+  profiles: any[] = [];
   filialId: string | null = null;
   filialSelecionada: string = '';
-  colaboradorSelecionado: string | null = null;
+  colaboradorSelecionado?: string;
   saldoTotal = 0;
   totalAdicoes = 0;
   totalGasto = 0;
   saldoAtual = 0;
   extra = 0;
 
-  constructor() {
+  constructor(private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
-    this.carregarDados();
-    this.carregarAdicoes();
-    this.carregarCarteira();
+    await this.carregarTodosOsDados()
+    await this.carregarUsuarios();
+    await this.carregarFiliais();
+    await this.carregarComFiltros();
   }
+   async carregarTodosOsDados() {
+  await this.carregarDados();
+  await this.carregarAdicoes();
+  await this.carregarCarteira();
+}
   onFilialChange() {
-    const filial = this.filiais.find(f => f.nome === this.filialSelecionada);
-    this.filialId = filial ? filial.id : null;
-
-    console.log("Selecionada:", this.filialSelecionada, "-> id:", this.filialId);
     console.log('Filial selecionada:', this.filialSelecionada);
-    this.carregarDados();
+    this.carregarUsuarios();
+    this.carregarTodosOsDados()
+  }
+  async carregarFiliais() {
+    this.filiais = await this.sharedService.carregarFiliais();
   }
 
-  async carregarDados() {
-    const filtro = this.filialSelecionada || this.filialId;
+  onColaboradorChange() {
+    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    this.carregarTodosOsDados()
+  }
+  async carregarUsuarios() {
+    this.profiles = await this.sharedService.carregarProfiles(
+      this.filialSelecionada || this.filialId
+    );
+  }
+  async carregarComFiltros(filialId?: string, colaboradorId?: string) {
+    this.cupons = await this.sharedService.carregarCuponsCiop(
+      filialId,
+      colaboradorId
+    );
+  }
 
-    let query = this.supabase
-      .from('cupons_com_usuario')
-      .select('*');
-
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+    async carregarDados() {
+      try {
+      this.cupons = await this.sharedService.carregarCuponsCiop(
+        this.filialSelecionada,
+        this.colaboradorSelecionado
+      );
+    } catch (error) {
+      console.error('Erro ao carregar cupons do gerente:', error);
     }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Erro ao buscar cupons:', error.message);
-      return;
-    }
-
-    this.cupons = (data || []).map((c: any) => {
-
-      return {
-        usuario: c.usuario_nome,
-        data: c.data_nota,
-        tipo: c.tipo_gasto,
-        valor: c.valor,
-      };
-    });
     this.processarIndicadores();
   }
 
   async carregarAdicoes() {
-    const filtro = this.filialSelecionada || this.filialId;
 
     let query = this.supabase
       .from('carteira')
       .select('profile_id, criado_em, observacoes, tipo_recarga,  valor_add, profiles (name)');
 
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+    if (this.filialSelecionada) {
+      query = query.eq('filial_id', this.filialSelecionada);
+    }
+    if (this.colaboradorSelecionado) {
+      query = query.eq('profile_id', this.colaboradorSelecionado);
     }
 
     const { data, error } = await query;
@@ -135,14 +143,16 @@ export class DashCarteiraComponent implements OnInit {
   }
 
   async carregarCarteira() {
-    const filtro = this.filialSelecionada || this.filialId;
 
     let query = this.supabase
       .from('profiles')
       .select('*');
 
-    if (filtro) {
-      query = query.eq('filial_id', filtro);
+    if (this.filialSelecionada) {
+      query = query.eq('filial_id', this.filialSelecionada);
+    }
+    if (this.colaboradorSelecionado) {
+      query = query.eq('id', this.colaboradorSelecionado);
     }
 
     const { data, error } = await query;

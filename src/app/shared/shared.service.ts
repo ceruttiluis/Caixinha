@@ -134,18 +134,51 @@ export class SharedService {
     const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     FileSaver.saveAs(data, nomeArquivo);
   }
-
-
-  async carregarCuponsCIOP(filialId?: string, colaboradorId?: string): Promise<any[]> {
-    let query = this.supabase
-      .from('cupons_com_usuario')
-      .select('*');
-
-    if (filialId) {
-      query = query.eq('filial_id', filialId);
+  exportarExcelRecargas(solicitacoes: any[], nomeArquivo: string = 'relatorio_solicitacoes.xlsx'): void {
+    if (!solicitacoes || solicitacoes.length === 0) {
+      console.warn('Nenhum dado para exportar');
+      return;
     }
-    if (colaboradorId) {
-      query = query.eq('usuario_id', colaboradorId);
+
+   const exportData = solicitacoes.map(solicitacao => ({
+      ID: solicitacao.id,
+      Colaborador: solicitacao.usuario,
+      Filial: solicitacao.filial,
+      Data: solicitacao.data,
+      Tipo: solicitacao.tipo,
+      Valor: solicitacao.valor,
+      Status: solicitacao.status,
+      Observacoes: solicitacao.observacoes,
+    }));
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Solicitacoes': worksheet }, SheetNames: ['Solicitacoes'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(data, nomeArquivo);
+  }
+  async carregarCuponsGerente(filialSelecionada?: string | null, colaboradorSelecionado?: string): Promise<any[]> {
+    const filtro = filialSelecionada;
+    let query = this.supabase
+      .from('cupons')
+      .select(`
+        id,
+        tipo_gasto, 
+        data_nota, 
+        valor, 
+        url_imagem, 
+        status, 
+        observacoes,
+        usuario:profiles!cupons_usuario_id_fkey ( name ),
+        filiais (nome)
+        `);
+
+    if (filtro) {
+      query = query.eq('filial_id', filtro);
+    }
+    if (colaboradorSelecionado) {
+      query = query.eq('usuario_id', colaboradorSelecionado);
     }
 
     const { data, error } = await query;
@@ -181,10 +214,9 @@ export class SharedService {
           publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
         }
       }
-
       return {
         id: c.id,
-        usuario: c.usuario_nome,
+        usuario: c.usuario?.name ?? '-',
         data: c.data_nota,
         tipo: c.tipo_gasto,
         valor: c.valor,
@@ -192,11 +224,161 @@ export class SharedService {
         imagem: c.url_imagem,
         link: c.url_imagem,
         status: c.status,
-        filial: c.filial_nome,
+        filial: c.filiais?.nome,
         diferenca,
         exceDeficit,
         descontar: c.descontar,
         observacoes: c.observacoes,
+      };
+    });
+  }
+  async carregarCuponsCiop(filialSelecionada?: string | null, colaboradorSelecionado?: string): Promise<any[]> {
+
+    let query = this.supabase
+      .from('cupons')
+      .select(`
+        id,
+        tipo_gasto, 
+        data_nota, 
+        valor, 
+        url_imagem, 
+        status, 
+        observacoes,
+        aprovador:profiles!cupons_aprovado_por_fkey ( name ),
+        usuario:profiles!cupons_usuario_id_fkey ( name ),
+        filiais (nome)
+        `);
+
+    if (filialSelecionada) {
+      query = query.eq('filial_id', filialSelecionada);
+    }
+    if (colaboradorSelecionado) {
+      query = query.eq('usuario_id', colaboradorSelecionado);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Erro ao buscar cupons:', error.message);
+      return [];
+    }
+
+    return (data || []).map((c: any) => {
+      const valorBase = this.getValorBase(c.tipo_gasto);
+      const diferenca = Number((c.valor - valorBase).toFixed(2));
+      const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+
+      let publicUrl = '';
+      if (c.url_imagem) {
+        let filePath = c.url_imagem.trim();
+
+        if (filePath.startsWith('http')) {
+          const match = filePath.match(/cupons\/(.+)$/);
+          if (match) {
+            filePath = match[1];
+          }
+        }
+
+        const { data: pu } = this.supabase.storage
+          .from('cupons')
+          .getPublicUrl(filePath);
+
+        publicUrl = pu?.publicUrl || '';
+
+        if (publicUrl) {
+          publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+        }
+      }
+      return {
+        id: c.id,
+        usuario: c.usuario?.name ?? '-',
+        data: c.data_nota,
+        tipo: c.tipo_gasto,
+        valor: c.valor,
+        url_imagem: publicUrl,
+        imagem: c.url_imagem,
+        link: c.url_imagem,
+        status: c.status,
+        filial: c.filiais?.nome,
+        diferenca,
+        exceDeficit,
+        descontar: c.descontar,
+        observacoes: c.observacoes,
+        aprovacao: c.aprovador?.name ?? '-',
+      };
+    });
+  }
+
+  async carregarCuponsColaborador(filialId?: string, colaboradorId?: string): Promise<any[]> {
+    const filtro = filialId;
+    let query = this.supabase
+      .from('cupons')
+      .select(`
+        id,
+        tipo_gasto, 
+        data_nota, 
+        valor, 
+        url_imagem, 
+        status, 
+        observacoes,
+        usuario:profiles!cupons_usuario_id_fkey ( name ),
+        aprovador:profiles!cupons_aprovado_por_fkey ( name ),
+        filiais (nome)
+        `);
+
+    if (filtro) {
+      query = query.eq('filial_id', filtro);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Erro ao buscar cupons:', error.message);
+      return [];
+    }
+
+    return (data || []).map((c: any) => {
+      const valorBase = this.getValorBase(c.tipo_gasto);
+      const diferenca = Number((c.valor - valorBase).toFixed(2));
+      const exceDeficit = Number((valorBase - c.valor).toFixed(2));
+
+      let publicUrl = '';
+      if (c.url_imagem) {
+        let filePath = c.url_imagem.trim();
+
+        if (filePath.startsWith('http')) {
+          const match = filePath.match(/cupons\/(.+)$/);
+          if (match) {
+            filePath = match[1];
+          }
+        }
+
+        const { data: pu } = this.supabase.storage
+          .from('cupons')
+          .getPublicUrl(filePath);
+
+        publicUrl = pu?.publicUrl || '';
+
+        if (publicUrl) {
+          publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+        }
+      }
+      return {
+        id: c.id,
+        usuario: c.usuario?.name ?? '-',
+        data: c.data_nota,
+        tipo: c.tipo_gasto,
+        valor: c.valor,
+        url_imagem: publicUrl,
+        imagem: c.url_imagem,
+        link: c.url_imagem,
+        status: c.status,
+        filial: c.filiais?.nome,
+        diferenca,
+        exceDeficit,
+        descontar: c.descontar,
+        observacoes: c.observacoes,
+        aprovacao: c.aprovador?.name ?? '-',
       };
     });
   }
@@ -206,6 +388,26 @@ export class SharedService {
       aprovados: cupons.filter(c => c.status === 'APROVADO'),
       reprovados: cupons.filter(c => c.status === 'DESCONTADO'),
     };
+  }
+  async carregarProfiles(filialId?: string | null): Promise<any[]> {
+    const filtro = filialId;
+    let query = this.supabase
+      .from('profiles')
+      .select('id, name')
+      .order('name', { ascending: true });
+
+    if (filtro) {
+      query = query.eq('filial_id', filialId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Erro ao buscar usuários:', error.message);
+      return [];
+    }
+
+    return data || [];
   }
 
 }

@@ -28,11 +28,11 @@ interface Filial {
     ReactiveFormsModule,
     FormsModule,
     SharedModule
-]
+  ]
 })
 export class FiliaisComponent implements OnInit {
 
-   constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
   supabase: SupabaseClient;

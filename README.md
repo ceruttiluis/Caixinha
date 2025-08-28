@@ -2,14 +2,16 @@
 CRIAR BOTÃO PARA O GERENTE EXCLUIR O CUPOM 
 
 Caso o gerente, tenha que mudar a sua decisão, de aprovado para recusado, ou vice e versa, terá de ter um campo de observação para justificar a sua ação.
-Após o gerente reprovar o cupom, e será descontado do usuario o valor, terá de ter um campo para que anexe imagem do documento, para ter o historico. 
-CIOP, também pode aprovar e reprovar o cupom.
 
-Tela para solicitação de recarga, com o historico de recarga, com botão para aprovar, quando aprovar, ele faz um update na carteira do colaborador, já com a quantidade certa. O valor da recarga será sempre pela solicitação de credito.
 quando tem solicitação de recarga extra, vai primeiro para o gerente aprovar, ele aprova e vem para a tela do ciop, fazer outra aprovação.
 
 Quando terminar isso tudo, pensar em melhorar a tela de cupons, para que fique menor como se fosse um kanban, assim os cupons viriam de forma pequena e ao clicar em cima, abriria o cupon inteiro.
 
+indicador de quanto de saldo o colaborador tem para gastar, para ele saber.
+
+Filtro de dia, Mes, trimestre, Semestre, anual 
+
+Filtro de data personalizavel (dia até tal dia)
 
 # Caixinha
 

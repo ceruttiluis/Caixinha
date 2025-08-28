@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
-import { FormsModule, FormGroup, Validators, ReactiveFormsModule, FormBuilder} from '@angular/forms';
+import { FormsModule, FormGroup, Validators, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { AuthService } from '../../services/auth.service';
@@ -61,8 +61,8 @@ export class UsuariosComponent implements OnInit {
       .from('profiles')
       .select('id, name, email, role, filial:filial_id ( id, nome, cidade ), gerente:gerente_id ( id, name )')
       .order('id', { ascending: false });
-      if (error) console.error(error);
-      else this.usuarios = data || [];
+    if (error) console.error(error);
+    else this.usuarios = data || [];
   }
 
   async carregarFiliais() {
@@ -78,16 +78,16 @@ export class UsuariosComponent implements OnInit {
     if (error) console.error(error);
     else this.gerentes = data || [];
   }
-  
-  async criarUsuario(): Promise<void>{
+
+  async criarUsuario(): Promise<void> {
     this.uploading = true;
 
     const { email, name, role, filial, gerente, password } = this.profileForm.value;
 
     const { data: authUser, error: authError } = await this.supabase.auth.admin.createUser({
-    email,
-    password, 
-    email_confirm: true,
+      email,
+      password,
+      email_confirm: true,
     });
 
     if (authError) {
@@ -97,7 +97,7 @@ export class UsuariosComponent implements OnInit {
     }
 
     const novoUsuario = {
-      id: authUser.user.id, 
+      id: authUser.user.id,
       email,
       name,
       role,

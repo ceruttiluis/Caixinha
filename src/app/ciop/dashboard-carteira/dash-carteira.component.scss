@@ -6,6 +6,34 @@
   margin-left: 90px;
   min-height: 98vh;
 
+    .Description {
+    margin-left: 90px;
+    align-items: left;
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    text-align: left;
+
+    h2 {
+      color: #130458;
+      font-weight: bold;
+    }
+
+    .filters {
+      margin-top: 0;
+      padding: 0;
+      display: flex;
+      gap: 3rem;
+      margin-bottom: 1rem;
+
+      select {
+        padding: 0.5rem;
+        border: 1px solid #a5d6a7;
+        border-radius: 4px;
+        width: 220px;
+      }
+    }}
+
   .cards-resumo {
     align-items: center;
     justify-content: center;
@@ -13,7 +41,7 @@
     gap: 15px;
 
     .card {
-      margin-top: 8rem;
+      margin-top: 1rem;
       width: 20%;
       background: #f9fff9;
       padding: 20px;
@@ -142,7 +170,7 @@
   }
 
   .grafico {
-   margin-top: 0.5rem;
+    margin-top: 0.5rem;
     align-items: top;
     justify-content: center;
     display: flex;
