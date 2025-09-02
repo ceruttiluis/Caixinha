@@ -100,7 +100,11 @@ export class SharedService {
   async carregarFiliais(): Promise<any[]> {
     const { data, error } = await this.supabase
       .from('filiais')
+<<<<<<< HEAD
       .select('id, nome, cidade, gerente:profiles!filiais_gerente_id_fkey ( name )')
+=======
+      .select('*')
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       .order('id', { ascending: false });
 
     if (error) {
@@ -140,7 +144,11 @@ export class SharedService {
       return;
     }
 
+<<<<<<< HEAD
     const exportData = solicitacoes.map(solicitacao => ({
+=======
+   const exportData = solicitacoes.map(solicitacao => ({
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       ID: solicitacao.id,
       Colaborador: solicitacao.usuario,
       Filial: solicitacao.filial,
@@ -158,6 +166,7 @@ export class SharedService {
     const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     FileSaver.saveAs(data, nomeArquivo);
   }
+<<<<<<< HEAD
   calcularPeriodo(
     periodoSelecionado: string = 'todos',
     dataInicio?: Date | undefined,
@@ -283,6 +292,8 @@ export class SharedService {
     return { startDate: startDate || undefined, endDate: endDate || undefined };
   }
 
+=======
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   async carregarCuponsGerente(filialSelecionada?: string | null, colaboradorSelecionado?: string): Promise<any[]> {
     const filtro = filialSelecionada;
     let query = this.supabase
@@ -357,7 +368,11 @@ export class SharedService {
       };
     });
   }
+<<<<<<< HEAD
   async carregarCuponsCiop(filialSelecionada?: string | null, colaboradorSelecionado?: string, startDate?: Date, endDate?: Date): Promise<any[]> {
+=======
+  async carregarCuponsCiop(filialSelecionada?: string | null, colaboradorSelecionado?: string): Promise<any[]> {
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
     let query = this.supabase
       .from('cupons')
@@ -380,12 +395,15 @@ export class SharedService {
     if (colaboradorSelecionado) {
       query = query.eq('usuario_id', colaboradorSelecionado);
     }
+<<<<<<< HEAD
     if (startDate) {
       query = query.gte('data_nota', new Date(startDate).toISOString().split('T')[0]);
     }
     if (endDate) {
       query = query.lte('data_nota', new Date(endDate).toISOString().split('T')[0]);
     }
+=======
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
     const { data, error } = await query;
 

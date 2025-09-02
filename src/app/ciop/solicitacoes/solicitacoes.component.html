@@ -3,6 +3,7 @@
 <main class="dashboard">
   <section class="content animate-fade-in">
     <div class="Description">
+<<<<<<< HEAD
       <h2>Filial</h2>
       <h2>Colaborador</h2>
       <h2>Periodo</h2>
@@ -184,6 +185,140 @@
         </table>
         </div>
       </div>
+=======
+      <h2>Aprovação de Recargas</h2>
+      <button (click)="exportarExcelRecargas()">Exportar Excel</button>
+      <div class="filters">
+        <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial..."
+          list="listaFiliais">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
+        </select>
+
+        <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
+          placeholder="Colaborador..." list="listaColaboradores">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="tabela-lancamentos">
+      <div class="list-lancamento">
+        <h2>Recargas Pendentes</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Filial</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Observações</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let solicitacao of solicitacoesPendentes">
+            <td>{{ solicitacao.id }}</td>
+            <td>{{ solicitacao.usuario }}</td>
+            <td>{{ solicitacao.filial }}</td>
+            <td>{{ solicitacao.data | date:'shortDate' }}</td>
+            <td>{{ solicitacao.tipo }}</td>
+            <td>{{ solicitacao.valor | currency:'BRL' }}</td>
+            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
+              <span class="obs-preview">{{ solicitacao.observacoes }}</span>
+              <div class="tooltip-observacao" *ngIf="isTooltipOpen(solicitacao.id)" (click)="$event.stopPropagation()">
+                {{ solicitacao.observacoes }}
+              </div>
+            </td>
+            <td class="actions">
+              <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
+              <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabela-lancamentos">
+      <div class="list-lancamento">
+        <h2>Recargas Aprovados</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Filial</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Observações</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let solicitacao of solicitacoesAprovados">
+            <td>{{ solicitacao.id }}</td>
+            <td>{{ solicitacao.usuario }}</td>
+            <td>{{ solicitacao.filial }}</td>
+            <td>{{ solicitacao.data | date:'shortDate' }}</td>
+            <td>{{ solicitacao.tipo }}</td>
+            <td>{{ solicitacao.valor | currency:'BRL' }}</td>
+            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
+              <span class="obs-preview">{{ solicitacao.observacoes }}</span>
+              <div class="tooltip-observacao" *ngIf="isTooltipOpen(solicitacao.id)" (click)="$event.stopPropagation()">
+                {{ solicitacao.observacoes }}
+              </div>
+            </td>
+            <td class="actions">
+              <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabela-lancamentos">
+      <div class="list-lancamento">
+        <h2>Recargas Reprovados</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>Filial</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Observações</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let solicitacao of solicitacoesReprovados">
+            <td>{{ solicitacao.id }}</td>
+            <td>{{ solicitacao.usuario }}</td>
+            <td>{{ solicitacao.filial }}</td>
+            <td>{{ solicitacao.data | date:'shortDate' }}</td>
+            <td>{{ solicitacao.tipo }}</td>
+            <td>{{ solicitacao.valor | currency:'BRL' }}</td>
+            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
+              <span class="obs-preview">{{ solicitacao.observacoes }}</span>
+              <div class="tooltip-observacao" *ngIf="isTooltipOpen(solicitacao.id)" (click)="$event.stopPropagation()">
+                {{ solicitacao.observacoes }}
+              </div>
+            </td>
+            <td class="actions">
+              <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Reprovar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
     </div>
   </section>
 </main>

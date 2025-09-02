@@ -59,7 +59,11 @@ export class UsuariosComponent implements OnInit {
   async carregarUsuarios() {
     const { data, error } = await this.supabase
       .from('profiles')
+<<<<<<< HEAD
       .select('id, name, email, role, filial:filial_id ( nome ), gerente:gerente_id ( name )')
+=======
+      .select('id, name, email, role, filial:filial_id ( id, nome, cidade ), gerente:gerente_id ( id, name )')
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       .order('id', { ascending: false });
     if (error) console.error(error);
     else this.usuarios = data || [];

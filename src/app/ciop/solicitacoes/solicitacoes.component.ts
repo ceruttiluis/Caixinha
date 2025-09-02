@@ -44,12 +44,15 @@ export class SolicitacoesComponent {
   profiles: any[] = [];
   filiais: any[] = [];
   tooltipOpenId: string | null = null;
+<<<<<<< HEAD
   periodoSelecionado: string = '';
   dataInicio?: Date;
   dataFim?: Date;
   trimestreSelecionado: null | undefined;
   semestreSelecionado: null | undefined;
   mesSelecionado: null | undefined;
+=======
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
   solicitacoesPendentes: Solicitacoes[] = [];
   solicitacoesAprovados: Solicitacoes[] = [];
@@ -64,6 +67,10 @@ export class SolicitacoesComponent {
     await this.carregarDados();
     await this.carregarUsuarios();
     await this.carregarFiliais();
+<<<<<<< HEAD
+=======
+    this.carregarComFiltros();
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   }
 
   onFilialChange() {
@@ -84,6 +91,7 @@ export class SolicitacoesComponent {
       this.filialSelecionada || this.filialId
     );
   }
+<<<<<<< HEAD
   async aplicarFiltros() {
     const { startDate, endDate } = this.sharedService.calcularPeriodo(
       this.periodoSelecionado,
@@ -98,6 +106,16 @@ export class SolicitacoesComponent {
   }
 
   async carregarDados(startDate?: Date, endDate?: Date) {
+=======
+  async carregarComFiltros(filialId?: string, colaboradorId?: string) {
+    this.solicitacoes = await this.sharedService.carregarCuponsCiop(
+      filialId,
+      colaboradorId
+    );
+  }
+
+  async carregarDados() {
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
     let query = this.supabase
       .from('solicitacao')
@@ -109,12 +127,15 @@ export class SolicitacoesComponent {
     if (this.colaboradorSelecionado) {
       query = query.eq('profile_id', this.colaboradorSelecionado);
     }
+<<<<<<< HEAD
     if (startDate) {
       query = query.gte('data_solicitacao', new Date(startDate).toISOString().split('T')[0]);
     }
     if (endDate) {
       query = query.lte('data_solicitacao', new Date(endDate).toISOString().split('T')[0]);
     }
+=======
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
     const { data, error } = await query;
 
@@ -228,8 +249,13 @@ export class SolicitacoesComponent {
   closeTooltip() {
     this.tooltipOpenId = null;
   }
+<<<<<<< HEAD
   exportarExcelSolicitacoes() {
     console.log('Exportando solicitacoes:', this.solicitacoes);
     this.sharedService.exportarExcelRecargas(this.solicitacoes, 'solicitacoes.xlsx')
+=======
+  exportarExcelRecargas() {
+    this.sharedService.exportarExcelRecargas(this.solicitacoes)
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   }
 }

@@ -3,6 +3,7 @@
 <main class="dashboard">
   <section class="content animate-fade-in">
     <div class="Description">
+<<<<<<< HEAD
       <h2>Filial</h2>
       <h2>Colaborador</h2>
       <h2>Periodo</h2>
@@ -63,6 +64,23 @@
         </div>
       </label>
        <button (click)="exportarParaExcel()">Exportar Excel</button>
+=======
+      <h2>Aprovação de Cupons</h2>
+      <button (click)="exportarParaExcel()">Exportar Excel</button>
+      <div class="filters">
+        <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial..."
+          list="listaFiliais">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
+        </select>
+
+        <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
+          placeholder="Colaborador..." list="listaColaboradores">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
+        </select>
+      </div>
+>>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
     </div>
     <div class="tables-cupons">
       <div class="tabela-lancamentos">
