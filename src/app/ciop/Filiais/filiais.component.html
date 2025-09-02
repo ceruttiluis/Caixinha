@@ -1,0 +1,38 @@
+<app-header></app-header>
+<app-sidebar-ciop></app-sidebar-ciop>
+<div class="container">
+  <div class="content animate-fade-in">
+    <h1>Gerenciar Filiais</h1>
+    <form (ngSubmit)="salvarFilial()" class="form-filial">
+      <input type="text" placeholder="Nome da Filial" [(ngModel)]="novaFilial.nome" name="nome" required />
+      <input type="text" placeholder="Cidade" [(ngModel)]="novaFilial.cidade" name="cidade" required />
+      <button type="submit">{{ editando ? 'Atualizar' : 'Cadastrar' }}</button>
+      <button *ngIf="editando" type="button" (click)="editando=null; novaFilial={nome:'',cidade:''}">Cancelar</button>
+    </form>
+    <div class="tabela-filiais">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Cidade</th>
+            <th>Gerente</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let filial of filiais">
+            <td>{{ filial.id }}</td>
+            <td>{{ filial.nome }}</td>
+            <td>{{ filial.cidade }}</td>
+            <td>{{ filial.gerente?.name ?? '-'}}</td>
+            <td>
+              <button (click)="editarFilial(filial)">Editar</button>
+              <button (click)="excluirFilial(filial.id!)">Excluir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

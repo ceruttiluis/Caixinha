@@ -1,0 +1,65 @@
+<app-header></app-header>
+<app-sidebar-ciop></app-sidebar-ciop>
+<div class="container">
+  <div class="content">
+    <h1>Gerenciamento de Carteira</h1>
+    <form [formGroup]="carteiraForm" (ngSubmit)="enviarSaldo()">
+      <div class="form-carteira">
+        <div class="form-group">
+          <label for="usuario">Selecionar Usuário:</label>
+          <select id="usuario" formControlName="usuarioId" required>
+            <option value="">Selecione um usuário</option>
+            <option *ngFor="let user of users" [value]="user.id">
+              {{ user.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Observações</label>
+          <input type="text" id="observacoes" formControlName="observacoes">
+        </div>
+
+        <div class="form-group">
+          <label for="valor">Saldo (R$):</label>
+          <input type="number" id="valor" formControlName="valor" min="0" step="0.01" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="uploading">Adicionar</button>
+          <button type="button" class="btn-cancel" *ngIf="editando" (click)="cancelarEdicao()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="tabela-usuarios">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Carteira (R$)</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.carteira | number:'1.2-2' }}</td>
+            <td class="actions">
+              <button (click)="editarCarteira(user)">Editar</button>
+            </td>
+          </tr>
+          <tr *ngIf="users.length === 0">
+            <td colspan="5" class="no-data">Nenhum usuário cadastrado</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

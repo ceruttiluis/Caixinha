@@ -1,0 +1,60 @@
+.Principal {
+  background: linear-gradient(135deg, #2d7d32 6%, #a8aca9 82.5%, #4caf50 120%);
+  margin-left: 90px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  height: 190px;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 70px;
+  z-index: 1000;
+  gap: 8rem;
+  font-family: 'Segoe UI', sans-serif;
+
+  h1 {
+    width: 500px;
+    font-size: 2.5rem;
+    color: #130458;
+    margin-bottom: 1rem;
+  }
+
+  .Logo {
+    width: 300px;
+    height: 60px;
+  }
+
+  .Policy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 0.001rem;
+    margin-top: 6rem;
+    background-color: #e5fcf0;
+    border-radius: 20px;
+
+    p {
+      display: flex;
+      justify-content: space-between;
+      width: 210px;
+      gap: 0;
+      font-size: 1.0rem;
+    }
+
+    span {
+      margin-left: 10px;
+      font-weight: 500;
+    }
+
+    strong {
+      color: #130458;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+  }
+}

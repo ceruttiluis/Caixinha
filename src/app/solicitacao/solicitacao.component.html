@@ -1,0 +1,25 @@
+<div class="container">
+  <img src="assets/FirstLogo.png" alt="Logo" class="Logo">
+  <div class="form-container">
+    <h2>Lançar Cupom Fiscal</h2>
+    <form [formGroup]="solicitacaoForm" (ngSubmit)="enviarCupom()">
+      <label>Tipo de Recarga</label>
+      <select formControlName="tipo">
+        <option value="">Selecione</option>
+        <option>Recarga Mensal</option>
+        <option>Recarga Extra</option>
+      </select>
+
+      <label>Observações</label>
+      <input type="text" formControlName="observacoes" />
+
+      <label>Data da Solicitação</label>
+      <input type="date" formControlName="data" />
+
+      <label>Valor</label>
+      <input type="number" step="0.01" formControlName="valor" />
+
+      <button type="submit" [disabled]="uploading">Enviar</button>
+    </form>
+  </div>
+</div>

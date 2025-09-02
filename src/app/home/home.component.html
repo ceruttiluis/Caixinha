@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="main-content">
+    <div class="option-container">
+      <img src="assets/FirstLogo.png" alt="Logo" class="Logo">
+      <h1>O que você deseja fazer?</h1>
+      <div class="options">
+        <div class="option-card" (click)="selectOption('dashboard')">
+          <i class="fas fa-chart-line"></i>
+          <h2>Dashboard</h2>
+        </div>
+        <div class="option-card" (click)="selectOption('cupon')">
+          <i class="fas fa-ticket-alt"></i>
+          <h2>Lançar Cupom</h2>
+        </div>
+        <div class="option-card" (click)="selectOption('recarga')">
+            <i class="fas fa-ticket-alt"></i>
+            <h2>Solicitar Recarga</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

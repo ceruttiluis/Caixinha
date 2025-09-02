@@ -1,0 +1,219 @@
+<app-header></app-header>
+<app-sidebar-ciop></app-sidebar-ciop>
+<main class="dashboard">
+  <section class="content animate-fade-in">
+    <div class="Description">
+      <h2>Filial</h2>
+      <h2>Colaborador</h2>
+      <h2>Periodo</h2>
+    </div>
+    <div class="filters">
+      <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial..."
+        list="listaFiliais">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
+      </select>
+      <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
+        placeholder="Colaborador..." list="listaColaboradores">
+        <option [ngValue]="null">Todos</option>
+        <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
+      </select>
+       <label>
+        <select [(ngModel)]="periodoSelecionado" (ngModelchange)="aplicarFiltros()">
+          <option value="todos">Todos</option>
+          <option value="mensal">Mensal</option>
+          <option value="trimestral">Trimestral</option>
+          <option value="semestral">Semestral</option>
+          <option value="anual">Anual</option>
+           <option value="personalizado">Personalizado</option>
+        </select>
+        <div class="periodo" *ngIf="periodoSelecionado === 'personalizado'">
+          <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">
+          <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltros()">
+        </div>
+        <div class="periodo" *ngIf="periodoSelecionado === 'mensal'">
+          <select [(ngModel)]="mesSelecionado" (change)="aplicarFiltros()">
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+          </select>
+        </div>
+        <div class="periodo" *ngIf="periodoSelecionado === 'trimestral'">
+          <select [(ngModel)]="trimestreSelecionado" (change)="aplicarFiltros()">
+            <option value="1">1º Trimestre (Jan-Mar)</option>
+            <option value="2">2º Trimestre (Abr-Jun)</option>
+            <option value="3">3º Trimestre (Jul-Set)</option>
+            <option value="4">4º Trimestre (Out-Dez)</option>
+          </select>
+        </div>
+        <div class="periodo" for *ngIf="periodoSelecionado === 'semestral'">
+          <select [(ngModel)]="semestreSelecionado" (change)="aplicarFiltros()">
+            <option value="1">1º Semestre (Jan-Jun)</option>
+            <option value="2">2º Semestre (Jul-Dez)</option>
+          </select>
+        </div>
+      </label>
+       <button (click)="exportarParaExcel()">Exportar Excel</button>
+    </div>
+    <div class="tables-cupons">
+      <div class="tabela-lancamentos">
+        <h2>Cupons Pendentes</h2>
+        <div class="list-lancamento">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Imagem</th>
+                <th>Excedente/Deficit</th>
+                <th>Observações</th>
+                <th>Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cuponsPendentes">
+                <td>{{ cupom.id }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td>{{ cupom.valor | currency:'BRL' }}</td>
+                <td>
+                  <a [href]="cupom.link" target="_blank">
+                    <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+                  </a>
+                </td>
+                <td [ngClass]="{
+                      'verde': cupom.exceDeficit > 0,
+                      'vermelho': cupom.exceDeficit < 0,
+                      'azul': cupom.exceDeficit === 0
+                    }">
+                  {{ cupom.diferenca | currency:'BRL' }}
+                </td>
+                <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+                  <span class="obs-preview">{{ cupom.observacoes }}</span>
+
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
+                    {{ cupom.observacoes }}
+                  </div>
+                </td>
+                <td>{{ cupom.aprovacao }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tabela-lancamentos">
+        <h2>Cupons Aprovados</h2>
+        <div class="list-lancamento">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Imagem</th>
+                <th>Excedente/Deficit</th>
+                <th>Observações</th>
+                <th>Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cuponsAprovados">
+                <td>{{ cupom.id }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td>{{ cupom.valor | currency:'BRL' }}</td>
+                <td>
+                  <a [href]="cupom.link " target="_blank">
+                    <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
+                  </a>
+                </td>
+                <td [ngClass]="{
+                      'verde': cupom.exceDeficit > 0,
+                      'vermelho': cupom.exceDeficit < 0,
+                      'azul': cupom.exceDeficit === 0
+                    }">
+                  {{ cupom.exceDeficit | currency:'BRL' }}
+                </td>
+                <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+                  <span class="obs-preview">{{ cupom.observacoes }}</span>
+
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
+                    {{ cupom.observacoes }}
+                  </div>
+                </td>
+                <td>{{ cupom.aprovacao }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tabela-lancamentos">
+        <h2>Cupons Reprovados</h2>
+        <div class="list-lancamento">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Imagem</th>
+                <th>Excedente/Deficit</th>
+                <th>Observações</th>
+                <th>Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cuponsReprovados">
+                <td>{{ cupom.id }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td>{{ cupom.valor | currency:'BRL' }}</td>
+                <td>
+                  <a [href]="cupom.link " target="_blank">
+                    <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
+                  </a>
+                </td>
+                <td [ngClass]="{
+                      'verde': cupom.exceDeficit > 0,
+                      'vermelho': cupom.exceDeficit < 0,
+                      'azul': cupom.exceDeficit === 0
+                    }">
+                  {{ cupom.exceDeficit | currency:'BRL' }}
+                </td>
+                <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+                  <span class="obs-preview">{{ cupom.observacoes }}</span>
+
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
+                    {{ cupom.observacoes }}
+                  </div>
+                </td>
+                <td>{{ cupom.aprovacao }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
