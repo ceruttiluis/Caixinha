@@ -27,25 +27,18 @@ export class DashboardCiopComponent implements OnInit {
   supabase: SupabaseClient;
   cupons: any[] = [];
   filialId: string | null = null;
-<<<<<<< HEAD
-=======
-  usuario: any[] = [];
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   profiles: any[] = [];
   filiais: any[] = [];
   rankingGastos: any[] = [];
   rankingExtrapolo: any[] = [];
   filialSelecionada: string = '';
   colaboradorSelecionado?: string;
-<<<<<<< HEAD
   periodoSelecionado: string = '';
   dataInicio?: Date;
   dataFim?: Date;
   trimestreSelecionado: null | undefined;
   semestreSelecionado: null | undefined;
   mesSelecionado: null | undefined;
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
   totalGasto = 0;
   totalOrcamento = 0;
@@ -93,7 +86,6 @@ export class DashboardCiopComponent implements OnInit {
     );
   }
 
-<<<<<<< HEAD
   async carregarDados(
     periodoSelecionado?: string | undefined,
     dataInicio?: Date,
@@ -127,18 +119,6 @@ export class DashboardCiopComponent implements OnInit {
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }
-=======
-  async carregarDados() {
-    try {
-      this.cupons = await this.sharedService.carregarCuponsCiop(
-        this.filialSelecionada,
-        this.colaboradorSelecionado
-      );
-    } catch (error) {
-      console.error('Erro ao carregar cupons do gerente:', error);
-    }
-    this.processarIndicadorCiop();
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   }
 
   async processarIndicadorCiop() {
@@ -163,7 +143,6 @@ export class DashboardCiopComponent implements OnInit {
 
     await this.carregarDados();
   }
-<<<<<<< HEAD
   async aplicarFiltros() {
    const { startDate, endDate } = this.sharedService.calcularPeriodo(
       this.periodoSelecionado,
@@ -176,7 +155,4 @@ export class DashboardCiopComponent implements OnInit {
     this.carregarDados(this.periodoSelecionado, startDate, endDate);
     this.processarIndicadorCiop();
   }
-=======
-
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 }

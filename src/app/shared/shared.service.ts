@@ -100,11 +100,7 @@ export class SharedService {
   async carregarFiliais(): Promise<any[]> {
     const { data, error } = await this.supabase
       .from('filiais')
-<<<<<<< HEAD
       .select('id, nome, cidade, gerente:profiles!filiais_gerente_id_fkey ( name )')
-=======
-      .select('*')
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       .order('id', { ascending: false });
 
     if (error) {
@@ -144,11 +140,7 @@ export class SharedService {
       return;
     }
 
-<<<<<<< HEAD
     const exportData = solicitacoes.map(solicitacao => ({
-=======
-   const exportData = solicitacoes.map(solicitacao => ({
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       ID: solicitacao.id,
       Colaborador: solicitacao.usuario,
       Filial: solicitacao.filial,
@@ -166,7 +158,6 @@ export class SharedService {
     const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     FileSaver.saveAs(data, nomeArquivo);
   }
-<<<<<<< HEAD
   calcularPeriodo(
     periodoSelecionado: string = 'todos',
     dataInicio?: Date | undefined,
@@ -183,117 +174,113 @@ export class SharedService {
     switch (periodoSelecionado) {
       case 'mensal':
         const mes = Number(mesSelecionado);
-        if (mes === 1){
+        if (mes === 1) {
           startDate = new Date(ano, 0, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 1, 0);
-        endDate.setHours(23, 59, 59, 999);
-        } else if (mes === 2){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 1, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 2) {
           startDate = new Date(ano, 1, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 2, 0);
-        endDate.setHours(23, 59, 59, 999);
-        } else if (mes === 3){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 2, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 3) {
           startDate = new Date(ano, 2, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 3, 0);
-        endDate.setHours(23, 59, 59, 999);
-        } else if (mes === 4){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 3, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 4) {
           startDate = new Date(ano, 3, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 4, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 5){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 4, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 5) {
           startDate = new Date(ano, 4, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 5, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 6){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 5, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 6) {
           startDate = new Date(ano, 5, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 6, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 7){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 6, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 7) {
           startDate = new Date(ano, 6, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 7, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 8){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 7, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 8) {
           startDate = new Date(ano, 7, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 8, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 9){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 8, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 9) {
           startDate = new Date(ano, 8, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 9, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 10){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 9, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 10) {
           startDate = new Date(ano, 9, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 10, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 11){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 10, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 11) {
           startDate = new Date(ano, 10, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 11, 0);
-        endDate.setHours(23, 59, 59, 999);
-        }else if (mes === 12){
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 11, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (mes === 12) {
           startDate = new Date(ano, 11, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 12, 0);
-        endDate.setHours(23, 59, 59, 999);
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 12, 0);
+          endDate.setHours(23, 59, 59, 999);
         }
         break;
       case 'trimestral':
         if (trimestreSelecionado) {
-        const inicioMes = (trimestreSelecionado - 1) * 3;
-        startDate = new Date(ano, inicioMes, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, inicioMes + 3, 0);
-        endDate.setHours(23, 59, 59, 999);
-      }
-      break;
+          const inicioMes = (trimestreSelecionado - 1) * 3;
+          startDate = new Date(ano, inicioMes, 1);
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, inicioMes + 3, 0);
+          endDate.setHours(23, 59, 59, 999);
+        }
+        break;
       case 'semestral':
         const semestre = Number(semestreSelecionado);
-      if (semestre === 1) {
-        startDate = new Date(ano, 0, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 6, 0);
-        endDate.setHours(23, 59, 59, 999);
-      } else if (semestre === 2) {
-        startDate = new Date(ano, 6, 1);
-        startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(ano, 12, 0);
-        endDate.setHours(23, 59, 59, 999);
-      }
-      break;
+        if (semestre === 1) {
+          startDate = new Date(ano, 0, 1);
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 6, 0);
+          endDate.setHours(23, 59, 59, 999);
+        } else if (semestre === 2) {
+          startDate = new Date(ano, 6, 1);
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(ano, 12, 0);
+          endDate.setHours(23, 59, 59, 999);
+        }
+        break;
       case 'anual':
         startDate = new Date(ano, 0, 1);
         startDate.setHours(0, 0, 0, 0);
         endDate = new Date(ano, 11, 31);
         endDate.setHours(23, 59, 59, 999);
-        console.log("inicio", startDate)
-         console.log("fim", endDate)
         break;
       case 'todos':
         startDate = null;
         endDate = null;
         break;
-        case 'personalizado':
-      if (dataInicio && dataFim) {
-        startDate = new Date(dataInicio);
-         startDate.setHours(0, 0, 0, 0);
-        endDate = new Date(dataFim);
-        endDate.setHours(23, 59, 59, 999);
-      }
-      break;
+      case 'personalizado':
+        if (dataInicio && dataFim) {
+          startDate = new Date(dataInicio);
+          startDate.setHours(0, 0, 0, 0);
+          endDate = new Date(dataFim);
+          endDate.setHours(23, 59, 59, 999);
+        }
+        break;
     }
     return { startDate: startDate || undefined, endDate: endDate || undefined };
   }
 
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   async carregarCuponsGerente(filialSelecionada?: string | null, colaboradorSelecionado?: string): Promise<any[]> {
     const filtro = filialSelecionada;
     let query = this.supabase
@@ -368,11 +355,7 @@ export class SharedService {
       };
     });
   }
-<<<<<<< HEAD
   async carregarCuponsCiop(filialSelecionada?: string | null, colaboradorSelecionado?: string, startDate?: Date, endDate?: Date): Promise<any[]> {
-=======
-  async carregarCuponsCiop(filialSelecionada?: string | null, colaboradorSelecionado?: string): Promise<any[]> {
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
     let query = this.supabase
       .from('cupons')
@@ -395,15 +378,12 @@ export class SharedService {
     if (colaboradorSelecionado) {
       query = query.eq('usuario_id', colaboradorSelecionado);
     }
-<<<<<<< HEAD
     if (startDate) {
       query = query.gte('data_nota', new Date(startDate).toISOString().split('T')[0]);
     }
     if (endDate) {
       query = query.lte('data_nota', new Date(endDate).toISOString().split('T')[0]);
     }
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
     const { data, error } = await query;
 

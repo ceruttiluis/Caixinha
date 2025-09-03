@@ -6,10 +6,7 @@
     <div class="Description">
       <h2>Filial</h2>
       <h2>Colaborador</h2>
-<<<<<<< HEAD
       <h2>Periodo</h2>
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
     </div>
     <div class="filters">
       <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial..."
@@ -17,16 +14,11 @@
         <option [ngValue]="null">Todos</option>
         <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
       </select>
-<<<<<<< HEAD
-=======
-
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
         placeholder="Colaborador..." list="listaColaboradores">
         <option [ngValue]="null">Todos</option>
         <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
       </select>
-<<<<<<< HEAD
       <label>
         <select [(ngModel)]="periodoSelecionado" (ngModelchange)="aplicarFiltros()">
           <option value="todos">Todos</option>
@@ -71,8 +63,6 @@
           </select>
         </div>
       </label>
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
     </div>
     <div class="cards">
       <div class="card total">

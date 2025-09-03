@@ -1,31 +1,38 @@
 const jwt = require('jsonwebtoken');
-const supabase = require('./supabaseClient');
+const { supabase } = require('./supabaseClient');
 
-const supabaseJwtSecret = 'RbgNi6kjKY/f8Im025nLPMEuvgjYyQ7E/n5mUfY6NFVl2BC6L6MimNaonIEXotsCpVHE1QA4KFzk00D/LBEyaA=='; // copiado do Supabase
+const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET;
 
 async function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader?.split(' ')[1];
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  if (!authHeader?.startsWith('')) {
+    return res.status(401).json({ error: 'Token não fornecido' });
+  }
 
-  if (!token) return res.status(401).json({ error: 'Token não fornecido' });
+  const token = authHeader.split('Bearer ')[1];
 
   try {
     const decoded = jwt.verify(token, supabaseJwtSecret);
-
-    const { data: usuario, error } = await supabase
+    
+    const { data: usuario, error} = await supabase
       .from('profiles')
       .select('*')
       .eq('id', decoded.sub)
       .single();
 
-    if (error || !profile) {
+console.log('🔍 ID buscado (trimmed):', `"${decoded.sub.trim()}"`);
+console.log('🔍 Tamanho do ID:', decoded.sub.trim().length);
+console.log('🔍 Resultado completo:', { usuario, error });
+
+    if ( error || !usuario) {
       return res.status(403).json({ error: 'Usuário inválido' });
     }
 
-    req.user = profile;
+    req.user = usuario;
     next();
   } catch (err) {
-    return res.status(403).json({ error: 'Token inválido ou expirado' });
+    console.error('❌ Erro na autenticação:', err);
+    return res.status(403).json({ error: 'Erro na autenticação' });
   }
 }
 

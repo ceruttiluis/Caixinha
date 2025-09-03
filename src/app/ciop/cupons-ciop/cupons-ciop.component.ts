@@ -48,15 +48,12 @@ export class CuponsCiopComponent {
   profiles: any[] = [];
   colaboradorSelecionado?: string;
   tooltipOpenId: string | null = null;
-<<<<<<< HEAD
   periodoSelecionado: string = '';
   dataInicio?: Date;
   dataFim?: Date;
   trimestreSelecionado: null | undefined;
   semestreSelecionado: null | undefined;
   mesSelecionado: null | undefined;
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
   cuponsPendentes: Cupom[] = [];
   cuponsAprovados: Cupom[] = [];
@@ -99,7 +96,6 @@ export class CuponsCiopComponent {
     );
   }
 
-<<<<<<< HEAD
   async carregarDados(
     periodoSelecionado?: string,
     dataInicio?: Date,
@@ -133,18 +129,6 @@ export class CuponsCiopComponent {
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }
-=======
-  async carregarDados() {
-    try {
-      this.cupons = await this.sharedService.carregarCuponsCiop(
-        this.filialSelecionada,
-        this.colaboradorSelecionado
-      );
-    } catch (error) {
-      console.error('Erro ao carregar cupons do gerente:', error);
-    }
-    this.separarListas();
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   }
 
   separarListas() {
@@ -190,7 +174,6 @@ export class CuponsCiopComponent {
   exportarParaExcel() {
     this.sharedService.exportarParaExcel(this.cupons)
   }
-<<<<<<< HEAD
   async aplicarFiltros() {
    const { startDate, endDate } = this.sharedService.calcularPeriodo(
       this.periodoSelecionado,
@@ -203,6 +186,4 @@ export class CuponsCiopComponent {
     this.carregarDados(this.periodoSelecionado, startDate, endDate);
     this.separarListas();
   }
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 }

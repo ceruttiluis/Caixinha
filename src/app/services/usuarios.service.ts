@@ -1,32 +1,49 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Usuario {
   id?: string;
-  nome: string;
+  name: string;
   email: string;
   role: string;
   filial_id: string;
+  gerente_id?: string | null;
+  carteira?: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
-  private apiUrl = 'http://localhost:3000/profiles';
+  private apiUrl = 'http://localhost:3000/api/profiles';
 
   constructor(private http: HttpClient) {}
 
-  criarUsuario(usuario: any): Observable<any> {
-    return this.http.post(this.apiUrl, usuario);
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
   }
 
-  listarUsuarios(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  criarUsuario(usuario: Usuario & { password: string }): Observable<Usuario> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<Usuario>(this.apiUrl, usuario,{
+       headers: this.getAuthHeaders()
+    })
   }
 
-  excluirUsuario(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  listarUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(this.apiUrl, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  excluirUsuario(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`,{
+      headers: this.getAuthHeaders()
+    });
   }
 }

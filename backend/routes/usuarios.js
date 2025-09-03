@@ -10,8 +10,8 @@ router.get('/', async (req, res) => {
 
   let query = supabase.from('profiles').select('id, name, role, filial_id');
 
-  if (usuario.role === 'CIOP') {
-  } else if (usuario.role === 'GERENTE') {
+  if (usuario.role === 'admin') {
+  } else if (usuario.role === 'moderator') {
     query = query.eq('filial_id', usuario.filial_id);
   } else {
     query = query.eq('id', usuario.id);
@@ -24,6 +24,9 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+  console.log('✅ Rota POST /api/profiles atingida!');
+  console.log('📦 Body recebido:', req.body);
+  console.log('👤 Usuário autenticado:', req.user);
   const { name, role, filial_id, gerente_id, email, password } = req.body;
 
   const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -44,7 +47,7 @@ router.post('/', async (req, res) => {
     role,
     filial_id,
     carteira: 0,
-    gerente_id: role === 'CIOP' ? gerente_id : null
+    gerente_id: role === 'admin' ? gerente_id : null
   }]);
 
   if (insertError) return res.status(500).json({ error: insertError.message });

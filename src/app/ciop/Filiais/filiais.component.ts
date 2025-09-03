@@ -13,12 +13,9 @@ interface Filial {
   id?: number;
   nome: string;
   cidade: string;
-<<<<<<< HEAD
    gerente?: {
     name: string;
   } | null;
-=======
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 }
 
 @Component({
@@ -43,11 +40,7 @@ export class FiliaisComponent implements OnInit {
   }
   supabase: SupabaseClient;
   filiais: Filial[] = [];
-<<<<<<< HEAD
   novaFilial: Filial = { nome: '', cidade: ''};
-=======
-  novaFilial: Filial = { nome: '', cidade: '' };
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   editando: Filial | null = null;
 
   async ngOnInit() {
@@ -66,11 +59,7 @@ export class FiliaisComponent implements OnInit {
 
       if (!error) {
         this.editando = null;
-<<<<<<< HEAD
         this.novaFilial = { nome: '', cidade: ''};
-=======
-        this.novaFilial = { nome: '', cidade: '' };
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
         await this.carregarFiliais();
       }
     } else {
@@ -79,11 +68,7 @@ export class FiliaisComponent implements OnInit {
         .insert([this.novaFilial]);
 
       if (!error) {
-<<<<<<< HEAD
         this.novaFilial = { nome: '', cidade: ''};
-=======
-        this.novaFilial = { nome: '', cidade: '' };
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
         await this.carregarFiliais();
       }
     }

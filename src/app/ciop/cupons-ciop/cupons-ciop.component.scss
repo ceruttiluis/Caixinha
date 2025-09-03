@@ -2,17 +2,10 @@
   margin-left: 90px;
   display: flex;
   padding: 0;
-<<<<<<< HEAD
   min-height: 160vh;
 
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 43.5%, #4caf50 90%);
-=======
-  min-height: 98vh;
-
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 45%, #4caf50 90%);
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   color: #1b1b1b;
 
   .content {
@@ -25,19 +18,13 @@
     align-items: left;
     display: flex;
     justify-content: left;
-<<<<<<< HEAD
     flex-direction: row;
     text-align: left;
     gap: 8rem;
-=======
-    flex-direction: column;
-    text-align: left;
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
 
     h2 {
       color: #130458;
       font-weight: bold;
-<<<<<<< HEAD
       width: 140px;
     }
   }
@@ -50,16 +37,10 @@
     margin-bottom: 1rem;
 
     label {
-=======
-    }
-
-    .filters {
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       margin-top: 0;
       padding: 0;
       display: flex;
       gap: 3rem;
-<<<<<<< HEAD
       width: 800px;
 
       .periodo {
@@ -94,33 +75,6 @@
     color: white;
   }
 
-=======
-      margin-bottom: 1rem;
-
-      select {
-        padding: 0.5rem;
-        border: 1px solid #a5d6a7;
-        border-radius: 4px;
-        width: 220px;
-      }
-    }
-
-    button {
-      max-width: 120px;
-      display: flex;
-      height: 50px;
-      padding: 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s;
-      background-color: #4caf50;
-      color: white;
-    }
-  }
-
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
   .tables-cupons {
     margin-top: 0.5rem;
     align-items: center;

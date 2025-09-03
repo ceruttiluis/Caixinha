@@ -8,6 +8,7 @@ import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
 import { SharedService } from '../../shared/shared.service';
+import { UsuariosService, Usuario } from '../../services/usuarios.service';
 
 interface User {
   id?: number;
@@ -37,16 +38,16 @@ export class UsuariosComponent implements OnInit {
   filiais: Filial[] = [];
   gerentes: any[] = [];
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private sharedService: SharedService) {
+  constructor(private fb: FormBuilder, private auth: AuthService, private sharedService: SharedService, private usuarioService: UsuariosService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
     this.profileForm = this.fb.group({
       password: ['', Validators.required],
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       name: ['', Validators.required],
       role: ['', Validators.required],
       filial: ['', Validators.required],
-      gerente: ['', Validators.required],
+      gerente: ['']
     });
   }
 
@@ -59,11 +60,7 @@ export class UsuariosComponent implements OnInit {
   async carregarUsuarios() {
     const { data, error } = await this.supabase
       .from('profiles')
-<<<<<<< HEAD
       .select('id, name, email, role, filial:filial_id ( nome ), gerente:gerente_id ( name )')
-=======
-      .select('id, name, email, role, filial:filial_id ( id, nome, cidade ), gerente:gerente_id ( id, name )')
->>>>>>> 05a56228f89f7cbc4793218da81cb70fd6f31a9b
       .order('id', { ascending: false });
     if (error) console.error(error);
     else this.usuarios = data || [];
@@ -83,49 +80,47 @@ export class UsuariosComponent implements OnInit {
     else this.gerentes = data || [];
   }
 
-  async criarUsuario(): Promise<void> {
+  criarUsuario(): void {
+    if (this.profileForm.invalid) {
+      return;
+    }
     this.uploading = true;
 
     const { email, name, role, filial, gerente, password } = this.profileForm.value;
 
-    const { data: authUser, error: authError } = await this.supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    });
-
-    if (authError) {
-      console.error('Erro ao criar usuário no Auth:', authError.message);
-      this.uploading = false;
-      return;
-    }
-
     const novoUsuario = {
-      id: authUser.user.id,
       email,
       name,
       role,
       filial_id: filial,
       carteira: 0,
       gerente_id: gerente,
+      password
     };
-
-    const { error } = await this.supabase
-      .from('profiles')
-      .insert(novoUsuario);
-
-    if (error) {
-      console.error('Erro ao registrar novo usuario: ' + error.message);
-    } else {
-      console.log('Usuário criado com sucesso!');
+    this.usuarioService.criarUsuario(novoUsuario).subscribe({
+    next: (res) => {
+      console.log('Usuário criado com sucesso!', res);
       this.carregarUsuarios();
-    }
+      this.profileForm.reset();
+      this.uploading = false;
+    },
 
-    this.uploading = false;
+    error: (err) => {
+      console.error('Erro ao criar usuário:', err.error?.error || err.message);
+      this.uploading = false;
+    }
+  });
   }
 
-  async excluirUsuario(id: string) {
-    await this.supabase.from('profiles').delete().eq('id', id);
-    await this.ngOnInit();
+  excluirUsuario(id: string): void{
+    this.usuarioService.excluirUsuario(id).subscribe({
+      next: () => {
+        console.log('Usuário excluído com sucesso!');
+        this.carregarUsuarios();
+      },
+      error: (err) => {
+        console.error('Erro ao excluir usuário:', err);
+      }
+    });
   }
 }

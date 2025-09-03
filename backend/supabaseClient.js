@@ -1,14 +1,36 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = 'https://cbymtecijykciwtmpglp.supabase.co';
+const supabaseUrl = process.env.SUPABASE_URL
+const anonKey = process.env.SUPABASE_ANON_KEY
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieW10ZWNpanlrY2l3dG1wZ2xwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxMDQ4MTMsImV4cCI6MjA2ODY4MDgxM30.nLtn39vpwUcUmdPQnfqeNGWPku_C5EdpR1magZC9RQ4';
+console.log('✅ Configurando Supabase Client com URL:', supabaseUrl);
 
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieW10ZWNpanlrY2l3dG1wZ2xwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzEwNDgxMywiZXhwIjoyMDY4NjgwODEzfQ.AhR6C4DFbBqZbLbSQfjOAnEpAj3KmAicCPSF3y88HyY'; // ⚠️ substitua por sua service_role_key
+try {
+  const supabase = createClient(supabaseUrl, anonKey, {
+    auth: {
+      persistSession: false
+    }
+  });
 
-const supabase = createClient(supabaseUrl, anonKey);
+   const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      persistSession: false
+    }
+  });
+  console.log('✅ supabase object:', typeof supabase);
+  console.log('✅ supabase.from:', typeof supabase.from);
+  console.log('✅ supabase.auth:', typeof supabase.auth);
 
-const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+  supabase.from('profiles').select('count').then(response => {
+    console.log('✅ Teste de conexão bem-sucedido');
+  }).catch(error => {
+    console.error('❌ Erro no teste de conexão:', error);
+  });
 
-module.exports = { supabase, supabaseAdmin };
+  module.exports = { supabase, supabaseAdmin };
+} catch (error) {
+  console.error('❌ Erro ao criar cliente Supabase:', error);
+  module.exports = null;
+}
