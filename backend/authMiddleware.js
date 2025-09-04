@@ -5,7 +5,7 @@ const supabaseJwtSecret = process.env.SUPABASE_JWT_SECRET;
 
 async function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-  if (!authHeader?.startsWith('')) {
+  if (!authHeader?.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Token não fornecido' });
   }
 
@@ -13,25 +13,33 @@ async function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, supabaseJwtSecret);
-    
-    const { data: usuario, error} = await supabase
+    const userId = String(decoded.sub).trim();
+
+    const { data: usuario, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', decoded.sub)
+      .eq('id', userId)
       .single();
 
-console.log('🔍 ID buscado (trimmed):', `"${decoded.sub.trim()}"`);
-console.log('🔍 Tamanho do ID:', decoded.sub.trim().length);
-console.log('🔍 Resultado completo:', { usuario, error });
+    if (error) {
+      console.error('Erro na consulta do usuário:', error);
 
-    if ( error || !usuario) {
-      return res.status(403).json({ error: 'Usuário inválido' });
+      if (error.code === 'PGRST116') {
+        return res.status(403).json({ error: 'Usuário não encontrado no banco de dados' });
+      }
+
+      return res.status(500).json({ error: 'Erro interno do servidor' });
     }
+
+    if (!usuario) {
+      return res.status(403).json({ error: 'Usuário não encontrado' });
+    }
+
 
     req.user = usuario;
     next();
   } catch (err) {
-    console.error('❌ Erro na autenticação:', err);
+    console.error(' Erro na autenticação:', err);
     return res.status(403).json({ error: 'Erro na autenticação' });
   }
 }

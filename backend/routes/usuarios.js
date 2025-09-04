@@ -6,9 +6,12 @@ const { supabase, supabaseAdmin } = require('../supabaseClient');
 router.use(authenticateToken);
 
 router.get('/', async (req, res) => {
+  console.log('👤 Usuário autenticado recebido no GET /profiles:', req.user);
   const usuario = req.user;
 
-  let query = supabase.from('profiles').select('id, name, role, filial_id');
+  let query = supabase
+  .from('profiles')
+  .select('id, name, role');
 
   if (usuario.role === 'admin') {
   } else if (usuario.role === 'moderator') {
