@@ -8,23 +8,28 @@
     <input type="text" formControlName="email" placeholder="Email" required />
     <input type="text" formControlName="password" placeholder="Senha" required />
     <select formControlName="role" required>
-      <option value="admin">admin</option>
-      <option value="moderator">moderator</option>
-      <option value="user">user</option>
+      <option value="" disabled selected>Selecione o Cargo</option>
+      <option value="admin">Admin</option>
+      <option value="moderator">Gerente</option>
+      <option value="user">Colaborador</option>
     </select>
 
     <select formControlName="gerente" placeholder="Selecione o Gerente" required>
+       <option value="" disabled selected>Selecione o Gerente</option>
       <option *ngFor="let g of gerentes" [value]="g.id">
         {{ g.name }}
       </option>
     </select>
 
     <select formControlName="filial" required>
+      <option value="" disabled selected>Selecione a Filial</option>
       <option *ngFor="let filial of filiais" [value]="filial.id">
         {{ filial.nome}}
       </option>
     </select>
-    <button type="submit" [disabled]="uploading">Criar Usuário</button>
+    <button *ngIf="!usuarioEditando" [disabled]="uploading">Criar Usuário</button>
+    <button *ngIf="usuarioEditando" (click)="salvarEdicao()">Salvar Alterações</button>
+    <button (click)="cancelarEdicao()" type="button">Cancelar</button>
   </form>
 
   <table>
@@ -45,7 +50,10 @@
         <td>{{ user.role }}</td>
         <td>{{ user.filial?.nome }}</td>
         <td>{{ user.gerente?.name }}</td>
-        <td><button (click)="excluirUsuario(user.id)">Excluir</button></td>
+        <td>
+          <button (click)="editarUsuario(user)">Editar</button>
+          <button (click)="excluirUsuario(user.id)">Excluir</button>
+        </td>
       </tr>
     </tbody>
   </table>

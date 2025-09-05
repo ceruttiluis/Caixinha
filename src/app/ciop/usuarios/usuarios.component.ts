@@ -10,12 +10,6 @@ import { SharedModule } from '../../shared/shared.module';
 import { SharedService } from '../../shared/shared.service';
 import { UsuariosService, Usuario } from '../../services/usuarios.service';
 
-interface User {
-  id?: number;
-  gerente: string;
-  filial: string;
-}
-
 interface Filial {
   id?: number;
   nome: string;
@@ -34,9 +28,9 @@ export class UsuariosComponent implements OnInit {
   supabase: SupabaseClient;
   uploading = false;
   usuarios: any[] = [];
-  profiles: User[] = [];
   filiais: Filial[] = [];
   gerentes: any[] = [];
+  usuarioEditando: Usuario | null = null;
 
   constructor(private fb: FormBuilder, private auth: AuthService, private sharedService: SharedService, private usuarioService: UsuariosService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
@@ -47,7 +41,7 @@ export class UsuariosComponent implements OnInit {
       name: ['', Validators.required],
       role: ['', Validators.required],
       filial: ['', Validators.required],
-      gerente: ['']
+      gerente: ['', Validators.required],
     });
   }
 
@@ -98,21 +92,60 @@ export class UsuariosComponent implements OnInit {
       password
     };
     this.usuarioService.criarUsuario(novoUsuario).subscribe({
-    next: (res) => {
-      console.log('Usuário criado com sucesso!', res);
-      this.carregarUsuarios();
-      this.profileForm.reset();
-      this.uploading = false;
-    },
+      next: (res) => {
+        console.log('Usuário criado com sucesso!', res);
+        console.log( 'usuario:', novoUsuario)
+        this.carregarUsuarios();
+        this.profileForm.reset();
+        this.uploading = false;
+      },
 
-    error: (err) => {
-      console.error('Erro ao criar usuário:', err.error?.error || err.message);
-      this.uploading = false;
-    }
-  });
+      error: (err) => {
+        console.error('Erro ao criar usuário:', err.error?.error || err.message);
+        this.uploading = false;
+      }
+    });
   }
 
-  excluirUsuario(id: string): void{
+  async editarUsuario(usuario: Usuario) {
+    this.usuarioEditando = usuario;
+    this.profileForm.patchValue({
+      name: usuario.name,
+      role: usuario.role,
+      filial: usuario.filial_id,
+      gerente: usuario.gerente_id
+    });
+  }
+  async salvarEdicao() {
+    if (!this.usuarioEditando) return;
+    if (this.profileForm.invalid) return;
+
+    const { name, role, filial, gerente } = this.profileForm.value;
+
+    const usuarioAtualizado = {
+      name,
+      role,
+      filial_id: filial,
+      gerente_id: gerente
+    };
+
+    try {
+      await this.usuarioService.atualizarUsuario(this.usuarioEditando.id!, usuarioAtualizado);
+      console.log('Usuário atualizado com sucesso!');
+      console.log('Usuario atualizado:', usuarioAtualizado)
+      this.usuarioEditando = null;
+      this.profileForm.reset();
+      this.carregarUsuarios();
+    } catch (err: any) {
+      console.error('Erro ao atualizar usuário:', err.message);
+    }
+  }
+  cancelarEdicao() {
+    this.usuarioEditando = null;
+    this.profileForm.reset();
+  }
+
+  excluirUsuario(id: string): void {
     this.usuarioService.excluirUsuario(id).subscribe({
       next: () => {
         console.log('Usuário excluído com sucesso!');

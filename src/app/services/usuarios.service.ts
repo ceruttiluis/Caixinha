@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { SupabaseClient, createClient } from '@supabase/supabase-js';
 
 export interface Usuario {
   id?: string;
@@ -17,8 +19,11 @@ export interface Usuario {
 })
 export class UsuariosService {
   private apiUrl = 'http://localhost:3000/api/profiles';
+  supabase: SupabaseClient;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -45,5 +50,14 @@ export class UsuariosService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`,{
       headers: this.getAuthHeaders()
     });
+  }
+  async atualizarUsuario(id: string, dados: Partial<Usuario>) {
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .update(dados)
+      .eq('id', id);
+
+    if (error) throw error;
+    return data;
   }
 }

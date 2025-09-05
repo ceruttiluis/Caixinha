@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
     role,
     filial_id,
     carteira: 0,
-    gerente_id: role === 'admin' ? gerente_id : null
+    gerente_id: role === 'moderator' ? gerente_id : null
   }]);
 
   if (insertError) return res.status(500).json({ error: insertError.message });
