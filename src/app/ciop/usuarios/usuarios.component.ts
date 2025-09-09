@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
 import { SharedService } from '../../shared/shared.service';
 import { UsuariosService, Usuario } from '../../services/usuarios.service';
+import { HttpClientModule } from '@angular/common/http';
 
 interface Filial {
   id?: number;
@@ -20,7 +21,15 @@ interface Filial {
   selector: 'app-usuarios',
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, SidebarCiopComponent, ReactiveFormsModule, SharedModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule, 
+    SidebarCiopComponent, 
+    ReactiveFormsModule, 
+    SharedModule,
+  HttpClientModule
+],
   standalone: true
 })
 export class UsuariosComponent implements OnInit {
@@ -94,7 +103,7 @@ export class UsuariosComponent implements OnInit {
     this.usuarioService.criarUsuario(novoUsuario).subscribe({
       next: (res) => {
         console.log('Usuário criado com sucesso!', res);
-        console.log( 'usuario:', novoUsuario)
+        console.log('usuario:', novoUsuario)
         this.carregarUsuarios();
         this.profileForm.reset();
         this.uploading = false;
@@ -109,36 +118,39 @@ export class UsuariosComponent implements OnInit {
 
   async editarUsuario(usuario: Usuario) {
     this.usuarioEditando = usuario;
+     this.profileForm.get('email')?.clearValidators();
+  this.profileForm.get('password')?.clearValidators();
+  this.profileForm.get('email')?.updateValueAndValidity();
+  this.profileForm.get('password')?.updateValueAndValidity();
+
     this.profileForm.patchValue({
       name: usuario.name,
       role: usuario.role,
       filial: usuario.filial_id,
       gerente: usuario.gerente_id
     });
+    console.log("editando", this.usuarioEditando)
   }
-  async salvarEdicao() {
+  salvarEdicao() {
     if (!this.usuarioEditando) return;
     if (this.profileForm.invalid) return;
-
+    console.log("editando", this.usuarioEditando)
     const { name, role, filial, gerente } = this.profileForm.value;
-
     const usuarioAtualizado = {
       name,
       role,
       filial_id: filial,
       gerente_id: gerente
     };
-
-    try {
-      await this.usuarioService.atualizarUsuario(this.usuarioEditando.id!, usuarioAtualizado);
-      console.log('Usuário atualizado com sucesso!');
-      console.log('Usuario atualizado:', usuarioAtualizado)
-      this.usuarioEditando = null;
-      this.profileForm.reset();
-      this.carregarUsuarios();
-    } catch (err: any) {
-      console.error('Erro ao atualizar usuário:', err.message);
-    }
+    this.usuarioService.atualizarUsuario(this.usuarioEditando.id!, usuarioAtualizado)
+      .subscribe({
+        next: () => {
+          this.usuarioEditando = null;
+          this.profileForm.reset();
+          this.carregarUsuarios();
+        },
+        error: (err) => console.error('Erro ao atualizar usuário:', err)
+      });
   }
   cancelarEdicao() {
     this.usuarioEditando = null;
@@ -156,4 +168,7 @@ export class UsuariosComponent implements OnInit {
       }
     });
   }
+  testeSubmit() {
+  console.log('Form submetido!', this.profileForm.value);
+}
 }

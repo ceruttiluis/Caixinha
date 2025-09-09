@@ -136,7 +136,7 @@
       </div>
     </div>
   </div>
-  <div class="grafico">
+  <div *ngIf="isBrowser" class="grafico">
     <div class="charts-container">
       <div class="chart-card">
         <canvas baseChart [data]="barChartGastos" [type]="'bar'" [options]="barChartOptions">

@@ -35,7 +35,6 @@ async function authenticateToken(req, res, next) {
       return res.status(403).json({ error: 'Usuário não encontrado' });
     }
 
-
     req.user = usuario;
     next();
   } catch (err) {

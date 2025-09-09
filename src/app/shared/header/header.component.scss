@@ -1,18 +1,17 @@
 .Principal {
-  background: linear-gradient(135deg, #2d7d32 6%, #a8aca9 82.5%, #4caf50 120%);
+  background: linear-gradient(135deg, #2d7d32 11%, #a8aca9 82.5%, #4caf50 120%);
   margin-left: 90px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
   padding: 0 30px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  height: 190px;
+  height: 170px;
   top: 0;
   left: 0;
   bottom: 0;
-  height: 70px;
   z-index: 1000;
-  gap: 8rem;
   font-family: 'Segoe UI', sans-serif;
 
   h1 {
@@ -27,34 +26,69 @@
     height: 60px;
   }
 
-  .Policy {
+  .carteira {
     display: flex;
-    flex-direction: column;
+    justify-content: left;
     align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    line-height: 0.001rem;
-    margin-top: 6rem;
-    background-color: #e5fcf0;
-    border-radius: 20px;
+    flex-direction: row;
 
-    p {
+    .Valor {
+      position: relative;
+      display: inline-block;
+
+      .wallet {
+        display: flex;
+        width: 180px;
+        height: 150px;
+        margin-top: 0.3rem;
+      }
+
+      .indicador {
+        position: absolute;
+            top: 83%;
+            left: 35%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #ffffff;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            padding: 8px 16px;
+            border-radius: 10px;
+            min-width: 120px;
+            text-align: center;
+            height: 100px;
+      }
+    }
+
+    .Policy {
       display: flex;
-      justify-content: space-between;
-      width: 210px;
-      gap: 0;
-      font-size: 1.0rem;
-    }
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      line-height: 0.001rem;
+      margin-top: 0.3rem;
+      background-color: #e5fcf0;
+      border-radius: 20px;
 
-    span {
-      margin-left: 10px;
-      font-weight: 500;
-    }
+      p {
+        display: flex;
+        justify-content: space-between;
+        width: 210px;
+        gap: 0;
+        font-size: 1.0rem;
+      }
 
-    strong {
-      color: #130458;
-      font-weight: bold;
-      margin-right: 10px;
+      span {
+        margin-left: 10px;
+        font-weight: 500;
+      }
+
+      strong {
+        color: #130458;
+        font-weight: bold;
+        margin-right: 10px;
+      }
     }
   }
 }

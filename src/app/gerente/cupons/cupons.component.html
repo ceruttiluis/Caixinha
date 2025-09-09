@@ -9,6 +9,7 @@
     <div class="filters">
       <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
         placeholder="Colaborador..." list="listaColaboradores">
+        <option value="" disabled selected>Selecione o Colaborador</option>
         <option [ngValue]="null">Todos</option>
         <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
       </select>

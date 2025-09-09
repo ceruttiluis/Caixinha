@@ -8,18 +8,21 @@
       <h2>Periodo</h2>
     </div>
     <div class="filters">
-      <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" placeholder="Filial..."
+      <select type="text" [(ngModel)]="filialSelecionada" (ngModelChange)="onFilialChange()" 
         list="listaFiliais">
+        <option value="" disabled selected>Selecione a Filial</option>
         <option [ngValue]="null">Todos</option>
         <option *ngFor="let filial of filiais" [value]="filial.id">{{ filial.nome }}</option>
       </select>
       <select type="text" [(ngModel)]="colaboradorSelecionado" (ngModelChange)="onColaboradorChange()"
-        placeholder="Colaborador..." list="listaColaboradores">
+         list="listaColaboradores">
+        <option value="" disabled selected>Selecione o Colaborador</option>
         <option [ngValue]="null">Todos</option>
         <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
       </select>
        <label>
         <select [(ngModel)]="periodoSelecionado" (ngModelchange)="aplicarFiltros()">
+          <option value="" disabled selected>Selecione o Periodo</option>
           <option value="todos">Todos</option>
           <option value="mensal">Mensal</option>
           <option value="trimestral">Trimestral</option>

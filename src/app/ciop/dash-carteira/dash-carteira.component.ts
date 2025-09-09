@@ -1,4 +1,5 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
@@ -10,20 +11,6 @@ import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
 import { SharedService } from '../../shared/shared.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-
-interface Adicao {
-  data: string;
-  usuario: string;
-  valor: number;
-  observacao: string;
-}
-
-interface User {
-  data: string;
-  usuario: string;
-  descricao: string;
-  valor: number;
-}
 
 @Component({
   selector: 'app-dash-carteira',
@@ -63,9 +50,15 @@ export class DashCarteiraComponent implements OnInit {
   totalGasto = 0;
   saldoAtual = 0;
   extra = 0;
+  isBrowser: boolean;
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private sharedService: SharedService,
+    @Inject(PLATFORM_ID) private platformId: Object) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+    this.isBrowser = isPlatformBrowser(platformId);
   }
 
   async ngOnInit() {

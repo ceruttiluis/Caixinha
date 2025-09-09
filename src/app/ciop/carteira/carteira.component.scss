@@ -5,8 +5,9 @@
   min-height: 98vh;
 
   .content {
+    margin-left: 50px;
+    margin-top: 0;
     flex-grow: 1;
-    padding: 3rem;
     animation: fadeIn 0.6s ease-in;
   }
 

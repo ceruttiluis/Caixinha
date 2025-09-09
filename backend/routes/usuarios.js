@@ -6,12 +6,11 @@ const { supabase, supabaseAdmin } = require('../supabaseClient');
 router.use(authenticateToken);
 
 router.get('/', async (req, res) => {
-  console.log('👤 Usuário autenticado recebido no GET /profiles:', req.user);
   const usuario = req.user;
 
   let query = supabase
-  .from('profiles')
-  .select('id, name, role');
+    .from('profiles')
+    .select('id, name, role');
 
   if (usuario.role === 'admin') {
   } else if (usuario.role === 'moderator') {
@@ -24,6 +23,34 @@ router.get('/', async (req, res) => {
   if (error) return res.status(500).json({ error: error.message });
 
   res.json(data);
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+  const { id } = req.params;
+  const { name, role, filial_id, gerente_id } = req.body;
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({
+      name,
+      role,
+      filial_id,
+      gerente_id
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+   if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
 });
 
 router.post('/', async (req, res) => {
@@ -53,7 +80,10 @@ router.post('/', async (req, res) => {
     gerente_id: role === 'moderator' ? gerente_id : null
   }]);
 
-  if (insertError) return res.status(500).json({ error: insertError.message });
+ if (insertError) {
+      await supabaseAdmin.auth.admin.deleteUser(novoUserId);
+      return res.status(500).json({ error: insertError.message });
+    }
 
   res.status(201).json({ id: novoUserId });
 });

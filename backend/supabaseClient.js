@@ -19,11 +19,11 @@ try {
 
   supabase.from('profiles').select('count').then(response => {
   }).catch(error => {
-    console.error('❌ Erro no teste de conexão:', error);
+    console.error(' Erro no teste de conexão:', error);
   });
 
   module.exports = { supabase, supabaseAdmin };
 } catch (error) {
-  console.error('❌ Erro ao criar cliente Supabase:', error);
+  console.error(' Erro ao criar cliente Supabase:', error);
   module.exports = null;
 }

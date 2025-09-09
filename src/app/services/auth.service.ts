@@ -3,15 +3,6 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../environments/environment';
 
-interface UserProfile {
-  id: string;
-  email: string;
-  role: string;
-  filial_id?: string; 
-  name?: string;
-  created_at?: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private supabase: SupabaseClient;

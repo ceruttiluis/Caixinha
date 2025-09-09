@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
 
 export interface Usuario {
   id?: string;
@@ -19,10 +17,8 @@ export interface Usuario {
 })
 export class UsuariosService {
   private apiUrl = 'http://localhost:3000/api/profiles';
-  supabase: SupabaseClient;
 
   constructor(private http: HttpClient) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
   }
 
   private getAuthHeaders(): HttpHeaders {
@@ -51,13 +47,9 @@ export class UsuariosService {
       headers: this.getAuthHeaders()
     });
   }
-  async atualizarUsuario(id: string, dados: Partial<Usuario>) {
-    const { data, error } = await this.supabase
-      .from('profiles')
-      .update(dados)
-      .eq('id', id);
-
-    if (error) throw error;
-    return data;
+  atualizarUsuario(id: string, dados: Partial<Usuario>): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.apiUrl}/${id}`, dados, {
+    headers: this.getAuthHeaders()
+  });
   }
 }
