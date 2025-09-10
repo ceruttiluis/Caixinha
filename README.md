@@ -7,7 +7,7 @@ quando tem solicitação de recarga extra, vai primeiro para o gerente aprovar, 
 
 Quando terminar isso tudo, pensar em melhorar a tela de cupons, para que fique menor como se fosse um kanban, assim os cupons viriam de forma pequena e ao clicar em cima, abriria o cupon inteiro.
 
-indicador de quanto de saldo o colaborador tem para gastar, para ele saber.
+Fazer o Gasto OUTROS, sem valor fixo. Indicador entra no realizado, no orçamento previsto, Descontado ou Aprovado, mas no prejuizo não. (tem que mexer no banco tambem, na tabela, que ela não aceita outros)
 
 # Caixinha
 

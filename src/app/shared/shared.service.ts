@@ -94,6 +94,7 @@ export class SharedService {
       case 'Janta': return 35;
       case 'Café da Manhã': return 15;
       case 'Hospedagem': return 130;
+      case 'Outros' : return 0;
       default: return 0;
     }
   }
@@ -159,15 +160,15 @@ export class SharedService {
     FileSaver.saveAs(data, nomeArquivo);
   }
   calcularPeriodo(
-    periodoSelecionado: string = 'todos',
+    periodoSelecionado: string | null | undefined = undefined,
     dataInicio?: Date | undefined,
     dataFim?: Date | undefined,
     mesSelecionado = null,
     trimestreSelecionado = null,
     semestreSelecionado = null,
   ): { startDate?: Date; endDate?: Date } {
-    let startDate: Date | null = null;
-    let endDate: Date | null = null;
+    let startDate: Date | null | undefined= undefined;
+    let endDate: Date | null | undefined= undefined;
 
     const ano = new Date().getFullYear();
 
@@ -281,7 +282,7 @@ export class SharedService {
     return { startDate: startDate || undefined, endDate: endDate || undefined };
   }
 
-  async carregarCuponsGerente(filialSelecionada?: string | null, colaboradorSelecionado?: string): Promise<any[]> {
+  async carregarCuponsGerente(filialSelecionada?: string | null, colaboradorId?: string | null, startDate?: Date | null, endDate?: Date | null): Promise<any[]> {
     const filtro = filialSelecionada;
     let query = this.supabase
       .from('cupons')
@@ -300,8 +301,14 @@ export class SharedService {
     if (filtro) {
       query = query.eq('filial_id', filtro);
     }
-    if (colaboradorSelecionado) {
-      query = query.eq('usuario_id', colaboradorSelecionado);
+    if (colaboradorId) {
+      query = query.eq('usuario_id', colaboradorId);
+    }
+    if (startDate) {
+      query = query.gte('data_nota', new Date(startDate).toISOString().split('T')[0]);
+    }
+    if (endDate) {
+      query = query.lte('data_nota', new Date(endDate).toISOString().split('T')[0]);
     }
 
     const { data, error } = await query;
@@ -355,7 +362,7 @@ export class SharedService {
       };
     });
   }
-  async carregarCuponsCiop(filialSelecionada?: string | null, colaboradorSelecionado?: string, startDate?: Date, endDate?: Date): Promise<any[]> {
+  async carregarCuponsCiop(filialId?: string | null, colaboradorId?:  string | null, startDate?: Date, endDate?: Date): Promise<any[]> {
 
     let query = this.supabase
       .from('cupons')
@@ -372,11 +379,11 @@ export class SharedService {
         filiais (nome)
         `);
 
-    if (filialSelecionada) {
-      query = query.eq('filial_id', filialSelecionada);
+    if (filialId) {
+      query = query.eq('filial_id', filialId);
     }
-    if (colaboradorSelecionado) {
-      query = query.eq('usuario_id', colaboradorSelecionado);
+    if (colaboradorId) {
+      query = query.eq('usuario_id', colaboradorId);
     }
     if (startDate) {
       query = query.gte('data_nota', new Date(startDate).toISOString().split('T')[0]);
@@ -438,7 +445,7 @@ export class SharedService {
     });
   }
 
-  async carregarCuponsColaborador(filialId?: string, colaboradorId?: string): Promise<any[]> {
+  async carregarCuponsColaborador(filialId?: string,  startDate?: Date, endDate?: Date): Promise<any[]> {
     const filtro = filialId;
     let query = this.supabase
       .from('cupons')
@@ -457,6 +464,12 @@ export class SharedService {
 
     if (filtro) {
       query = query.eq('filial_id', filtro);
+    }
+    if (startDate) {
+      query = query.gte('data_nota', new Date(startDate).toISOString().split('T')[0]);
+    }
+    if (endDate) {
+      query = query.lte('data_nota', new Date(endDate).toISOString().split('T')[0]);
     }
 
     const { data, error } = await query;

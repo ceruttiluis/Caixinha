@@ -42,11 +42,10 @@ interface Cupom {
 })
 export class CuponsCiopComponent {
   supabase: SupabaseClient;
-  filialId: string | null = null;
-  filialSelecionada: string = '';
+  filialId: string | null | undefined = undefined;
   filiais: any[] = [];
   profiles: any[] = [];
-  colaboradorSelecionado?: string;
+    colaboradorId: string | null | undefined = undefined;
   tooltipOpenId: string | null = null;
   periodoSelecionado: string = '';
   dataInicio?: Date;
@@ -72,7 +71,7 @@ export class CuponsCiopComponent {
   }
 
   onFilialChange() {
-    console.log('Filial selecionada:', this.filialSelecionada);
+    console.log('Filial selecionada:', this.filialId);
     this.carregarUsuarios();
     this.carregarDados();
   }
@@ -81,12 +80,12 @@ export class CuponsCiopComponent {
   }
 
   onColaboradorChange() {
-    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    console.log('Usuário selecionado:', this.colaboradorId);
     this.carregarDados();
   }
   async carregarUsuarios() {
     this.profiles = await this.sharedService.carregarProfiles(
-      this.filialSelecionada || this.filialId
+      this.filialId
     );
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
@@ -120,8 +119,8 @@ export class CuponsCiopComponent {
         endDate = dataFim;
       }
       this.cupons = await this.sharedService.carregarCuponsCiop(
-        this.filialSelecionada,
-        this.colaboradorSelecionado,
+        this.filialId,
+        this.colaboradorId,
         startDate,
         endDate
       );

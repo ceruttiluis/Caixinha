@@ -26,13 +26,12 @@ import { SharedService } from '../../shared/shared.service';
 export class DashboardCiopComponent implements OnInit {
   supabase: SupabaseClient;
   cupons: any[] = [];
-  filialId: string | null = null;
+  filialId: string | null | undefined = undefined;
   profiles: any[] = [];
   filiais: any[] = [];
   rankingGastos: any[] = [];
   rankingExtrapolo: any[] = [];
-  filialSelecionada: string = '';
-  colaboradorSelecionado?: string;
+  colaboradorId: string | null | undefined = undefined;
   periodoSelecionado: string = '';
   dataInicio?: Date;
   dataFim?: Date;
@@ -62,7 +61,7 @@ export class DashboardCiopComponent implements OnInit {
   }
 
   onFilialChange() {
-    console.log('Filial selecionada:', this.filialSelecionada);
+    console.log('Filial selecionada:', this.filialId);
     this.carregarUsuarios();
     this.carregarDados();
   }
@@ -71,12 +70,12 @@ export class DashboardCiopComponent implements OnInit {
   }
 
   onColaboradorChange() {
-    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    console.log('Usuário selecionado:', this.colaboradorId);
     this.carregarDados();
   }
   async carregarUsuarios() {
     this.profiles = await this.sharedService.carregarProfiles(
-      this.filialSelecionada || this.filialId
+     this.filialId
     );
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
@@ -84,6 +83,7 @@ export class DashboardCiopComponent implements OnInit {
       filialId,
       colaboradorId
     );
+    console.log("Filial: ", filialId)
   }
 
   async carregarDados(
@@ -110,8 +110,8 @@ export class DashboardCiopComponent implements OnInit {
         endDate = dataFim;
       }
       this.cupons = await this.sharedService.carregarCuponsCiop(
-        this.filialSelecionada,
-        this.colaboradorSelecionado,
+        this.filialId,
+        this.colaboradorId,
         startDate,
         endDate
       );

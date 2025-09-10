@@ -34,9 +34,8 @@ export class DashCarteiraComponent implements OnInit {
   carteira: any[] = [];
   filiais: any[] = [];
   profiles: any[] = [];
-  filialId: string | null = null;
-  filialSelecionada: string = '';
-  colaboradorSelecionado?: string;
+  filialId: string | null | undefined = undefined;
+  colaboradorId: string | null | undefined = undefined;
   periodoSelecionado: string = '';
   dataInicio?: Date;
   dataFim?: Date;
@@ -73,7 +72,7 @@ export class DashCarteiraComponent implements OnInit {
     await this.carregarCarteira();
   }
   onFilialChange() {
-    console.log('Filial selecionada:', this.filialSelecionada);
+    console.log('Filial selecionada:', this.filialId);
     this.carregarUsuarios();
     this.carregarTodosOsDados()
   }
@@ -82,12 +81,12 @@ export class DashCarteiraComponent implements OnInit {
   }
 
   onColaboradorChange() {
-    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    console.log('Usuário selecionado:', this.colaboradorId);
     this.carregarTodosOsDados()
   }
   async carregarUsuarios() {
     this.profiles = await this.sharedService.carregarProfiles(
-      this.filialSelecionada || this.filialId
+      this.filialId
     );
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
@@ -113,7 +112,7 @@ export class DashCarteiraComponent implements OnInit {
   }
 
   async carregarDados(
-    periodoSelecionado?: string | undefined,
+    periodoSelecionado?: string,
     dataInicio?: Date,
     dataFim?: Date
   ) {
@@ -121,8 +120,8 @@ export class DashCarteiraComponent implements OnInit {
       let startDate = dataInicio ?? this.startDate;
       let endDate = dataFim ?? this.endDate;
       this.cupons = await this.sharedService.carregarCuponsCiop(
-        this.filialSelecionada,
-        this.colaboradorSelecionado,
+        this.filialId,
+        this.colaboradorId,
         startDate,
         endDate
       );
@@ -137,11 +136,11 @@ export class DashCarteiraComponent implements OnInit {
       .from('carteira')
       .select('profile_id, criado_em, observacoes, tipo_recarga,  valor_add, profiles (name)');
 
-    if (this.filialSelecionada) {
-      query = query.eq('filial_id', this.filialSelecionada);
+    if (this.filialId) {
+      query = query.eq('filial_id', this.filialId);
     }
-    if (this.colaboradorSelecionado) {
-      query = query.eq('profile_id', this.colaboradorSelecionado);
+    if (this.colaboradorId) {
+      query = query.eq('profile_id', this.colaboradorId);
     }
     if (this.startDate) {
       query = query.gte('criado_em', new Date(this.startDate).toISOString().split('T')[0]);
@@ -176,11 +175,11 @@ export class DashCarteiraComponent implements OnInit {
       .from('profiles')
       .select('*');
 
-    if (this.filialSelecionada) {
-      query = query.eq('filial_id', this.filialSelecionada);
+    if (this.filialId) {
+      query = query.eq('filial_id', this.filialId);
     }
-    if (this.colaboradorSelecionado) {
-      query = query.eq('id', this.colaboradorSelecionado);
+    if (this.colaboradorId) {
+      query = query.eq('id', this.colaboradorId);
     }
 
     const { data, error } = await query;

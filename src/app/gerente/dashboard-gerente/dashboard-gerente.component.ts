@@ -27,18 +27,23 @@ export class DashboardGerenteComponent implements OnInit {
   supabase: SupabaseClient;
   cupons: any[] = [];
   filialId: string | null = null;
-  filialSelecionada?: string;
   filiais: any[] = [];
   profiles: any[] = [];
   usuario: any[] = [];
   rankingGastos: any[] = [];
   rankingExtrapolo: any[] = [];
-  colaboradorSelecionado?: string;
+  colaboradorId: string | null | undefined = undefined;
   totalGasto = 0;
   totalOrcamento = 0;
   totalDeficit = 0;
   totalDescontado = 0;
   totalExcedenteAprovado = 0;
+  periodoSelecionado: string | null | undefined = undefined;
+  dataInicio?: Date;
+  dataFim?: Date;
+  trimestreSelecionado: null | undefined;
+  semestreSelecionado: null | undefined;
+  mesSelecionado: null | undefined;
 
   constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
@@ -57,24 +62,47 @@ export class DashboardGerenteComponent implements OnInit {
   }
 
   onColaboradorChange() {
-    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    console.log('Usuário selecionado:', this.colaboradorId);
     this.carregarDados();
   }
   async carregarUsuarios() {
     this.profiles = await this.sharedService.carregarProfiles(
-      this.filialSelecionada || this.filialId
+      this.filialId
     );
   }
-  async carregarDados() {
+  async carregarDados(
+    periodoSelecionado?: string | null,
+    dataInicio?: Date,
+    dataFim?: Date
+  ) {
     try {
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+      if (periodoSelecionado) {
+        const periodo = this.sharedService.calcularPeriodo(
+          periodoSelecionado,
+          dataInicio,
+          dataFim,
+          this.mesSelecionado,
+          this.trimestreSelecionado,
+          this.semestreSelecionado
+        );
+        startDate = periodo.startDate || undefined;
+        endDate = periodo.endDate || undefined;
+      } else if (dataInicio && dataFim) {
+        startDate = dataInicio;
+        endDate = dataFim;
+      }
       this.cupons = await this.sharedService.carregarCuponsGerente(
-        this.filialSelecionada || this.filialId,
-        this.colaboradorSelecionado
+        this.filialId,
+        this.colaboradorId,
+        startDate,
+        endDate
       );
+      this.processarIndicadoresGerente();
     } catch (error) {
-      console.error('Erro ao carregar cupons do gerente:', error);
+      console.error('Erro ao carregar cupons:', error);
     }
-    this.processarIndicadoresGerente();
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
     this.cupons = await this.sharedService.carregarCuponsGerente(
@@ -104,5 +132,17 @@ export class DashboardGerenteComponent implements OnInit {
       .eq('id', id);
 
     await this.carregarDados();
+  }
+  async aplicarFiltros() {
+    const { startDate, endDate } = this.sharedService.calcularPeriodo(
+      this.periodoSelecionado,
+      this.dataInicio,
+      this.dataFim,
+      this.mesSelecionado,
+      this.trimestreSelecionado,
+      this.semestreSelecionado,
+    );
+    this.carregarDados(this.periodoSelecionado, startDate, endDate);
+    this.processarIndicadoresGerente();
   }
 }

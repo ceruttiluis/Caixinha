@@ -45,6 +45,12 @@ export class CuponsColaboradorComponent {
   filialId: string | null = null;
   filialSelecionada: string = '';
   tooltipOpenId: string | null = null;
+  periodoSelecionado: string = '';
+  dataInicio?: Date;
+  dataFim?: Date;
+  trimestreSelecionado: null | undefined;
+  semestreSelecionado: null | undefined;
+  mesSelecionado: null | undefined;
 
   cuponsPendentes: Cupom[] = [];
   cuponsAprovados: Cupom[] = [];
@@ -60,15 +66,38 @@ export class CuponsColaboradorComponent {
     await this.carregarDados();
   }
 
-  async carregarDados() {
+ async carregarDados(
+    periodoSelecionado?: string,
+    dataInicio?: Date,
+    dataFim?: Date
+  ) {
     try {
-      this.cupons = await this.sharedService.carregarCuponsColaborador();
-
-      console.log('Cupons carregados:', this.cupons);
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+      if (periodoSelecionado) {
+        const periodo = this.sharedService.calcularPeriodo(
+          periodoSelecionado,
+          dataInicio,
+          dataFim,
+          this.mesSelecionado,
+          this.trimestreSelecionado,
+          this.semestreSelecionado,
+        );
+        startDate = periodo.startDate || undefined;
+        endDate = periodo.endDate || undefined;
+      } else if (dataInicio && dataFim) {
+        startDate = dataInicio;
+        endDate = dataFim;
+      }
+      this.cupons = await this.sharedService.carregarCuponsColaborador(
+        this.filialSelecionada,
+        startDate,
+        endDate
+      );
+      this.separarListas();
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }
-    this.separarListas();
   }
 
   separarListas() {
@@ -76,31 +105,17 @@ export class CuponsColaboradorComponent {
     this.cuponsAprovados = this.cupons.filter(c => c.status === 'APROVADO');
     this.cuponsReprovados = this.cupons.filter(c => c.status === 'DESCONTADO');
   }
-
-
-  private getPublicImageUrl(path?: string): string {
-    if (!path) return '';
-
-    let filePath = path.trim();
-
-    if (filePath.startsWith('http')) {
-      const match = filePath.match(/cupons\/(.+)$/);
-      if (match) {
-        filePath = match[1];
-      }
-    }
-
-    const { data: pu } = this.supabase.storage
-      .from('cupons')
-      .getPublicUrl(filePath);
-
-    let publicUrl = pu?.publicUrl || '';
-
-    if (publicUrl) {
-      publicUrl += (publicUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-    }
-
-    return publicUrl;
+  async aplicarFiltros() {
+   const { startDate, endDate } = this.sharedService.calcularPeriodo(
+      this.periodoSelecionado,
+      this.dataInicio,
+      this.dataFim,
+      this.mesSelecionado,
+      this.trimestreSelecionado,
+      this.semestreSelecionado,
+    );
+    this.carregarDados(this.periodoSelecionado, startDate, endDate);
+    this.separarListas();
   }
   isTooltipOpen(id: number | string): boolean {
     return this.tooltipOpenId === String(id);

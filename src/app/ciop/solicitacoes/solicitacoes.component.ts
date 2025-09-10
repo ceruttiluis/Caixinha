@@ -38,9 +38,8 @@ interface Solicitacoes {
 })
 export class SolicitacoesComponent {
   supabase: SupabaseClient;
-  filialId: string | null = null;
-  filialSelecionada: string = '';
-  colaboradorSelecionado?: string;
+  filialId: string | null | undefined = undefined;
+  colaboradorId: string | null | undefined = undefined;
   profiles: any[] = [];
   filiais: any[] = [];
   tooltipOpenId: string | null = null;
@@ -67,7 +66,7 @@ export class SolicitacoesComponent {
   }
 
   onFilialChange() {
-    console.log('Filial selecionada:', this.filialSelecionada);
+    console.log('Filial selecionada:', this.filialId);
     this.carregarUsuarios();
     this.carregarDados();
   }
@@ -76,12 +75,12 @@ export class SolicitacoesComponent {
   }
 
   onColaboradorChange() {
-    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    console.log('Usuário selecionado:', this.colaboradorId);
     this.carregarDados();
   }
   async carregarUsuarios() {
     this.profiles = await this.sharedService.carregarProfiles(
-      this.filialSelecionada || this.filialId
+      this.filialId
     );
   }
   async aplicarFiltros() {
@@ -103,11 +102,11 @@ export class SolicitacoesComponent {
       .from('solicitacao')
       .select('id, profile_id, tipo_recarga, status, valor, data_solicitacao, observacoes, profiles (name), filiais (nome)');
 
-    if (this.filialSelecionada) {
-      query = query.eq('filial_id', this.filialSelecionada);
+    if (this.filialId) {
+      query = query.eq('filial_id', this.filialId);
     }
-    if (this.colaboradorSelecionado) {
-      query = query.eq('profile_id', this.colaboradorSelecionado);
+    if (this.colaboradorId) {
+      query = query.eq('profile_id', this.colaboradorId);
     }
     if (startDate) {
       query = query.gte('data_solicitacao', new Date(startDate).toISOString().split('T')[0]);

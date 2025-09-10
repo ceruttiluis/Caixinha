@@ -46,7 +46,13 @@ export class CuponsComponent {
   filialSelecionada?: string;
   tooltipOpenId: string | null = null;
   profiles: any[] = [];
-  colaboradorSelecionado?: string;
+  colaboradorId: string | null | undefined = undefined;
+  periodoSelecionado: string | null | undefined = undefined;
+  dataInicio?: Date;
+  dataFim?: Date;
+  trimestreSelecionado: null | undefined;
+  semestreSelecionado: null | undefined;
+  mesSelecionado: null | undefined;
 
   cuponsPendentes: Cupom[] = [];
   cuponsAprovados: Cupom[] = [];
@@ -65,7 +71,7 @@ export class CuponsComponent {
   }
 
   onColaboradorChange() {
-    console.log('Usuário selecionado:', this.colaboradorSelecionado);
+    console.log('Usuário selecionado:', this.colaboradorId);
     this.carregarDados();
   }
   async carregarUsuarios() {
@@ -73,19 +79,42 @@ export class CuponsComponent {
       this.filialSelecionada || this.filialId
     );
   }
-  async carregarDados() {
+  async carregarDados(
+    periodoSelecionado?: string | null,
+    dataInicio?: Date,
+    dataFim?: Date
+  ) {
     try {
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+      if (periodoSelecionado) {
+        const periodo = this.sharedService.calcularPeriodo(
+          periodoSelecionado,
+          dataInicio,
+          dataFim,
+          this.mesSelecionado,
+          this.trimestreSelecionado,
+          this.semestreSelecionado,
+        );
+        startDate = periodo.startDate || undefined;
+        endDate = periodo.endDate || undefined;
+      } else if (dataInicio && dataFim) {
+        startDate = dataInicio;
+        endDate = dataFim;
+      }
       this.cupons = await this.sharedService.carregarCuponsGerente(
-        this.filialSelecionada || this.filialId,
-        this.colaboradorSelecionado
+        this.filialSelecionada,
+        this.colaboradorId,
+        startDate,
+        endDate
       );
+      this.separarListas();
     } catch (error) {
-      console.error('Erro ao carregar cupons do gerente:', error);
+      console.error('Erro ao carregar cupons:', error);
     }
-    this.separarListas();
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
-    this.cupons = await this.sharedService.carregarCuponsColaborador(
+    this.cupons = await this.sharedService.carregarCuponsGerente(
       filialId,
       colaboradorId
     );
@@ -196,5 +225,17 @@ export class CuponsComponent {
   }
   exportarParaExcel() {
     this.sharedService.exportarParaExcel(this.cupons)
+  }
+  async aplicarFiltros() {
+   const { startDate, endDate } = this.sharedService.calcularPeriodo(
+      this.periodoSelecionado,
+      this.dataInicio,
+      this.dataFim,
+      this.mesSelecionado,
+      this.trimestreSelecionado,
+      this.semestreSelecionado,
+    );
+    this.carregarDados(this.periodoSelecionado, startDate, endDate);
+    this.separarListas();
   }
 }

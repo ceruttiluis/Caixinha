@@ -46,6 +46,5 @@ export class HeaderComponent {
     }
 
     this.carteira =  data?.carteira || 0;
-    console.log("valor: ", this.carteira)
   }
 }
