@@ -1,13 +1,9 @@
 
 CRIAR BOTÃO PARA O GERENTE EXCLUIR O CUPOM 
 
-Caso o gerente, tenha que mudar a sua decisão, de aprovado para recusado, ou vice e versa, terá de ter um campo de observação para justificar a sua ação.
-
-quando tem solicitação de recarga extra, vai primeiro para o gerente aprovar, ele aprova e vem para a tela do ciop, fazer outra aprovação.
-
 Quando terminar isso tudo, pensar em melhorar a tela de cupons, para que fique menor como se fosse um kanban, assim os cupons viriam de forma pequena e ao clicar em cima, abriria o cupon inteiro.
 
-Fazer o Gasto OUTROS, sem valor fixo. Indicador entra no realizado, no orçamento previsto, Descontado ou Aprovado, mas no prejuizo não. (tem que mexer no banco tambem, na tabela, que ela não aceita outros)
+Colocar a tela de carteira, que faz a inserção manual de valores pro usuario, na tela do DP.
 
 # Caixinha
 

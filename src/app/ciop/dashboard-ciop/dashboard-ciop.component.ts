@@ -6,8 +6,10 @@ import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonModule, NgFor, } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
-import { SharedService } from '../../shared/shared.service';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { SharedService } from '../../services/shared.service';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard-ciop',
@@ -45,7 +47,12 @@ export class DashboardCiopComponent implements OnInit {
   totalDescontado = 0;
   totalExcedenteAprovado = 0;
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private sharedService: SharedService,
+    private ngZone: NgZone
+  ) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
   logout() {
@@ -58,6 +65,13 @@ export class DashboardCiopComponent implements OnInit {
     await this.carregarUsuarios();
     await this.carregarFiliais();
     this.carregarComFiltros();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarDados();
+        this.carregarUsuarios();
+        this.carregarFiliais();
+      });
   }
 
   onFilialChange() {
@@ -67,6 +81,9 @@ export class DashboardCiopComponent implements OnInit {
   }
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
+    this.ngZone.run(() => {
+      this.filiais = this.filiais;
+    });
   }
 
   onColaboradorChange() {
@@ -75,8 +92,12 @@ export class DashboardCiopComponent implements OnInit {
   }
   async carregarUsuarios() {
     this.profiles = await this.sharedService.carregarProfiles(
-     this.filialId
+      this.filialId
     );
+    this.ngZone.run(() => {
+      this.profiles = this.profiles;
+    });
+    
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
     this.cupons = await this.sharedService.carregarCuponsCiop(
@@ -115,7 +136,11 @@ export class DashboardCiopComponent implements OnInit {
         startDate,
         endDate
       );
+      this.ngZone.run(() => {
+      this.cupons = this.cupons;
       this.processarIndicadorCiop();
+    });
+
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }
@@ -144,7 +169,7 @@ export class DashboardCiopComponent implements OnInit {
     await this.carregarDados();
   }
   async aplicarFiltros() {
-   const { startDate, endDate } = this.sharedService.calcularPeriodo(
+    const { startDate, endDate } = this.sharedService.calcularPeriodo(
       this.periodoSelecionado,
       this.dataInicio,
       this.dataFim,

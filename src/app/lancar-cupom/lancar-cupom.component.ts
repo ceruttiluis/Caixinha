@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
-import { SharedModule } from '../../shared/shared.module';
+import { environment } from '../../environments/environment';
+import { SharedModule } from '../shared/shared.module';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +7,9 @@ import { AuthService } from '../../services/auth.service';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { environment } from '../../../environments/environment';
-import { SharedService } from '../../shared/shared.service';
+import { SharedService } from '../../services/shared.service';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -59,15 +61,25 @@ export class CuponsComponent {
   cuponsReprovados: Cupom[] = [];
   cupons: any[] = [];
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private sharedService: SharedService,
+    private ngZone: NgZone) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
-    this.carregarDados();
+    await this.carregarDados();
     await this.carregarUsuarios();
     this.carregarComFiltros();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarDados();
+        this.carregarUsuarios();
+      });
   }
 
   onColaboradorChange() {
@@ -78,6 +90,9 @@ export class CuponsComponent {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialSelecionada || this.filialId
     );
+    this.ngZone.run(() => {
+      this.profiles = this.profiles;
+    });
   }
   async carregarDados(
     periodoSelecionado?: string | null,
@@ -108,7 +123,10 @@ export class CuponsComponent {
         startDate,
         endDate
       );
+      this.ngZone.run(() => {
+      this.cupons = this.cupons;
       this.separarListas();
+    });
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }
@@ -167,6 +185,9 @@ export class CuponsComponent {
         console.error('Erro ao atualizar saldo: ' + updateError.message);
         return;
       }
+      this.ngZone.run(() => {
+      this.cupons = this.cupons;
+    });
     }
 
     console.log(`Cupom atualizado no banco:`, data);
@@ -208,6 +229,9 @@ export class CuponsComponent {
     if (novoStatus === 'APROVADO') this.cuponsAprovados.push(cupom);
     else if (novoStatus === 'DESCONTADO') this.cuponsReprovados.push(cupom);
     else this.cuponsPendentes.push(cupom);
+    this.ngZone.run(() => {
+      this.cupons = this.cupons;
+    });
   }
 
   isTooltipOpen(id: number | string): boolean {
@@ -227,7 +251,7 @@ export class CuponsComponent {
     this.sharedService.exportarParaExcel(this.cupons)
   }
   async aplicarFiltros() {
-   const { startDate, endDate } = this.sharedService.calcularPeriodo(
+    const { startDate, endDate } = this.sharedService.calcularPeriodo(
       this.periodoSelecionado,
       this.dataInicio,
       this.dataFim,

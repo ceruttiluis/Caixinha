@@ -5,15 +5,17 @@ import { NgFor, NgIf, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
-import { SharedService } from '../../shared/shared.service';
+import { SharedService } from '../../services/shared.service';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 interface Filial {
   id?: number;
   nome: string;
   cidade: string;
-   gerente?: {
+  gerente?: {
     name: string;
   } | null;
 }
@@ -35,20 +37,31 @@ interface Filial {
 })
 export class FiliaisComponent implements OnInit {
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private router: Router,
+    private sharedService: SharedService,
+    private ngZone: NgZone) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
   supabase: SupabaseClient;
   filiais: Filial[] = [];
-  novaFilial: Filial = { nome: '', cidade: ''};
+  novaFilial: Filial = { nome: '', cidade: '' };
   editando: Filial | null = null;
 
   async ngOnInit() {
     await this.carregarFiliais();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarFiliais();
+      });
   }
 
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
+    this.ngZone.run(() => {
+      this.filiais = this.filiais;
+    });
   }
   async salvarFilial() {
     if (this.editando) {
@@ -59,7 +72,7 @@ export class FiliaisComponent implements OnInit {
 
       if (!error) {
         this.editando = null;
-        this.novaFilial = { nome: '', cidade: ''};
+        this.novaFilial = { nome: '', cidade: '' };
         await this.carregarFiliais();
       }
     } else {
@@ -68,7 +81,7 @@ export class FiliaisComponent implements OnInit {
         .insert([this.novaFilial]);
 
       if (!error) {
-        this.novaFilial = { nome: '', cidade: ''};
+        this.novaFilial = { nome: '', cidade: '' };
         await this.carregarFiliais();
       }
     }

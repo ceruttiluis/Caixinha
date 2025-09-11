@@ -3,13 +3,15 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormGroup, Validators, ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
-import { SharedService } from '../../shared/shared.service';
+import { SharedService } from '../../services/shared.service';
 import { UsuariosService, Usuario } from '../../services/usuarios.service';
 import { HttpClientModule } from '@angular/common/http';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 interface Filial {
   id?: number;
@@ -22,14 +24,14 @@ interface Filial {
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.scss'],
   imports: [
-    CommonModule, 
-    FormsModule, 
-    RouterModule, 
-    SidebarCiopComponent, 
-    ReactiveFormsModule, 
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    SidebarCiopComponent,
+    ReactiveFormsModule,
     SharedModule,
-  HttpClientModule
-],
+    HttpClientModule
+  ],
   standalone: true
 })
 export class UsuariosComponent implements OnInit {
@@ -41,7 +43,13 @@ export class UsuariosComponent implements OnInit {
   gerentes: any[] = [];
   usuarioEditando: Usuario | null = null;
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private sharedService: SharedService, private usuarioService: UsuariosService) {
+  constructor(
+    private fb: FormBuilder,
+    private sharedService: SharedService,
+    private usuarioService: UsuariosService,
+    private router: Router,
+    private ngZone: NgZone
+  ) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
     this.profileForm = this.fb.group({
@@ -58,6 +66,13 @@ export class UsuariosComponent implements OnInit {
     this.carregarUsuarios()
     this.carregarFiliais()
     this.carregarGerentes()
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarGerentes();
+        this.carregarUsuarios();
+        this.carregarFiliais();
+      });
   }
 
   async carregarUsuarios() {
@@ -67,10 +82,16 @@ export class UsuariosComponent implements OnInit {
       .order('id', { ascending: false });
     if (error) console.error(error);
     else this.usuarios = data || [];
+    this.ngZone.run(() => {
+      this.usuarios = this.usuarios;
+    });
   }
 
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
+    this.ngZone.run(() => {
+      this.filiais = this.filiais;
+    });
   }
 
   async carregarGerentes() {
@@ -81,6 +102,9 @@ export class UsuariosComponent implements OnInit {
 
     if (error) console.error(error);
     else this.gerentes = data || [];
+    this.ngZone.run(() => {
+      this.gerentes = this.gerentes;
+    });
   }
 
   criarUsuario(): void {
@@ -118,10 +142,10 @@ export class UsuariosComponent implements OnInit {
 
   async editarUsuario(usuario: Usuario) {
     this.usuarioEditando = usuario;
-     this.profileForm.get('email')?.clearValidators();
-  this.profileForm.get('password')?.clearValidators();
-  this.profileForm.get('email')?.updateValueAndValidity();
-  this.profileForm.get('password')?.updateValueAndValidity();
+    this.profileForm.get('email')?.clearValidators();
+    this.profileForm.get('password')?.clearValidators();
+    this.profileForm.get('email')?.updateValueAndValidity();
+    this.profileForm.get('password')?.updateValueAndValidity();
 
     this.profileForm.patchValue({
       name: usuario.name,
@@ -169,6 +193,6 @@ export class UsuariosComponent implements OnInit {
     });
   }
   testeSubmit() {
-  console.log('Form submetido!', this.profileForm.value);
-}
+    console.log('Form submetido!', this.profileForm.value);
+  }
 }

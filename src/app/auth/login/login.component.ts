@@ -15,18 +15,18 @@ export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string = '';
   loading: boolean = false;
-  
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private fb: FormBuilder
-  ){
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
   }
-  
+
   async onSubmit(): Promise<void> {
     if (this.loginForm.invalid) return;
 
@@ -44,7 +44,7 @@ export class LoginComponent {
       const redirectUrl = `/${userData.role.toLowerCase()}`;
 
       setTimeout(() => {
-        switch(userData.role) {
+        switch (userData.role) {
           case 'CIOP':
             this.router.navigate(['/ciop']);
             break;
@@ -53,6 +53,9 @@ export class LoginComponent {
             break;
           case 'COLABORADOR':
             this.router.navigate(['/home']);
+            break;
+          case 'DP':
+            this.router.navigate(['/deparPessoas']);
             break;
           default:
             this.errorMessage = 'Tipo de usuário não reconhecido.';

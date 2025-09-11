@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +7,9 @@ import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
-import { SharedService } from '../../shared/shared.service';
+import { SharedService } from '../../services/shared.service';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -45,7 +47,7 @@ export class CuponsCiopComponent {
   filialId: string | null | undefined = undefined;
   filiais: any[] = [];
   profiles: any[] = [];
-    colaboradorId: string | null | undefined = undefined;
+  colaboradorId: string | null | undefined = undefined;
   tooltipOpenId: string | null = null;
   periodoSelecionado: string = '';
   dataInicio?: Date;
@@ -59,7 +61,11 @@ export class CuponsCiopComponent {
   cuponsReprovados: Cupom[] = [];
   cupons: any[] = [];
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private sharedService: SharedService,
+    private ngZone: NgZone) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
@@ -67,6 +73,11 @@ export class CuponsCiopComponent {
     await this.carregarDados();
     await this.carregarUsuarios();
     await this.carregarFiliais();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarDados();
+      });
     this.carregarComFiltros();
   }
 
@@ -77,6 +88,9 @@ export class CuponsCiopComponent {
   }
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
+    this.ngZone.run(() => {
+      this.filiais = this.filiais;
+    });
   }
 
   onColaboradorChange() {
@@ -87,6 +101,9 @@ export class CuponsCiopComponent {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialId
     );
+     this.ngZone.run(() => {
+      this.profiles = this.profiles;
+    });
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
     this.cupons = await this.sharedService.carregarCuponsCiop(
@@ -124,7 +141,10 @@ export class CuponsCiopComponent {
         startDate,
         endDate
       );
-      this.separarListas();
+      this.ngZone.run(() => {
+        this.cupons = this.cupons;
+        this.separarListas();
+      });
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }
@@ -174,7 +194,7 @@ export class CuponsCiopComponent {
     this.sharedService.exportarParaExcel(this.cupons)
   }
   async aplicarFiltros() {
-   const { startDate, endDate } = this.sharedService.calcularPeriodo(
+    const { startDate, endDate } = this.sharedService.calcularPeriodo(
       this.periodoSelecionado,
       this.dataInicio,
       this.dataFim,

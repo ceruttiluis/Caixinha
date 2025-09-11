@@ -3,11 +3,12 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-usuarios',
@@ -22,13 +23,22 @@ export class UsuariosGerenteComponent implements OnInit {
   filialSelecionada: string = '';
   filialId: string | null = null;
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(
+    private auth: AuthService, 
+    private router: Router,
+    private ngZone: NgZone
+  ) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
     this.carregarUsuarios();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarUsuarios();
+      });
   }
 
   async carregarUsuarios() {
@@ -43,5 +53,8 @@ export class UsuariosGerenteComponent implements OnInit {
        const { data, error } = await query;
     if (error) console.error(error);
     else this.usuarios = data || [];
+     this.ngZone.run(() => {
+      this.usuarios = this.usuarios;
+    });
   }
 }

@@ -3,10 +3,12 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 interface User {
   id?: number;
@@ -36,7 +38,9 @@ export class CarteiraComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService) {
+    private auth: AuthService,
+    private router: Router,
+    private ngZone: NgZone) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
     this.carteiraForm = this.fb.group({
       usuarioId: ['', Validators.required],
@@ -47,6 +51,11 @@ export class CarteiraComponent implements OnInit {
 
   async ngOnInit() {
     this.carregarUsuarios();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarUsuarios();
+      });
   }
 
   async carregarUsuarios() {
@@ -57,6 +66,10 @@ export class CarteiraComponent implements OnInit {
 
     if (error) console.error(error);
     else this.users = data || [];
+
+    this.ngZone.run(() => {
+      this.users = this.users;
+    });
   }
 
   async atualizarCarteira(user: User) {

@@ -5,9 +5,11 @@ import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonModule, NgFor, } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
-import { SharedService } from '../../shared/shared.service';
+import { SharedService } from '../../services/shared.service';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard-gerente',
@@ -45,7 +47,12 @@ export class DashboardGerenteComponent implements OnInit {
   semestreSelecionado: null | undefined;
   mesSelecionado: null | undefined;
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private auth: AuthService, 
+    private router: Router, 
+    private sharedService: SharedService,
+    private ngZone: NgZone
+  ) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
@@ -56,9 +63,15 @@ export class DashboardGerenteComponent implements OnInit {
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
-    this.carregarDados();
+    await this.carregarDados();
     await this.carregarUsuarios();
     this.carregarComFiltros();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarDados();
+        this.carregarUsuarios();
+      });
   }
 
   onColaboradorChange() {
@@ -69,6 +82,10 @@ export class DashboardGerenteComponent implements OnInit {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialId
     );
+    this.ngZone.run(() => {
+      this.profiles = this.profiles;
+    });
+    
   }
   async carregarDados(
     periodoSelecionado?: string | null,
@@ -99,7 +116,10 @@ export class DashboardGerenteComponent implements OnInit {
         startDate,
         endDate
       );
+      this.ngZone.run(() => {
+      this.cupons = this.cupons;
       this.processarIndicadoresGerente();
+    });
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }

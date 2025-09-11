@@ -41,19 +41,17 @@ export class HomeComponent {
     const role = this.currentUser?.role; 
     if (option === 'dashboard') {
       if (role === 'user') {
-        this.router.navigate(['/dash-colaborador']);
+        this.router.navigate(['/colaborador']);
       } else if (role === 'moderator') {
         this.router.navigate(['/gerente']);
-      } else if (role === 'admin') {
-        this.router.navigate(['/ciop']);
       }
     } 
   
     else if (option === 'cupon') {
       if (role === 'user') {
-        this.router.navigate(['/colaborador']);
+        this.router.navigate(['/lancar-cupom']);
       } else if (role === 'moderator') {
-        this.router.navigate(['/colaborador']);
+        this.router.navigate(['/lancar-cupom']);
       }
     }
      else if (option === 'recarga') {

@@ -1,15 +1,13 @@
-import { Router, NavigationEnd } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
+import { SidebarDPComponent } from '../sharedDP/sidebarDP.component';
 import { SharedModule } from '../../shared/shared.module';
 import { environment } from '../../../environments/environment';
 import { SharedService } from '../../services/shared.service';
-import { NgZone } from '@angular/core';
-import { filter } from 'rxjs/operators';
 
 type SolicitacoesStatus = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
 
@@ -26,19 +24,19 @@ interface Solicitacoes {
 }
 
 @Component({
-  selector: 'app-solicitacoes',
-  templateUrl: './solicitacoes.component.html',
-  styleUrls: ['./solicitacoes.component.scss'],
+  selector: 'app-solicitacoes-dp',
+  templateUrl: './solicitacoesDP.component.html',
+  styleUrls: ['./solicitacoesDP.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
     NgFor,
     CommonModule,
-    SidebarCiopComponent,
-    SharedModule
-  ]
+    SharedModule,
+    SidebarDPComponent
+]
 })
-export class SolicitacoesComponent {
+export class SolicitacoesDPComponent {
   supabase: SupabaseClient;
   filialId: string | null | undefined = undefined;
   colaboradorId: string | null | undefined = undefined;
@@ -57,12 +55,7 @@ export class SolicitacoesComponent {
   solicitacoesReprovados: Solicitacoes[] = [];
   solicitacoes: any[] = [];
 
-  constructor(
-    private auth: AuthService, 
-    private router: Router, 
-    private sharedService: SharedService,
-    private ngZone: NgZone
-  ) {
+  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
@@ -70,13 +63,6 @@ export class SolicitacoesComponent {
     await this.carregarDados();
     await this.carregarUsuarios();
     await this.carregarFiliais();
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.carregarDados();
-        this.carregarUsuarios();
-        this.carregarFiliais();
-      });
   }
 
   onFilialChange() {
@@ -86,9 +72,6 @@ export class SolicitacoesComponent {
   }
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
-     this.ngZone.run(() => {
-      this.filiais = this.filiais;
-    });
   }
 
   onColaboradorChange() {
@@ -99,10 +82,6 @@ export class SolicitacoesComponent {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialId
     );
-    this.ngZone.run(() => {
-      this.profiles = this.profiles;
-    });
-    
   }
   async aplicarFiltros() {
     const { startDate, endDate } = this.sharedService.calcularPeriodo(
@@ -157,10 +136,7 @@ export class SolicitacoesComponent {
         observacoes: s.observacoes,
       };
     });
-    this.ngZone.run(() => {
-      this.solicitacoes = this.solicitacoes;
     this.separarListas();
-    });
   }
   separarListas() {
     this.solicitacoesPendentes = this.solicitacoes.filter(s => s.status === 'PENDENTE');

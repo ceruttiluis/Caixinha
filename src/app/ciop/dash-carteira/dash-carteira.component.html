@@ -1,160 +1,161 @@
 <app-header></app-header>
 <app-sidebar-ciop></app-sidebar-ciop>
 <div class="dashboard-container">
-  <div class="Description">
-    <h2>Aprovação de Cupons</h2>
-    <div class="filters">
-      <select type="text" [(ngModel)]="filialId" (ngModelChange)="onFilialChange()"
-        list="listaFiliais">
-        <option [ngValue]="undefined" disabled>Selecione a Filial</option>
-        <option [ngValue]="null">Todos</option>
-        <option *ngFor="let filial of filiais" [ngValue]="filial.id">{{ filial.nome }}</option>
-      </select>
-      <select type="text" [(ngModel)]="colaboradorId" (ngModelChange)="onColaboradorChange()"
-        list="listaColaboradores">
-        <option [ngValue]="undefined" disabled>Selecione o Colaborador</option>
-        <option [ngValue]="null">Todos</option>
-        <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
-      </select>
-      <label>
-        <select [(ngModel)]="periodoSelecionado" (ngModelChange)="aplicarFiltros()">
-          <option value="" disabled selected>Selecione o Periodo</option>
-          <option value="todos">Todos</option>
-          <option value="mensal">Mensal</option>
-          <option value="trimestral">Trimestral</option>
-          <option value="semestral">Semestral</option>
-          <option value="anual">Anual</option>
-           <option value="personalizado">Personalizado</option>
+  <section class="content animate-fade-in">
+    <div class="Description">
+      <h2>Aprovação de Cupons</h2>
+      <div class="filters">
+        <select type="text" [(ngModel)]="filialId" (ngModelChange)="onFilialChange()" list="listaFiliais">
+          <option [ngValue]="undefined" disabled>Selecione a Filial</option>
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let filial of filiais" [ngValue]="filial.id">{{ filial.nome }}</option>
         </select>
-        <div class="periodo" *ngIf="periodoSelecionado === 'personalizado'">
-          <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">
-          <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltros()">
-        </div>
-        <div class="periodo" *ngIf="periodoSelecionado === 'mensal'">
-          <select [(ngModel)]="mesSelecionado" (change)="aplicarFiltros()">
-            <option value="1">Janeiro</option>
-            <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
-            <option value="4">Abril</option>
-            <option value="5">Maio</option>
-            <option value="6">Junho</option>
-            <option value="7">Julho</option>
-            <option value="8">Agosto</option>
-            <option value="9">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
+        <select type="text" [(ngModel)]="colaboradorId" (ngModelChange)="onColaboradorChange()"
+          list="listaColaboradores">
+          <option [ngValue]="undefined" disabled>Selecione o Colaborador</option>
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let colaborador of profiles" [ngValue]="colaborador.id">{{colaborador.name }}</option>
+        </select>
+        <label>
+          <select [(ngModel)]="periodoSelecionado" (ngModelChange)="aplicarFiltros()">
+            <option value="" disabled selected>Selecione o Periodo</option>
+            <option value="todos">Todos</option>
+            <option value="mensal">Mensal</option>
+            <option value="trimestral">Trimestral</option>
+            <option value="semestral">Semestral</option>
+            <option value="anual">Anual</option>
+            <option value="personalizado">Personalizado</option>
           </select>
-        </div>
-        <div class="periodo" *ngIf="periodoSelecionado === 'trimestral'">
-          <select [(ngModel)]="trimestreSelecionado" (change)="aplicarFiltros()">
-            <option value="1">1º Trimestre (Jan-Mar)</option>
-            <option value="2">2º Trimestre (Abr-Jun)</option>
-            <option value="3">3º Trimestre (Jul-Set)</option>
-            <option value="4">4º Trimestre (Out-Dez)</option>
-          </select>
-        </div>
-        <div class="periodo" for *ngIf="periodoSelecionado === 'semestral'">
-          <select [(ngModel)]="semestreSelecionado" (change)="aplicarFiltros()">
-            <option value="1">1º Semestre (Jan-Jun)</option>
-            <option value="2">2º Semestre (Jul-Dez)</option>
-          </select>
-        </div>
-      </label>
+          <div class="periodo" *ngIf="periodoSelecionado === 'personalizado'">
+            <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">
+            <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltros()">
+          </div>
+          <div class="periodo" *ngIf="periodoSelecionado === 'mensal'">
+            <select [(ngModel)]="mesSelecionado" (change)="aplicarFiltros()">
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+          </div>
+          <div class="periodo" *ngIf="periodoSelecionado === 'trimestral'">
+            <select [(ngModel)]="trimestreSelecionado" (change)="aplicarFiltros()">
+              <option value="1">1º Trimestre (Jan-Mar)</option>
+              <option value="2">2º Trimestre (Abr-Jun)</option>
+              <option value="3">3º Trimestre (Jul-Set)</option>
+              <option value="4">4º Trimestre (Out-Dez)</option>
+            </select>
+          </div>
+          <div class="periodo" for *ngIf="periodoSelecionado === 'semestral'">
+            <select [(ngModel)]="semestreSelecionado" (change)="aplicarFiltros()">
+              <option value="1">1º Semestre (Jan-Jun)</option>
+              <option value="2">2º Semestre (Jul-Dez)</option>
+            </select>
+          </div>
+        </label>
+      </div>
     </div>
-  </div>
-  <div class="cards-resumo">
-    <div class="card">
-      <span class="icon"></span>
-      <p>TOTAL ADIÇÕES</p>
-      <h3 class="limite">{{ totalAdicoes | currency:'BRL'}}</h3>
-    </div>
-    <div class="card">
-      <span class="icon"></span>
-      <p>TOTAL DE GASTOS</p>
-      <h3 class="gastos">{{ totalGasto | currency:'BRL' }}</h3>
-    </div>
-    <div class="card">
-      <span class="icon"></span>
-      <p>SALDO ATUAL</p>
-      <h3 [ngClass]="{
+    <div class="cards-resumo">
+      <div class="card">
+        <span class="icon"></span>
+        <p>TOTAL ADIÇÕES</p>
+        <h3 class="limite">{{ totalAdicoes | currency:'BRL'}}</h3>
+      </div>
+      <div class="card">
+        <span class="icon"></span>
+        <p>TOTAL DE GASTOS</p>
+        <h3 class="gastos">{{ totalGasto | currency:'BRL' }}</h3>
+      </div>
+      <div class="card">
+        <span class="icon"></span>
+        <p>SALDO ATUAL</p>
+        <h3 [ngClass]="{
             'verde': saldoTotal > 0,
             'vermelho': saldoTotal < 0,
             'azul': saldoTotal === 0
           }" class="saldo">{{ saldoTotal | currency:'BRL'}}</h3>
+      </div>
+      <div class="card">
+        <span class="icon"></span>
+        <p>TOTAL EXTRA</p>
+        <h3 class="extra">{{ extra | currency:'BRL'}}</h3>
+      </div>
     </div>
-    <div class="card">
-      <span class="icon"></span>
-      <p>TOTAL EXTRA</p>
-      <h3 class="extra">{{ extra | currency:'BRL'}}</h3>
-    </div>
-  </div>
 
-  <div class="historicos">
-    <div class="tabela-titulo">
-      <h2>Histórico de Gastos</h2>
-      <div class="historico-card">
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Usuário</th>
-              <th>Descrição</th>
-              <th>Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let cupom of cupons">
-              <td>{{ cupom.data }}</td>
-              <td>{{ cupom.usuario }}</td>
-              <td>{{ cupom.tipo }}</td>
-              <td class="negativo">{{ cupom.valor | currency:'BRL' }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="historicos">
+      <div class="tabela-titulo">
+        <h2>Histórico de Gastos</h2>
+        <div class="historico-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Usuário</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cupons">
+                <td>{{ cupom.data }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td class="negativo">{{ cupom.valor | currency:'BRL' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tabela-titulo">
+        <h2>Histórico de Adições</h2>
+        <div class="historico-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Usuário</th>
+                <th>Valor</th>
+                <th>Tipo Recarga</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let adicao of adicoes">
+                <td>{{ adicao.data }}</td>
+                <td>{{ adicao.usuario }}</td>
+                <td class="positivo">+R$ {{ adicao.valor }},00</td>
+                <td>{{ adicao.tipo }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="tabela-titulo">
-      <h2>Histórico de Adições</h2>
-      <div class="historico-card">
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Usuário</th>
-              <th>Valor</th>
-              <th>Tipo Recarga</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let adicao of adicoes">
-              <td>{{ adicao.data }}</td>
-              <td>{{ adicao.usuario }}</td>
-              <td class="positivo">+R$ {{ adicao.valor }},00</td>
-              <td>{{ adicao.tipo }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div *ngIf="isBrowser" class="grafico">
+      <div class="charts-container">
+        <div class="chart-card">
+          <canvas baseChart [data]="barChartGastos" [type]="'bar'" [options]="barChartOptions">
+          </canvas>
+        </div>
+      </div>
+      <div class="charts-container">
+        <div class="chart-card">
+          <canvas baseChart [data]="barChartAdicoes" [type]="'bar'" [options]="barChartOptions">
+          </canvas>
+        </div>
       </div>
     </div>
-  </div>
-  <div *ngIf="isBrowser" class="grafico">
-    <div class="charts-container">
-      <div class="chart-card">
-        <canvas baseChart [data]="barChartGastos" [type]="'bar'" [options]="barChartOptions">
-        </canvas>
-      </div>
-    </div>
-    <div class="charts-container">
-      <div class="chart-card">
-        <canvas baseChart [data]="barChartAdicoes" [type]="'bar'" [options]="barChartOptions">
-        </canvas>
-      </div>
-    </div>
-  </div>
-  <button class="btn-flutuante">
-    <a routerLink="/ciop/carteira" routerLinkActive="active">
-      <img class="icon-add" src="assets/Add.png" alt="Filiais">
-    </a>
-  </button>
+    <button class="btn-flutuante">
+      <a routerLink="/ciop/carteira" routerLinkActive="active">
+        <img class="icon-add" src="assets/Add.png" alt="Filiais">
+      </a>
+    </button>
+  </section>
 </div>

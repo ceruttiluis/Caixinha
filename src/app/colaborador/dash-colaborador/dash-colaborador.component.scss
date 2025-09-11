@@ -1,9 +1,9 @@
 .dashboard {
   margin-left: 90px;
-  min-height: 98vh;
+  min-height: 80vh;
   display: flex;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 53%, #4caf50 90%);
+  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 57%, #4caf50 90%);
   color: #1b1b1b;
 
   .content {
@@ -42,16 +42,14 @@
       gap: 3rem;
       width: 800px;
 
-      .periodo {
-        display: flex;
-        gap: 3rem;
-        border-radius: 4px;
-        width: 515px;
-      }
+      .periodo{
+      display: flex;
+      gap: 3rem;
+      border-radius: 4px;
+      width: 515px;
     }
-
-    select,
-    input {
+    }
+    select, input {
       padding: 0.5rem;
       border: 1px solid #a5d6a7;
       border-radius: 4px;

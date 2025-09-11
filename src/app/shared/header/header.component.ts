@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { SharedService } from '../shared.service';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -14,7 +15,11 @@ import { environment } from '../../../environments/environment';
 export class HeaderComponent {
   carteira: string | null = null;
   supabase: SupabaseClient;
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private ngZone: NgZone
+  ) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
   logout(): void {
@@ -24,6 +29,11 @@ export class HeaderComponent {
 
   async ngOnInit() {
     await this.carregarCarteira();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarCarteira();
+      });
   }
   async carregarCarteira() {
 
@@ -46,5 +56,8 @@ export class HeaderComponent {
     }
 
     this.carteira =  data?.carteira || 0;
+    this.ngZone.run(() => {
+      this.carteira = this.carteira;
+    });
   }
 }

@@ -29,7 +29,12 @@ export class SharedService {
 
     for (const cupom of cupons) {
       totalGasto += cupom.valor;
-      totalOrcamento += this.getValorBase(cupom.tipo || 0);
+
+      if (cupom.tipo === 'Outros'){
+        totalOrcamento += cupom.valor;
+      } else {
+        totalOrcamento += this.getValorBase(cupom.tipo || 0);
+      }
 
       const excedente = cupom.diferenca || 0;
 
@@ -282,8 +287,8 @@ export class SharedService {
     return { startDate: startDate || undefined, endDate: endDate || undefined };
   }
 
-  async carregarCuponsGerente(filialSelecionada?: string | null, colaboradorId?: string | null, startDate?: Date | null, endDate?: Date | null): Promise<any[]> {
-    const filtro = filialSelecionada;
+  async carregarCuponsGerente(filialId?: string | null, colaboradorId?: string | null, startDate?: Date | null, endDate?: Date | null): Promise<any[]> {
+    const filtro = filialId;
     let query = this.supabase
       .from('cupons')
       .select(`
@@ -445,7 +450,7 @@ export class SharedService {
     });
   }
 
-  async carregarCuponsColaborador(filialId?: string,  startDate?: Date, endDate?: Date): Promise<any[]> {
+  async carregarCuponsColaborador(filialId?: string | null,  startDate?: Date, endDate?: Date): Promise<any[]> {
     const filtro = filialId;
     let query = this.supabase
       .from('cupons')

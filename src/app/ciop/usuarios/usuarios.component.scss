@@ -2,9 +2,14 @@
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 43.5%, #4caf50 90%);
   margin-left: 110px;
-  margin-top: 0;
   padding: 1rem;
   min-height: 160vh;
+
+  .content {
+    margin-top: 0;
+    flex-grow: 1;
+    animation: fadeIn 0.6s ease-in;
+  }
 
   h1 {
     margin-bottom: 1.5rem;
@@ -67,16 +72,22 @@
     }
 
     button {
+      margin-right: 0.5rem;
       padding: 0.3rem 0.6rem;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      background: #f44336;
       color: white;
 
-      &:hover {
-        background: #d32f2f;
-      }
+      &:first-child {
+          background: #2196f3;
+          color: white;
+        }
+
+     &:last-child {
+          background: #f44336;
+          color: white;
+        }
     }
   }
 }

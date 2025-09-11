@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../environments/environment';
@@ -6,21 +7,24 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private supabase: SupabaseClient;
-  
-  constructor() {
+  private isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+    this.isBrowser = isPlatformBrowser(this.platformId);
   }
-  private roleMapping: {[key: string]: string} = {
-  'admin': 'CIOP',
-  'moderator': 'GERENTE',
-  'user': 'COLABORADOR'
-};
-  
-  async login(email: string, password: string): Promise<{role: string}> {
-    const { data: authData, error: authError } = await this.supabase.auth.signInWithPassword({ 
-    email, 
-    password 
-  });
+  private roleMapping: { [key: string]: string } = {
+    'admin': 'CIOP',
+    'moderator': 'GERENTE',
+    'user': 'COLABORADOR',
+    'dp': 'DP'
+  };
+
+  async login(email: string, password: string): Promise<{ role: string }> {
+    const { data: authData, error: authError } = await this.supabase.auth.signInWithPassword({
+      email,
+      password
+    });
 
     if (authError) {
       console.error('Erro na autenticação:', authError);
@@ -46,8 +50,10 @@ export class AuthService {
       filial_id: profile.filial_id || null
     };
 
-    localStorage.setItem('token', authData.session.access_token);
-    localStorage.setItem('user', JSON.stringify(userData));
+    if (this.isBrowser) {
+      localStorage.setItem('token', authData.session.access_token);
+      localStorage.setItem('user', JSON.stringify(userData));
+    }
 
     return userData;
   }
@@ -66,28 +72,33 @@ export class AuthService {
       .insert([{
         id: authData.user?.id,
         email,
-        role: 'user' 
+        role: 'user'
       }]);
     if (profileError) throw profileError;
   }
 
   logout(): void {
     this.supabase.auth.signOut();
-    localStorage.removeItem('token');
+    if (this.isBrowser) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   }
 
   getRoleSync(): string | null {
-      const userData = localStorage.getItem('user');
-      if (!userData) return null;
-      try {
-        const parsed = JSON.parse(userData);
-        return parsed.role || null;
-        } catch {
-        return null;
-        }
+    if (!this.isBrowser) return null;
+    const userData = localStorage.getItem('user');
+    if (!userData) return null;
+    try {
+      const parsed = JSON.parse(userData);
+      return parsed.role || null;
+    } catch {
+      return null;
+    }
   }
 
   getUserId(): string | null {
+    if (!this.isBrowser) return null;
     const token = localStorage.getItem('token');
     if (!token) return null;
     const decoded: any = jwtDecode(token);
@@ -95,13 +106,13 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    return this.isBrowser && !!localStorage.getItem('token');
   }
   getFilialId(): string | null {
-  const userData = localStorage.getItem('user');
-  if (!userData) return null;
-
-  const parsed = JSON.parse(userData);
-  return parsed?.filial_id || null;
+    if (!this.isBrowser) return null;
+    const userData = localStorage.getItem('user');
+    if (!userData) return null;
+    const parsed = JSON.parse(userData);
+    return parsed?.filial_id || null;
   }
 }

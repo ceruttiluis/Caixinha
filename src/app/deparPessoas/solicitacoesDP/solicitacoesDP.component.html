@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-sidebar-ciop></app-sidebar-ciop>
+<app-sidebar-dp></app-sidebar-dp>
 <main class="dashboard">
   <section class="content animate-fade-in">
     <div class="Description">
@@ -79,6 +79,7 @@
                 <th>Tipo</th>
                 <th>Valor</th>
                 <th>Observações</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -95,6 +96,10 @@
                     (click)="$event.stopPropagation()">
                     {{ solicitacao.observacoes }}
                   </div>
+                </td>
+                <td class="actions">
+                  <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
+                  <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
                 </td>
               </tr>
             </tbody>
@@ -114,6 +119,7 @@
                 <th>Tipo</th>
                 <th>Valor</th>
                 <th>Observações</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -130,6 +136,9 @@
                     (click)="$event.stopPropagation()">
                     {{ solicitacao.observacoes }}
                   </div>
+                </td>
+                <td class="actions">
+                  <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
                 </td>
               </tr>
             </tbody>
@@ -149,6 +158,7 @@
                 <th>Tipo</th>
                 <th>Valor</th>
                 <th>Observações</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -165,6 +175,9 @@
                     (click)="$event.stopPropagation()">
                     {{ solicitacao.observacoes }}
                   </div>
+                </td>
+                <td class="actions">
+                  <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
                 </td>
               </tr>
             </tbody>

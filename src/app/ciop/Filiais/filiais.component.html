@@ -1,7 +1,7 @@
 <app-header></app-header>
 <app-sidebar-ciop></app-sidebar-ciop>
 <div class="container">
-  <div class="content animate-fade-in">
+  <section class="content animate-fade-in">
     <h1>Gerenciar Filiais</h1>
     <form (ngSubmit)="salvarFilial()" class="form-filial">
       <input type="text" placeholder="Nome da Filial" [(ngModel)]="novaFilial.nome" name="nome" required />
@@ -34,5 +34,5 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </section>
 </div>

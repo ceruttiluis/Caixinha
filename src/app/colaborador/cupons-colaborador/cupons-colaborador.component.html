@@ -7,14 +7,14 @@
     </div>
     <div class="filters">
       <label>
-        <select [(ngModel)]="periodoSelecionado" (ngModelchange)="aplicarFiltros()">
+        <select [(ngModel)]="periodoSelecionado" (ngModelChange)="aplicarFiltros()">
           <option value="" disabled selected>Selecione o Periodo</option>
           <option value="todos">Todos</option>
           <option value="mensal">Mensal</option>
           <option value="trimestral">Trimestral</option>
           <option value="semestral">Semestral</option>
           <option value="anual">Anual</option>
-          <option value="personalizado">Personalizado</option>
+           <option value="personalizado">Personalizado</option>
         </select>
         <div class="periodo" *ngIf="periodoSelecionado === 'personalizado'">
           <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">

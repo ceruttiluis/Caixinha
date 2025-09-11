@@ -1,13 +1,15 @@
-import { Router } from '@angular/router';
+import { Router, NavigationEnd  } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { FormsModule } from '@angular/forms';
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
-import { SharedService } from '../../shared/shared.service';
+import { SharedService } from '../../services/shared.service';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -40,7 +42,7 @@ interface Cupom {
     SharedModule
   ]
 })
-export class CuponsColaboradorComponent {
+export class CuponsColaboradorComponent implements OnInit{
   supabase: SupabaseClient;
   filialId: string | null = null;
   filialSelecionada: string = '';
@@ -57,13 +59,22 @@ export class CuponsColaboradorComponent {
   cuponsReprovados: Cupom[] = [];
   cupons: any[] = [];
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
+  constructor(
+    private auth: AuthService, 
+    private router: Router, 
+    private sharedService: SharedService,
+  private ngZone: NgZone) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
     await this.carregarDados();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarDados();
+      });
   }
 
  async carregarDados(
@@ -90,11 +101,14 @@ export class CuponsColaboradorComponent {
         endDate = dataFim;
       }
       this.cupons = await this.sharedService.carregarCuponsColaborador(
-        this.filialSelecionada,
+        this.filialId,
         startDate,
         endDate
       );
+      this.ngZone.run(() => {
+      this.cupons = this.cupons;
       this.separarListas();
+    });
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }

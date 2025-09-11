@@ -8,9 +8,11 @@ import { FormsModule } from '@angular/forms';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
-import { SharedService } from '../../shared/shared.service';
-import { Router } from '@angular/router';
+import { SharedService } from '../../services/shared.service';
+import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NgZone } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dash-carteira',
@@ -55,6 +57,7 @@ export class DashCarteiraComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
+    private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
     this.isBrowser = isPlatformBrowser(platformId);
@@ -65,6 +68,11 @@ export class DashCarteiraComponent implements OnInit {
     await this.carregarUsuarios();
     await this.carregarFiliais();
     await this.carregarComFiltros();
+     this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarTodosOsDados();
+      });
   }
   async carregarTodosOsDados() {
     await this.carregarDados();
@@ -78,6 +86,9 @@ export class DashCarteiraComponent implements OnInit {
   }
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
+    this.ngZone.run(() => {
+      this.filiais = this.filiais;
+    });
   }
 
   onColaboradorChange() {
@@ -88,6 +99,9 @@ export class DashCarteiraComponent implements OnInit {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialId
     );
+     this.ngZone.run(() => {
+      this.profiles = this.profiles;
+    });
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
     this.cupons = await this.sharedService.carregarCuponsCiop(
@@ -128,7 +142,10 @@ export class DashCarteiraComponent implements OnInit {
     } catch (error) {
       console.error('Erro ao carregar cupons do gerente:', error);
     }
-    this.processarIndicadores();
+    this.ngZone.run(() => {
+      this.cupons = this.cupons;
+      this.processarIndicadores();
+    });
   }
 
   async carregarAdicoes() {
@@ -166,7 +183,10 @@ export class DashCarteiraComponent implements OnInit {
         valor: a.valor_add,
       };
     });
-    this.processarIndicadores();
+    this.ngZone.run(() => {
+      this.adicoes = this.adicoes;
+      this.processarIndicadores();
+    });
   }
 
   async carregarCarteira() {
@@ -195,7 +215,10 @@ export class DashCarteiraComponent implements OnInit {
         valor: ca.carteira,
       };
     });
-    this.processarIndicadores();
+    this.ngZone.run(() => {
+      this.carteira = this.carteira;
+      this.processarIndicadores();
+    });
   }
   processarIndicadores() {
     this.totalGasto = 0;
@@ -250,10 +273,13 @@ export class DashCarteiraComponent implements OnInit {
         (this.barChartAdicoes.datasets[0].data as number[]).push(adicoesPorCategoria[categoria]);
       }
     }
-
+    this.ngZone.run(() => {
+    this.adicoes = this.adicoes;
+    this.cupons = this.cupons;
     this.atualizarGraficos();
+    });
   }
-  atualizarGraficos() {
+  async atualizarGraficos() {
     setTimeout(() => {
       if (this.gastosChart) {
         this.gastosChart.update();
@@ -262,6 +288,7 @@ export class DashCarteiraComponent implements OnInit {
         this.adicoesChart.update();
       }
     }, 0);
+    
   }
   public barChartGastos: ChartConfiguration<'bar'>['data'] = {
     labels: [] as string[],
