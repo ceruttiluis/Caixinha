@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, FormGroup, Validators, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
-import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
 import { SharedService } from '../../services/shared.service';
 import { UsuariosService, Usuario } from '../../services/usuarios.service';

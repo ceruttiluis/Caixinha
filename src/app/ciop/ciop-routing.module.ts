@@ -6,7 +6,6 @@ import { CiopGuard } from '../guards/ciop.guard';
 import { FiliaisComponent } from './Filiais/filiais.component';
 import { DashCarteiraComponent } from './dash-carteira/dash-carteira.component';
 import { CuponsCiopComponent } from './cupons-ciop/cupons-ciop.component';
-import { CarteiraComponent } from './carteira/carteira.component';
 import { SolicitacoesComponent } from './solicitacoes/solicitacoes.component';
 
 const routes: Routes = [
@@ -37,12 +36,6 @@ const routes: Routes = [
   {
     path: 'cupons-ciop',
     component: CuponsCiopComponent,
-    //canActivate: [CiopGuard],
-    data: { roles: ['CIOP'] }
-  },
-  {
-    path: 'carteira',
-    component: CarteiraComponent,
     //canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   },

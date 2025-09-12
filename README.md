@@ -1,9 +1,6 @@
 
 CRIAR BOTÃO PARA O GERENTE EXCLUIR O CUPOM 
 
-Quando terminar isso tudo, pensar em melhorar a tela de cupons, para que fique menor como se fosse um kanban, assim os cupons viriam de forma pequena e ao clicar em cima, abriria o cupon inteiro.
-
-Colocar a tela de carteira, que faz a inserção manual de valores pro usuario, na tela do DP.
 
 # Caixinha
 

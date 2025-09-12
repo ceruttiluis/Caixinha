@@ -1,10 +1,18 @@
 <div class="Sidebar">
-  <aside class="sidebar">
+  <div class="content">
     <nav>
+      <a routerLink="/deparPessoas" routerLinkActive="active">
+        <img class="img" src="assets/Solicitacoes.png" alt="Dashboard">
+      </a>
+      <div class="label">Solicitações</div>
+      <a routerLink="/deparPessoas/carteira" routerLinkActive="active">
+        <img class="img" src="assets/Add.png" alt="Dashboard">
+      </a>
+      <div class="label">Adicionar Saldo</div>
       <a (click)="logout()">
         <img class="img" src="assets/Logout.png" alt="Sair">
       </a>
       <div class="label">Sair</div>
     </nav>
-  </aside>
+  </div>
 </div>

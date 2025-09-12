@@ -233,7 +233,6 @@ export class CuponsComponent {
       this.cupons = this.cupons;
     });
   }
-
   isTooltipOpen(id: number | string): boolean {
     return this.tooltipOpenId === String(id);
   }

@@ -19,13 +19,17 @@
 }
 
 .form-container {
-  max-height: 480px;
+  display: flex;
+  max-height: 540px;
   width: 350px;
   padding: 2rem;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   text-align: center;
+  align-items: left;
+  justify-content: left;
+  flex-direction: column;
 
   h2 {
     text-align: center;
@@ -33,14 +37,15 @@
   }
 
   label {
-    display: block;
+    display: flex;
     margin-top: 1rem;
     text-align: left;
   }
 
   input,
   select {
-    width: 100%;
+    display: flex;
+    width: 90%;
     padding: 0.5rem;
     margin-top: 0.25rem;
   }

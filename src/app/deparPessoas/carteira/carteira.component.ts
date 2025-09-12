@@ -4,11 +4,10 @@ import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
-import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
-import { AuthService } from '../../services/auth.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
+import { SidebarDPComponent } from "../sharedDP/sidebarDP.component";
 
 interface User {
   id?: number;
@@ -16,21 +15,22 @@ interface User {
   email: string;
   carteira: number;
   incremento?: number;
+  filial?: {
+    nome: string;
+  } | null;
 }
 
 @Component({
   selector: 'app-usuarios',
   templateUrl: './carteira.component.html',
   styleUrls: ['./carteira.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, SidebarCiopComponent, SharedModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, RouterModule, SidebarDPComponent, SharedModule, ReactiveFormsModule, SidebarDPComponent],
   standalone: true
 })
 export class CarteiraComponent implements OnInit {
   supabase: SupabaseClient;
-  users: User[] = [];
-  novoUsuario: User = { name: '', email: '', carteira: 0 };
+  users: any[] = [];
   selectedUser: User | null = null;
-  editando: User | null = null;
   message: string = '';
   isError: boolean = false;
   carteiraForm: FormGroup;
@@ -38,12 +38,12 @@ export class CarteiraComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService,
     private router: Router,
     private ngZone: NgZone) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
     this.carteiraForm = this.fb.group({
       usuarioId: ['', Validators.required],
+      tipo: ['', Validators.required],
       observacoes: [''],
       valor: ['', [Validators.required, Validators.min(0.01)]]
     });
@@ -61,39 +61,13 @@ export class CarteiraComponent implements OnInit {
   async carregarUsuarios() {
     const { data, error } = await this.supabase
       .from('profiles')
-      .select('*')
+      .select('id, name, email, filial:filial_id ( nome ), carteira')
       .order('id', { ascending: false });
-
     if (error) console.error(error);
     else this.users = data || [];
-
     this.ngZone.run(() => {
       this.users = this.users;
     });
-  }
-
-  async atualizarCarteira(user: User) {
-    if (!user.incremento || user.incremento === 0) {
-      this.showMessage('Informe um valor para atualizar o saldo!', true);
-      return;
-    }
-
-    const novoSaldo = user.carteira + user.incremento;
-
-    const { data, error } = await this.supabase
-      .from('profiles')
-      .update({ carteira: novoSaldo })
-      .eq('id', user.id)
-      .select();
-
-    if (error) {
-      console.error('Erro ao atualizar carteira:', error);
-      this.showMessage('Erro ao atualizar carteira!', true);
-    } else {
-      user.carteira = novoSaldo;
-      user.incremento = 0;
-      this.showMessage('Saldo atualizado com sucesso!');
-    }
   }
 
   async enviarSaldo(): Promise<void> {
@@ -104,8 +78,14 @@ export class CarteiraComponent implements OnInit {
 
     this.uploading = true;
 
-    const { usuarioId, observacoes, valor } = this.carteiraForm.value;
-    const valorNumerico = parseFloat(valor);
+    const { usuarioId, observacoes, valor, tipo } = this.carteiraForm.value;
+
+    const valorNumerico = parseFloat(String(valor).replace(',', '.'));
+    if (isNaN(valorNumerico) || valorNumerico <= 0) {
+      this.showMessage('Valor inválido!', true);
+      this.uploading = false;
+      return;
+    }
 
     try {
       const { data: usuario, error: usuarioError } = await this.supabase
@@ -122,7 +102,14 @@ export class CarteiraComponent implements OnInit {
         throw new Error('Usuário não possui filial cadastrada!');
       }
 
-      const novoSaldo = (usuario.carteira || 0) + valorNumerico;
+      const isRemocao = String(tipo || '').toLowerCase().includes('remov');
+      const valorAplicado = isRemocao ? -Math.abs(valorNumerico) : Math.abs(valorNumerico);
+
+      const novoSaldo = (usuario.carteira ?? 0) + valorAplicado;
+
+      if (novoSaldo < 0) {
+        throw new Error('Saldo insuficiente para remover este valor!');
+      }
 
       const { error: updateError } = await this.supabase
         .from('profiles')
@@ -136,8 +123,9 @@ export class CarteiraComponent implements OnInit {
       const historicoData = {
         profile_id: usuarioId,
         filial_id: usuario.filial_id,
+        tipo_recarga: tipo || (isRemocao ? 'Remoção de saldo' : 'Recarga de saldo'),
         observacoes: observacoes || 'Recarga de saldo',
-        valor_add: valorNumerico,
+        valor_add: valorAplicado,
         criado_em: new Date().toISOString(),
       };
 
@@ -153,7 +141,6 @@ export class CarteiraComponent implements OnInit {
       if (userIndex !== -1) {
         this.users[userIndex].carteira = novoSaldo;
       }
-
       this.carteiraForm.reset({
         usuarioId: '',
         observacoes: '',
@@ -161,7 +148,9 @@ export class CarteiraComponent implements OnInit {
       });
 
       this.selectedUser = null;
-      this.showMessage(`Saldo de R$ ${valorNumerico.toFixed(2)} adicionado com sucesso para o usuário!`);
+      this.showMessage(
+      `${isRemocao ? 'Removido' : 'Adicionado'} R$ ${Math.abs(valorNumerico).toFixed(2)} ${isRemocao ? 'da' : 'à'} carteira do usuário com sucesso!`
+    );
 
     } catch (error: any) {
       console.error('Erro ao processar recarga:', error);
@@ -171,14 +160,13 @@ export class CarteiraComponent implements OnInit {
     }
   }
 
-  editarCarteira(users: User) {
-    this.editando = users;
-    this.novoUsuario = { ...users };
-  }
-
   cancelarEdicao() {
-    this.editando = null;
-    this.novoUsuario = { name: '', email: '', carteira: 0 };
+    this.carteiraForm.reset({
+      usuarioId: '',
+      tipo: '',
+      observacoes: '',
+      valor: ''
+    });
   }
 
   private showMessage(msg: string, isError: boolean = false): void {

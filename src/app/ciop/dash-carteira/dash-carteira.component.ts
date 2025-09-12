@@ -68,10 +68,13 @@ export class DashCarteiraComponent implements OnInit {
     await this.carregarUsuarios();
     await this.carregarFiliais();
     await this.carregarComFiltros();
-     this.router.events
+    this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.carregarTodosOsDados();
+        this.carregarUsuarios();
+        this.carregarFiliais();
+        this.carregarComFiltros();
       });
   }
   async carregarTodosOsDados() {
@@ -99,7 +102,7 @@ export class DashCarteiraComponent implements OnInit {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialId
     );
-     this.ngZone.run(() => {
+    this.ngZone.run(() => {
       this.profiles = this.profiles;
     });
   }
@@ -121,12 +124,10 @@ export class DashCarteiraComponent implements OnInit {
     this.startDate = startDate;
     this.endDate = endDate;
     await this.carregarTodosOsDados();
-    this.processarIndicadores();
+    await this.processarIndicadores();
 
   }
-
   async carregarDados(
-    periodoSelecionado?: string,
     dataInicio?: Date,
     dataFim?: Date
   ) {
@@ -249,8 +250,16 @@ export class DashCarteiraComponent implements OnInit {
     }
     for (const tipo in gastosPorTipo) {
       if (gastosPorTipo[tipo] > 0) {
-        this.barChartGastos.labels!.push(tipo);
-        (this.barChartGastos.datasets[0].data as number[]).push(gastosPorTipo[tipo]);
+        this.barChartGastos = {
+          labels: Object.keys(gastosPorTipo).filter(tipo => gastosPorTipo[tipo] > 0),
+          datasets: [
+            {
+              label: 'Gastos',
+              data: Object.keys(gastosPorTipo).filter(tipo => gastosPorTipo[tipo] > 0).map(tipo => gastosPorTipo[tipo]),
+              backgroundColor: '#e74c3c'
+            }
+          ]
+        };
       }
     }
     const adicoesPorCategoria: { [key: string]: number } = {
@@ -269,14 +278,20 @@ export class DashCarteiraComponent implements OnInit {
     }
     for (const categoria in adicoesPorCategoria) {
       if (adicoesPorCategoria[categoria] > 0) {
-        this.barChartAdicoes.labels!.push(categoria);
-        (this.barChartAdicoes.datasets[0].data as number[]).push(adicoesPorCategoria[categoria]);
+        this.barChartAdicoes = {
+          labels: Object.keys(adicoesPorCategoria).filter(categoria => adicoesPorCategoria[categoria] > 0),
+          datasets: [
+            {
+              label: 'Adições',
+              data: Object.keys(adicoesPorCategoria).filter(categoria => adicoesPorCategoria[categoria] > 0).map(categoria => adicoesPorCategoria[categoria]),
+              backgroundColor: '#2ecc71'
+            }
+          ]
+        };
       }
     }
     this.ngZone.run(() => {
-    this.adicoes = this.adicoes;
-    this.cupons = this.cupons;
-    this.atualizarGraficos();
+      this.atualizarGraficos();
     });
   }
   async atualizarGraficos() {
@@ -288,7 +303,11 @@ export class DashCarteiraComponent implements OnInit {
         this.adicoesChart.update();
       }
     }, 0);
-    
+    this.ngZone.run(() => {
+      this.gastosChart = this.gastosChart;
+      this.adicoesChart = this.adicoesChart;
+    });
+
   }
   public barChartGastos: ChartConfiguration<'bar'>['data'] = {
     labels: [] as string[],
