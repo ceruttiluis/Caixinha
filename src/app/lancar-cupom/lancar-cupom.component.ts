@@ -5,6 +5,7 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { SharedModule } from '../shared/shared.module';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-lancar-cupom',
@@ -22,7 +23,8 @@ export class LancarCupomComponent {
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router,
   ) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
@@ -110,5 +112,10 @@ export class LancarCupomComponent {
       this.preview = '';
     }
     this.uploading = false;
+  }
+  selectOption(option: string): void {
+    if (option === 'home') {
+      this.router.navigate(['/home']);
+    }
   }
 }

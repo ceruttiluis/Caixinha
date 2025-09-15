@@ -127,51 +127,5 @@
         </div>
       </div>
     </div>
-    <!---
-    <div class="tabela-lancamentos">
-  <div class="list-lancamento">
-    <h2>Lista de Lançamento</h2>
-    <button (click)="exportarParaExcel()">Exportar Excel</button>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Usuário</th>
-        <th>Data</th>
-        <th>Tipo</th>
-        <th>Valor</th>
-        <th>Imagem</th>
-        <th>Status</th>
-        <th>Excedente/Deficit</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let lancamento of cupons">
-        <td>{{ lancamento.id }}</td>
-        <td>{{ lancamento.usuario }}</td>
-        <td>{{ lancamento.data | date:'shortDate' }}</td>
-        <td>{{ lancamento.tipo }}</td>
-        <td>{{ lancamento.valor | currency:'BRL' }}</td>
-        <td>
-          <a [href]="lancamento.url_imagem " target="_blank">
-            <img [src]="lancamento.imagem " alt="Nota" class="imagem-nota">
-          </a>
-        </td>
-        <td>{{ lancamento.status }}</td>
-        <td
-          [ngClass]="{
-            'verde': lancamento.exceDeficit > 0,
-            'vermelho': lancamento.exceDeficit < 0,
-            'azul': lancamento.exceDeficit === 0
-          }"
-        >
-          {{ lancamento.exceDeficit | currency:'BRL' }}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
--->
   </section>
 </main>

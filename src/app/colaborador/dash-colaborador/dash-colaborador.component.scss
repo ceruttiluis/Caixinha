@@ -1,6 +1,7 @@
 .dashboard {
   margin-left: 90px;
-  min-height: 80vh;
+  height: 81vh;   
+  width: 100%;   
   display: flex;
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 57%, #4caf50 90%);
@@ -61,7 +62,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 8rem;
+    margin-left: 4rem;
     gap: 3rem;
     margin-bottom: 2rem;
     height: 250px;

@@ -1,6 +1,12 @@
-<div class="Sidebar">
+<div class="Sidebar" [class.open]="sidebarOpen">
+  <button class="menu-btn" (click)="toggleSidebar()">☰</button>
   <aside class="sidebar">
     <nav>
+      <a routerLink="/home" routerLinkActive="active">
+        <img class="img" src="assets/Goback.png" alt="Dashboard">
+      </a>
+      <div class="label">Voltar</div>
+
       <a routerLink="/gerente" routerLinkActive="active">
         <img class="img" src="assets/BtnDash.png" alt="Dashboard">
       </a>
@@ -22,4 +28,5 @@
       <div class="label">Sair</div>
     </nav>
   </aside>
+    <div class="overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
 </div>

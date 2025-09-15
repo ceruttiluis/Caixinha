@@ -1,5 +1,11 @@
 <div class="container">
-  <img src="assets/FirstLogo.png" alt="Logo" class="Logo">
+  <div class="btn-flutuante" (click)="selectOption('home')">
+      <a routerLink="/home" routerLinkActive="active">
+        <img class="icon-add" src="assets/Back.png" alt="home">
+      </a>
+    </div>
+  <div class="main-content">
+      <img src="assets/FirstLogo.png" alt="Logo" class="Logo">
   <div class="form-container">
     <h2>Lançar Cupom Fiscal</h2>
     <form [formGroup]="solicitacaoForm" (ngSubmit)="enviarCupom()">
@@ -21,5 +27,6 @@
 
       <button type="submit" [disabled]="uploading">Enviar</button>
     </form>
+  </div>
   </div>
 </div>

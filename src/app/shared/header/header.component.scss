@@ -13,6 +13,16 @@
   bottom: 0;
   z-index: 1000;
   font-family: 'Segoe UI', sans-serif;
+  
+    @media (max-width: 768px) {
+        background: linear-gradient(110deg, #2d7d32 20%, #a8aca9 75%, #4caf50 130%);
+      margin-left: 0;
+      height: 80px;
+
+      @media (max-width: 480px) {
+        margin-left: 0;
+      }
+    }
 
   h1 {
     width: 500px;

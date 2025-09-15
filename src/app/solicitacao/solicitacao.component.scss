@@ -1,60 +1,129 @@
 .container {
   display: flex;
-  align-items: center;
   flex-direction: column;
-  gap: 4rem;
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #e8f5e9;
   color: #1b1b1b;
-  min-height: 98vh;
+  min-height: 100vh;
   background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 53%, #4caf50 90%);
-}
 
-.Logo {
-  margin-top: 5rem;
-  width: 600px;
-  height: 150px;
-}
 
-.form-container {
-  max-height: 400px;
-  width: 350px;
-  padding: 2rem;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-
-  h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-
-  label {
-    display: block;
+  .btn-flutuante {
     margin-top: 1rem;
-    text-align: left;
-  }
-
-  input,
-  select {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.25rem;
-  }
-
-  button {
-    font-size: 25px;
-    margin-top: 1rem;
-    width: 90%;
-    padding: 0.5rem;
-    background: #1dac48;
-    color: white;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 30px;
+    right: 30px;
+    background: #0b630f;
     border: none;
-    font-weight: bold;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
     cursor: pointer;
-    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+      background: #1b5e20;
+    }
+
+    .icon-add {
+      display: flex;
+      width: 60px;
+      height: 60px;
+
+      @media (max-width: 768px) {
+        width: 30px;
+        height: 30px;
+      }
+
+      @media (max-width: 480px) {}
+    }
+
+    @media (max-width: 768px) {
+      width: 40px;
+      height: 40px;
+      margin-top: 0.1rem;
+      margin-left: 0.1rem;
+    }
+
+    @media (max-width: 480px) {}
   }
+
+  .main-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 3rem;
+    margin: 0;
+    padding: 0;
+
+  .Logo {
+    margin-top: 2rem;
+      width: 600px;
+      height: 150px;
+
+      @media (max-width: 768px) {
+        width: 70%;
+        height: auto;
+      }
+
+      @media (max-width: 480px) {
+        width: 90%;
+      }
+    }
+
+  .form-container {
+    max-height: 400px;
+    width: 350px;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    @media (max-width: 768px) {
+        max-width: 300px;
+      }
+
+      @media (max-width: 480px) {
+        max-width: 300px;
+      }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    button {
+      font-size: 25px;
+      margin-top: 1rem;
+      width: 90%;
+      padding: 0.5rem;
+      background: #1dac48;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+  }
+}
 }
