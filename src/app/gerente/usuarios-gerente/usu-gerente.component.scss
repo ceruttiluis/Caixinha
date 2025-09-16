@@ -6,9 +6,17 @@
   padding: 1rem;
   min-height: 160vh;
 
+  @media (max-width: 768px) {
+    margin-left: 0;
+    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
+  }
+
   h1 {
     margin-bottom: 1.5rem;
     color: #130458;
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   form {
@@ -37,6 +45,7 @@
         background: #45a049;
       }
     }
+    
   }
 
   table {
@@ -76,6 +85,9 @@
       &:hover {
         background: #d32f2f;
       }
+    }
+    @media (max-width: 768px) {
+      display: none;
     }
   }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { supabase } from '../services/supabaseClient';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 
@@ -8,10 +7,8 @@ import * as FileSaver from 'file-saver';
   providedIn: 'root'
 })
 export class SharedService {
-  private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   processarIndicadores(cupons: any[]): {
@@ -104,7 +101,7 @@ export class SharedService {
     }
   }
   async carregarFiliais(): Promise<any[]> {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('filiais')
       .select('id, nome, cidade, gerente:profiles!filiais_gerente_id_fkey ( name )')
       .order('id', { ascending: false });
@@ -289,7 +286,7 @@ export class SharedService {
 
   async carregarCuponsGerente(filialId?: string | null, colaboradorId?: string | null, startDate?: Date | null, endDate?: Date | null): Promise<any[]> {
     const filtro = filialId;
-    let query = this.supabase
+    let query = supabase
       .from('cupons')
       .select(`
         id,
@@ -339,7 +336,7 @@ export class SharedService {
           }
         }
 
-        const { data: pu } = this.supabase.storage
+        const { data: pu } = supabase.storage
           .from('cupons')
           .getPublicUrl(filePath);
 
@@ -369,7 +366,7 @@ export class SharedService {
   }
   async carregarCuponsCiop(filialId?: string | null, colaboradorId?:  string | null, startDate?: Date, endDate?: Date): Promise<any[]> {
 
-    let query = this.supabase
+    let query = supabase
       .from('cupons')
       .select(`
         id,
@@ -420,7 +417,7 @@ export class SharedService {
           }
         }
 
-        const { data: pu } = this.supabase.storage
+        const { data: pu } = supabase.storage
           .from('cupons')
           .getPublicUrl(filePath);
 
@@ -452,7 +449,7 @@ export class SharedService {
 
   async carregarCuponsColaborador(filialId?: string | null,  startDate?: Date, endDate?: Date): Promise<any[]> {
     const filtro = filialId;
-    let query = this.supabase
+    let query = supabase
       .from('cupons')
       .select(`
         id,
@@ -500,7 +497,7 @@ export class SharedService {
           }
         }
 
-        const { data: pu } = this.supabase.storage
+        const { data: pu } = supabase.storage
           .from('cupons')
           .getPublicUrl(filePath);
 
@@ -538,7 +535,7 @@ export class SharedService {
   }
   async carregarProfiles(filialId?: string | null): Promise<any[]> {
     const filtro = filialId;
-    let query = this.supabase
+    let query = supabase
       .from('profiles')
       .select('id, name')
       .order('name', { ascending: true });

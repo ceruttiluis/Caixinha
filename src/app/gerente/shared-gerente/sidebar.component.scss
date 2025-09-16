@@ -43,8 +43,7 @@
   }
 
   .menu-btn {
-    display: none;
-    position: absolute;
+    position: fixed;
     top: 1rem;
     left: 1rem;
     background: #1dac48;
@@ -54,29 +53,30 @@
     padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
-    z-index: 1100;
+    z-index: 1200;
 
-    @media (max-width: 768px) {
-      display: block;
+    @media (min-width: 769px) {
+      display: none;
     }
   }
 
   @media (max-width: 768px) {
     left: -250px;
-    width: 200px;
+    width: 60px;
     padding-top: 5rem;
 
     &.open {
       left: 0;
     }
   }
+
   .overlay {
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
+    left: 90px;
+    width: calc(100% - 90px);
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 900; 
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 900;
   }
 }

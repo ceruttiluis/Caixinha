@@ -5,10 +5,19 @@
   padding: 1rem;
   min-height: 160vh;
 
+  @media (max-width: 768px) {
+    margin-left: 0;
+    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
+  }
+
   .content {
     margin-top: 0;
     flex-grow: 1;
     animation: fadeIn 0.6s ease-in;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   h1 {
@@ -80,14 +89,14 @@
       color: white;
 
       &:first-child {
-          background: #2196f3;
-          color: white;
-        }
+        background: #2196f3;
+        color: white;
+      }
 
-     &:last-child {
-          background: #f44336;
-          color: white;
-        }
+      &:last-child {
+        background: #f44336;
+        color: white;
+      }
     }
   }
 }

@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { NgFor, NgIf, CommonModule } from '@angular/common';
-import { environment } from '../../../environments/environment';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
 import { SharedService } from '../../services/shared.service';
-import { AuthService } from '../../services/auth.service';
+import { supabase } from '../../services/supabaseClient';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
@@ -36,17 +34,14 @@ interface Filial {
   ]
 })
 export class FiliaisComponent implements OnInit {
-
+  filiais: Filial[] = [];
+  novaFilial: Filial = { nome: '', cidade: '' };
+  editando: Filial | null = null;
   constructor(
     private router: Router,
     private sharedService: SharedService,
     private ngZone: NgZone) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
-  supabase: SupabaseClient;
-  filiais: Filial[] = [];
-  novaFilial: Filial = { nome: '', cidade: '' };
-  editando: Filial | null = null;
 
   async ngOnInit() {
     await this.carregarFiliais();
@@ -65,7 +60,7 @@ export class FiliaisComponent implements OnInit {
   }
   async salvarFilial() {
     if (this.editando) {
-      const { error } = await this.supabase
+      const { error } = await supabase
         .from('filiais')
         .update({ nome: this.novaFilial.nome, cidade: this.novaFilial.cidade })
         .eq('id', this.editando.id);
@@ -76,7 +71,7 @@ export class FiliaisComponent implements OnInit {
         await this.carregarFiliais();
       }
     } else {
-      const { error } = await this.supabase
+      const { error } = await supabase
         .from('filiais')
         .insert([this.novaFilial]);
 
@@ -93,7 +88,7 @@ export class FiliaisComponent implements OnInit {
   }
 
   async excluirFilial(id: number) {
-    const { error } = await this.supabase
+    const { error } = await supabase
       .from('filiais')
       .delete()
       .eq('id', id);

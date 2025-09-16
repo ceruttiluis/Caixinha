@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
+import { supabase } from '../../services/supabaseClient';
 import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonModule, NgFor, } from '@angular/common';
@@ -26,7 +25,6 @@ import { filter } from 'rxjs/operators';
   ]
 })
 export class DashboardGerenteComponent implements OnInit {
-  supabase: SupabaseClient;
   cupons: any[] = [];
   filialId: string | null = null;
   filiais: any[] = [];
@@ -52,9 +50,7 @@ export class DashboardGerenteComponent implements OnInit {
     private router: Router, 
     private sharedService: SharedService,
     private ngZone: NgZone
-  ) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-  }
+  ) {}
 
   logout() {
     this.auth.logout();
@@ -146,7 +142,7 @@ export class DashboardGerenteComponent implements OnInit {
   }
 
   async updateStatus(id: number, status: string) {
-    await this.supabase
+    await supabase
       .from('cupons')
       .update({ status })
       .eq('id', id);

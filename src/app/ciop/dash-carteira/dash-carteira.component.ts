@@ -1,9 +1,8 @@
 import { Component, ViewChild, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { supabase } from '../../services/supabaseClient';
 import { FormsModule } from '@angular/forms';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
@@ -30,7 +29,6 @@ import { filter } from 'rxjs/operators';
 export class DashCarteiraComponent implements OnInit {
   @ViewChild('gastosChart') gastosChart: BaseChartDirective | undefined;
   @ViewChild('adicoesChart') adicoesChart: BaseChartDirective | undefined;
-  supabase: SupabaseClient;
   cupons: any[] = [];
   adicoes: any[] = [];
   carteira: any[] = [];
@@ -59,7 +57,6 @@ export class DashCarteiraComponent implements OnInit {
     private sharedService: SharedService,
     private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
@@ -150,7 +147,7 @@ export class DashCarteiraComponent implements OnInit {
   }
 
   async carregarAdicoes() {
-    let query = this.supabase
+    let query = supabase
       .from('carteira')
       .select('profile_id, criado_em, observacoes, tipo_recarga,  valor_add, profiles (name)');
 
@@ -192,7 +189,7 @@ export class DashCarteiraComponent implements OnInit {
 
   async carregarCarteira() {
 
-    let query = this.supabase
+    let query = supabase
       .from('profiles')
       .select('*');
 

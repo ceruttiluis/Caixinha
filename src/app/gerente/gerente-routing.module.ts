@@ -9,19 +9,19 @@ const routes: Routes = [
   {
       path: '',
       component: DashboardGerenteComponent,
-      //canActivate: [GerenteGuard],
+      canActivate: [GerenteGuard],
       data: { roles: ['GERENTE'] }
     },
     {
       path: 'usuarios-gerente',
       component: UsuariosGerenteComponent,
-     // canActivate: [GerenteGuard],
+      canActivate: [GerenteGuard],
       data: { roles: ['GERENTE'] }
     },
     {
       path: 'cupons',
       component: CuponsComponent,
-      //canActivate: [GerenteGuard],
+      canActivate: [GerenteGuard],
       data: { roles: ['GERENTE'] }
     },
 ];

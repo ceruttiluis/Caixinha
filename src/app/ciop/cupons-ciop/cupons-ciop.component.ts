@@ -1,10 +1,9 @@
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { AuthService } from '../../services/auth.service';
+import { supabase } from '../../services/supabaseClient';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { environment } from '../../../environments/environment';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
 import { SharedService } from '../../services/shared.service';
@@ -43,7 +42,6 @@ interface Cupom {
   ]
 })
 export class CuponsCiopComponent {
-  supabase: SupabaseClient;
   filialId: string | null | undefined = undefined;
   filiais: any[] = [];
   profiles: any[] = [];
@@ -65,9 +63,7 @@ export class CuponsCiopComponent {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
-    private ngZone: NgZone) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-  }
+    private ngZone: NgZone) {}
 
   async ngOnInit() {
     await this.carregarDados();
@@ -157,7 +153,7 @@ export class CuponsCiopComponent {
   }
 
   async atualizarStatusCupom(cupom: Cupom, novoStatus: CupomStatus) {
-    const { error } = await this.supabase
+    const { error } = await supabase
       .from('cupons')
       .update({ status: novoStatus })
       .eq('id', cupom.id);

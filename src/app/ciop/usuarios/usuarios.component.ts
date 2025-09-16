@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { supabase } from '../../services/supabaseClient';
 import { FormsModule, FormGroup, Validators, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
@@ -35,7 +34,6 @@ interface Filial {
 })
 export class UsuariosComponent implements OnInit {
   profileForm: FormGroup;
-  supabase: SupabaseClient;
   uploading = false;
   usuarios: any[] = [];
   filiais: Filial[] = [];
@@ -49,7 +47,6 @@ export class UsuariosComponent implements OnInit {
     private router: Router,
     private ngZone: NgZone
   ) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
 
     this.profileForm = this.fb.group({
       password: ['', Validators.required],
@@ -75,7 +72,7 @@ export class UsuariosComponent implements OnInit {
   }
 
   async carregarUsuarios() {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('id, name, email, role, filial:filial_id ( nome ), gerente:gerente_id ( name )')
       .order('id', { ascending: false });
@@ -94,7 +91,7 @@ export class UsuariosComponent implements OnInit {
   }
 
   async carregarGerentes() {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('id, name, role')
       .eq('role', 'moderator');

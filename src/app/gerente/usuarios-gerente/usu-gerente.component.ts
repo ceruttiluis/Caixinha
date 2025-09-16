@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { supabase } from '../../services/supabaseClient';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
@@ -18,7 +17,6 @@ import { filter } from 'rxjs/operators';
   standalone: true
 })
 export class UsuariosGerenteComponent implements OnInit {
-  supabase: SupabaseClient;
   usuarios: any[] = [];
   filialSelecionada: string = '';
   filialId: string | null = null;
@@ -27,9 +25,7 @@ export class UsuariosGerenteComponent implements OnInit {
     private auth: AuthService, 
     private router: Router,
     private ngZone: NgZone
-  ) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-  }
+  ) {}
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
@@ -43,7 +39,7 @@ export class UsuariosGerenteComponent implements OnInit {
 
   async carregarUsuarios() {
     const filtro = this.filialSelecionada || this.filialId;
-    let query = this.supabase
+    let query = supabase
       .from('profiles')
       .select('id, name, email, role, filial:filial_id ( nome )')
       .order('id', { ascending: false });

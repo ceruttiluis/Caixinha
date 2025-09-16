@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { supabase } from '../services/supabaseClient';
 
 @Component({
   selector: 'app-home',
@@ -11,16 +10,15 @@ import { environment } from '../../environments/environment';
   standalone: true,
 })
 export class HomeComponent {
-  supabase: SupabaseClient;
   currentUser: any;
   constructor(private auth: AuthService, private router: Router) 
-  {this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);}
+  {}
 
   async ngOnInit() {
-    const { data: { user } } = await this.supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
-      const { data, error } = await this.supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, role, filial_id')
         .eq('id', user.id) 

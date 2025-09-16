@@ -106,7 +106,7 @@
                 <td class="actions">
                   <button class="approve" (click)="atualizarStatusCarteira(cupom, 'APROVADO')">Aprovar</button>
                   <button class="reject" (click)="atualizarStatusCarteira(cupom, 'DESCONTADO')">Descontar</button>
-                  <!---<button class="reject" (click)="excluirCupom()">Excluir</button> --->
+                 <button class="delete" (click)="excluirCupom(cupom.id)">Excluir</button>
                 </td>
               </tr>
             </tbody>
@@ -158,7 +158,7 @@
                 </td>
                 <td class="actions">
                   <button class="reject" (click)="atualizarStatusCupom(cupom, 'DESCONTADO')">Descontar</button>
-                  <!---<button class="reject" (click)="excluirCupom()">Excluir</button> --->
+                  <button class="delete" (click)="excluirCupom(cupom.id)">Excluir</button>
                 </td>
               </tr>
             </tbody>
@@ -210,7 +210,7 @@
                 </td>
                 <td class="actions">
                   <button class="approve" (click)="atualizarStatusCupom(cupom, 'APROVADO')">Aprovar</button>
-                  <!---<button class="reject" (click)="excluirCupom()">Excluir</button> --->
+                  <button class="delete" (click)="excluirCupom(cupom.id)">Excluir</button>
                 </td>
               </tr>
             </tbody>

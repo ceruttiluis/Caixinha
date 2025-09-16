@@ -8,13 +8,13 @@ const routes: Routes = [
   {
     path: '',
     component: DashColaboradorComponent,
-    //canActivate: [ColaboradorGuard],
+    canActivate: [ColaboradorGuard],
     data: { roles: ['COLABORADOR'] }
   },
   {
     path: 'cupons-colaborador',
     component: CuponsColaboradorComponent,
-    //canActivate: [ColaboradorGuard],
+    canActivate: [ColaboradorGuard],
     data: { roles: ['COLABORADOR'] }
   },
 ];

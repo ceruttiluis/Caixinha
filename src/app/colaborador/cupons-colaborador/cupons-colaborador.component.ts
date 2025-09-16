@@ -1,10 +1,8 @@
 import { Router, NavigationEnd  } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { environment } from '../../../environments/environment';
 import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
 import { SharedService } from '../../services/shared.service';
@@ -43,7 +41,6 @@ interface Cupom {
   ]
 })
 export class CuponsColaboradorComponent implements OnInit{
-  supabase: SupabaseClient;
   filialId: string | null = null;
   filialSelecionada: string = '';
   tooltipOpenId: string | null = null;
@@ -64,7 +61,6 @@ export class CuponsColaboradorComponent implements OnInit{
     private router: Router, 
     private sharedService: SharedService,
   private ngZone: NgZone) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {

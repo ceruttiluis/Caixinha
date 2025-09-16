@@ -1,4 +1,5 @@
-<div class="Sidebar">
+<div class="Sidebar" [class.open]="sidebarOpen">
+  <button class="menu-btn" (click)="toggleSidebar()">☰</button>
   <aside class="sidebar">
     <nav>
       <a routerLink="/home" routerLinkActive="active">
@@ -21,4 +22,5 @@
       <div class="label">Sair</div>
     </nav>
   </aside>
+      <div class="overlay" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
 </div>

@@ -1,9 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
-import { NgZone } from '@angular/core';
+import { supabase } from '../../services/supabaseClient';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -14,13 +12,11 @@ import { filter } from 'rxjs/operators';
 })
 export class HeaderComponent {
   carteira: string | null = null;
-  supabase: SupabaseClient;
   constructor(
     private auth: AuthService,
     private router: Router,
     private ngZone: NgZone
   ) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
   logout(): void {
     this.auth.logout();
@@ -37,14 +33,14 @@ export class HeaderComponent {
   }
   async carregarCarteira() {
 
-    const { data: { user }, error: userError } = await this.supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
 
     if (userError || !user) {
       console.error('Usuário não autenticado:', userError?.message);
       return;
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)

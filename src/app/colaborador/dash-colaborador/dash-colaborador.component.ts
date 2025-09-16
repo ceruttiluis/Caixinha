@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonModule } from '@angular/common';
@@ -25,7 +23,6 @@ import { filter } from 'rxjs/operators';
   ]
 })
 export class DashColaboradorComponent implements OnInit {
-  supabase: SupabaseClient;
   cupons: any[] = [];
   filialId: string | null = null;
   rankingGastos: any[] = [];
@@ -47,7 +44,6 @@ export class DashColaboradorComponent implements OnInit {
     private router: Router,
     private sharedService: SharedService,
     private ngZone: NgZone,) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
   logout() {
     this.auth.logout();

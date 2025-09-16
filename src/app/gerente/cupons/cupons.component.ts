@@ -1,12 +1,11 @@
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { supabase } from '../../services/supabaseClient';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
-import { environment } from '../../../environments/environment';
 import { SharedService } from '../../services/shared.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
@@ -43,7 +42,6 @@ interface Cupom {
   ]
 })
 export class CuponsComponent {
-  supabase: SupabaseClient;
   filialId: string | null = null;
   filialSelecionada?: string;
   tooltipOpenId: string | null = null;
@@ -65,9 +63,7 @@ export class CuponsComponent {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
-    private ngZone: NgZone) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-  }
+    private ngZone: NgZone) {}
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
@@ -144,7 +140,7 @@ export class CuponsComponent {
   }
 
   async atualizarStatusCarteira(cupom: Cupom, novoStatus: CupomStatus) {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('cupons')
       .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
       .eq('id', Number(cupom.id))
@@ -163,7 +159,7 @@ export class CuponsComponent {
 
       const usuarioId = cupom.usuarioID;
 
-      const { data: usuario, error: usuarioError } = await this.supabase
+      const { data: usuario, error: usuarioError } = await supabase
         .from('profiles')
         .select('carteira, filial_id, name, id')
         .eq('id', usuarioId)
@@ -176,7 +172,7 @@ export class CuponsComponent {
 
       const novoSaldo = (usuario.carteira || 0) - (cupom.valor || 0);
 
-      const { error: updateError } = await this.supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({ carteira: novoSaldo })
         .eq('id', usuarioId);
@@ -203,7 +199,7 @@ export class CuponsComponent {
   }
 
   async atualizarStatusCupom(cupom: Cupom, novoStatus: CupomStatus) {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('cupons')
       .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
       .eq('id', Number(cupom.id))
@@ -232,6 +228,18 @@ export class CuponsComponent {
     this.ngZone.run(() => {
       this.cupons = this.cupons;
     });
+  }
+
+  async excluirCupom(id: Number){
+     const { error } = await supabase
+      .from('cupons')
+      .delete()
+      .eq('id', Number(id))
+      .maybeSingle();
+
+      if (!error) {
+      await this.carregarDados();
+    }
   }
   isTooltipOpen(id: number | string): boolean {
     return this.tooltipOpenId === String(id);

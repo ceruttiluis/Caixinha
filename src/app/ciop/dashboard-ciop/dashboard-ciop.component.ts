@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
+import { supabase } from '../../services/supabaseClient';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { CommonModule, NgFor, } from '@angular/common';
@@ -26,7 +25,6 @@ import { filter } from 'rxjs/operators';
   ]
 })
 export class DashboardCiopComponent implements OnInit {
-  supabase: SupabaseClient;
   cupons: any[] = [];
   filialId: string | null | undefined = undefined;
   profiles: any[] = [];
@@ -52,9 +50,7 @@ export class DashboardCiopComponent implements OnInit {
     private router: Router,
     private sharedService: SharedService,
     private ngZone: NgZone
-  ) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-  }
+  ) {}
   logout() {
     this.auth.logout();
     this.router.navigate(['/login']);
@@ -161,7 +157,7 @@ export class DashboardCiopComponent implements OnInit {
   }
 
   async updateStatus(id: number, status: string) {
-    await this.supabase
+    await supabase
       .from('cupons')
       .update({ status })
       .eq('id', id);

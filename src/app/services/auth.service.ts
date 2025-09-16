@@ -1,16 +1,14 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { supabase } from '../services/supabaseClient';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private supabase: SupabaseClient;
   private isBrowser: boolean;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
   private roleMapping: { [key: string]: string } = {
@@ -21,7 +19,7 @@ export class AuthService {
   };
 
   async login(email: string, password: string): Promise<{ role: string }> {
-    const { data: authData, error: authError } = await this.supabase.auth.signInWithPassword({
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password
     });
@@ -33,7 +31,7 @@ export class AuthService {
 
     console.log('Auth success. User ID:', authData.user?.id);
 
-    const { data: profile, error: profileError } = await this.supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role, filial_id')
       .eq('id', authData.user?.id)
@@ -59,7 +57,7 @@ export class AuthService {
   }
   async signUp(email: string, password: string) {
 
-    const { data: authData, error: authError } = await this.supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password
     });
@@ -67,7 +65,7 @@ export class AuthService {
     if (authError) throw authError;
 
 
-    const { error: profileError } = await this.supabase
+    const { error: profileError } = await supabase
       .from('profiles')
       .insert([{
         id: authData.user?.id,
@@ -78,7 +76,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.supabase.auth.signOut();
+    supabase.auth.signOut();
     if (this.isBrowser) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');

@@ -1,12 +1,11 @@
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule, NgFor } from '@angular/common';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { supabase } from '../../services/supabaseClient';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
-import { environment } from '../../../environments/environment';
 import { SharedService } from '../../services/shared.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
@@ -39,7 +38,6 @@ interface Solicitacoes {
   ]
 })
 export class SolicitacoesComponent {
-  supabase: SupabaseClient;
   filialId: string | null | undefined = undefined;
   colaboradorId: string | null | undefined = undefined;
   profiles: any[] = [];
@@ -63,7 +61,6 @@ export class SolicitacoesComponent {
     private sharedService: SharedService,
     private ngZone: NgZone
   ) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
   }
 
   async ngOnInit() {
@@ -119,7 +116,7 @@ export class SolicitacoesComponent {
 
   async carregarDados(startDate?: Date, endDate?: Date) {
 
-    let query = this.supabase
+    let query = supabase
       .from('solicitacao')
       .select('id, profile_id, tipo_recarga, status, valor, data_solicitacao, observacoes, profiles (name), filiais (nome)');
 
@@ -169,7 +166,7 @@ export class SolicitacoesComponent {
   }
 
   async atualizarStatusCupom(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('solicitacao')
       .update({ status: novoStatus })
       .eq('id', Number(solicitacoes.id))
@@ -188,7 +185,7 @@ export class SolicitacoesComponent {
     if (novoStatus === 'APROVADO') {
       const usuarioId = solicitacoes.usuarioID;
 
-      const { data: usuario, error: usuarioError } = await this.supabase
+      const { data: usuario, error: usuarioError } = await supabase
         .from('profiles')
         .select('carteira, filial_id, name')
         .eq('id', usuarioId)
@@ -201,7 +198,7 @@ export class SolicitacoesComponent {
 
       const novoSaldo = (usuario.carteira || 0) + (solicitacoes.valor || 0);
 
-      const { error: updateError } = await this.supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({ carteira: novoSaldo })
         .eq('id', usuarioId);
@@ -219,7 +216,7 @@ export class SolicitacoesComponent {
         tipo_recarga: solicitacoes.tipo,
       };
 
-      const { error: insertError } = await this.supabase
+      const { error: insertError } = await supabase
         .from('carteira')
         .insert(historicoData);
 

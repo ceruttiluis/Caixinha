@@ -1,20 +1,37 @@
 .dashboard {
-  margin-left: 90px;
-  height: 81vh;   
-  width: 100%;   
+  margin-left: 110px;
+  min-height: 98vh;
+  padding: 1rem;
   display: flex;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 57%, #4caf50 90%);
+  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 53%, #4caf50 90%);
   color: #1b1b1b;
 
+  @media (max-width: 768px) {
+    margin-left: 0;
+
+    .content {
+      padding: 0.3rem;
+      width: 100%;}
+    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
+
+    @media (max-width: 480px) {
+     margin-left: 0;
+
+    .content {
+      padding: 0.3rem;
+      width: 100%;}
+    }
+  }
+
   .content {
-    margin-left: 50px;
     margin-top: 0;
     flex-grow: 1;
     animation: fadeIn 0.6s ease-in;
   }
 
   .Description {
+    margin-top: 0;
     align-items: left;
     display: flex;
     justify-content: left;
@@ -26,6 +43,10 @@
       color: #130458;
       font-weight: bold;
       width: 140px;
+    }
+
+    @media (max-width: 768px) {
+      gap: 3rem;
     }
   }
 
@@ -43,45 +64,102 @@
       gap: 3rem;
       width: 800px;
 
-      .periodo{
-      display: flex;
-      gap: 3rem;
-      border-radius: 4px;
-      width: 515px;
+      .periodo {
+        display: flex;
+        gap: 3rem;
+        border-radius: 4px;
+        width: 515px;
+      }
+      @media (max-width: 768px) {
+      gap: 1rem;
+
+      label {
+        gap: 1rem;
+      }
     }
     }
-    select, input {
+
+    select,
+    input {
       padding: 0.5rem;
       border: 1px solid #a5d6a7;
       border-radius: 4px;
       width: 220px;
+
+      @media (max-width: 768px) {
+        width: 170px;
+
+        @media (max-width: 480px) {
+          width: 170px;
+        }
+      }
     }
+
   }
 
   .cards {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 4rem;
-    gap: 3rem;
-    margin-bottom: 2rem;
-    height: 250px;
-    width: 85%;
-    padding: 1.5rem;
+    gap: 2rem;
+    margin: 0 auto 2rem auto;
+    height: auto;
+    width: 100%;
+    padding: 1rem;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+        align-items: center;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0.1rem;
+
+      @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: center;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0.1rem;
+      }
+    }
 
     .card {
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      gap: 2rem;
-      height: 260px;
-      flex: 1;
+      gap: 1rem;
+      min-height: 260px;
+      flex: 1 1 200px; 
       background-color: white;
       border-radius: 8px;
       padding: 1rem;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s;
+      width: 100%;
+      max-width: 250px; 
+
+      @media (max-width: 768px) {
+        width: 80%; 
+        max-width: 230px; 
+        min-height: 120px;
+        gap: 0.5rem;
+        padding: 0.2rem;
+        .label { font-size: 1rem; } 
+        .value { font-size: 1.5rem; } 
+        .coin { width: 40px; height: 60px; }
+        @media (max-width: 480px) {
+          width: 80%; 
+          max-width: 230px; 
+          min-height: 120px;
+          gap: 0.5rem;
+          padding: 0.2rem;
+          .label { font-size: 1rem; } 
+          .value { font-size: 1.5rem; } 
+          .coin { width: 40px; height: 60px; }
+        }
+      }
 
       &:hover {
         transform: scale(1.02);
@@ -136,123 +214,6 @@
     color: #130458;
     margin-bottom: 1rem;
   }
-
-
-  .rankings {
-    margin-top: 0;
-    padding: 0;
-    display: flex;
-    gap: 3rem;
-    width: 100%;
-
-    .ranking {
-      flex: 1;
-      background-color: #f5fffa;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-      .Title {
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        height: 100px;
-
-        .Logo {
-          width: 70px;
-          height: 70px;
-          margin-right: 0.5rem;
-        }
-
-        .h2 {
-          font-size: 1.1rem;
-          font-weight: bold;
-          color: #1f1f1f;
-        }
-      }
-
-      .table-container {
-        max-height: 300px;
-        text-align: left;
-
-        table {
-          width: 100%;
-
-          th,
-          td {
-            margin-top: 0;
-            border-bottom: 1px solid #ccc;
-            padding: 0.5rem;
-            text-align: left;
-            align-items: center;
-            font-size: 18px;
-            gap: 1rem;
-          }
-
-        }
-      }
-    }
-  }
-
-  /*  .tabela-lancamentos {
-    overflow-y: auto; 
-    border-collapse: collapse;
-    border-radius: 8px;
-    margin-top: 2rem;
-    background: #f5fffa;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); 
-
-    table {
-      overflow-y: auto; 
-      border-collapse: collapse;
-      width: 100%;
-      border-collapse: collapse;
-
-      th, td {
-        padding: 0.5rem;
-        border-bottom: 1px solid #e0e0e0;
-        text-align: left;
-      }
-
-      img.imagem-nota {
-        height: 40px;
-        object-fit: contain;
-      }
-      .verde {
-        color: #2e7d32; 
-        font-weight: bold;
-      }
-      .vermelho {
-        color: #c62828;
-        font-weight: bold;
-      }
-      .azul {
-        color: #1565c0;
-        font-weight: bold;
-      }
-    }
-    .list-lancamento{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 80rem;
-    }
-    
-    button {
-      margin-bottom: 1rem;
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-
-      &:hover {
-        background-color: #388e3c;
-      }
-    }
-  }
-*/
 
   @keyframes fadeIn {
     from {

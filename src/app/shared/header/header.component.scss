@@ -13,16 +13,24 @@
   bottom: 0;
   z-index: 1000;
   font-family: 'Segoe UI', sans-serif;
-  
-    @media (max-width: 768px) {
-        background: linear-gradient(110deg, #2d7d32 20%, #a8aca9 75%, #4caf50 130%);
-      margin-left: 0;
-      height: 80px;
 
-      @media (max-width: 480px) {
-        margin-left: 0;
+  @media (max-width: 768px) {
+    background: linear-gradient(110deg, #2d7d32 20%, #a8aca9 67%, #4caf50 150%);
+    margin-left: 0;
+    height: 100px;
+
+    h1 {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      margin-left: 0;
+
+      h1 {
+        display: none;
       }
     }
+  }
 
   h1 {
     width: 500px;
@@ -55,18 +63,32 @@
 
       .indicador {
         position: absolute;
-            top: 83%;
-            left: 35%;
-            transform: translate(-50%, -50%);
-            font-weight: bold;
-            font-size: 1.3rem;
-            color: #ffffff;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-            padding: 8px 16px;
-            border-radius: 10px;
-            min-width: 120px;
-            text-align: center;
-            height: 100px;
+        top: 83%;
+        left: 35%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+        font-size: 1.3rem;
+        color: #ffffff;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+        padding: 8px 16px;
+        border-radius: 10px;
+        min-width: 120px;
+        text-align: center;
+        height: 100px;
+      }
+
+      @media (max-width: 768px) {
+        .wallet {
+          width: 120px;
+          height: 100px;
+        }
+
+        .indicador {
+          font-size: 1rem;
+          top: 100%;
+        }
+
+        @media (max-width: 480px) {}
       }
     }
 
@@ -98,6 +120,69 @@
         color: #130458;
         font-weight: bold;
         margin-right: 10px;
+      }
+
+      @media (max-width: 768px) {
+
+        p,
+        span {
+          width: 150px;
+          font-weight: 500;
+          font-size: 0.6rem;
+        }
+
+        strong {
+          color: #130458;
+          font-weight: bold;
+          margin-right: 10px;
+          width: 150px;
+        }
+
+        @media (max-width: 480px) {
+
+          p,
+          span {
+            width: 140px;
+            font-weight: 500;
+            font-size: 0.6rem;
+          }
+
+          strong {
+            color: #130458;
+            font-weight: bold;
+            width: 90px;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      gap: 1rem;
+      justify-content: right;
+      align-items: right;
+
+      @media (max-width: 480px) {
+        gap: 1rem;
+      justify-content: right;
+      align-items: right;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    justify-content: right;
+    align-items: right;
+
+    .Logo {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      justify-content: right;
+      align-items: right;
+
+      .Logo {
+        display: none;
       }
     }
   }

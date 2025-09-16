@@ -12,37 +12,37 @@ const routes: Routes = [
   {
     path: '',
     component: DashboardCiopComponent,
-    //canActivate: [CiopGuard],
+    canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   },
   {
     path: 'usuarios',
     component: UsuariosComponent,
-    //canActivate: [CiopGuard],
+    canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   },
   {
     path: 'filiais',
     component: FiliaisComponent,
-    //canActivate: [CiopGuard],
+    canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   },
   {
     path: 'dash-carteira',
     component: DashCarteiraComponent,
-    //canActivate: [CiopGuard],
+    canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   },
   {
     path: 'cupons-ciop',
     component: CuponsCiopComponent,
-    //canActivate: [CiopGuard],
+    canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   },
   {
     path: 'solicitacoes',
     component: SolicitacoesComponent,
-    //canActivate: [CiopGuard],
+    canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
   }
 ];

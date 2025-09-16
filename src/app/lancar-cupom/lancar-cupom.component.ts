@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { supabase } from '../services/supabaseClient';
 import { environment } from '../../environments/environment';
 import { SharedModule } from '../shared/shared.module';
 import { CommonModule } from '@angular/common';
@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
 })
 export class LancarCupomComponent {
   cupomForm: FormGroup;
-  supabase: SupabaseClient;
   imageUrl: string = '';
   preview: string = '';
   uploading = false;
@@ -26,8 +25,6 @@ export class LancarCupomComponent {
     private auth: AuthService,
     private router: Router,
   ) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-
     this.cupomForm = this.fb.group({
       tipo: ['', Validators.required],
       observacoes: ['', Validators.required],
@@ -59,7 +56,7 @@ export class LancarCupomComponent {
     const file: File = this.cupomForm.value.imagem;
     const filePath = `cupons/${Date.now()}-${file.name}`;
 
-    const { error: uploadError } = await this.supabase
+    const { error: uploadError } = await supabase
       .storage
       .from('cupons')
       .upload(filePath, file);
@@ -74,7 +71,7 @@ export class LancarCupomComponent {
 
     const { tipo, observacoes, data, valor } = this.cupomForm.value;
 
-    const { data: perfil, error: perfilError } = await this.supabase
+    const { data: perfil, error: perfilError } = await supabase
       .from('profiles')
       .select('filial_id')
       .eq('id', this.auth.getUserId())
@@ -86,7 +83,7 @@ export class LancarCupomComponent {
       return;
     }
 
-    const { error: insertError } = await this.supabase
+    const { error: insertError } = await supabase
       .from('cupons')
       .insert({
         usuario_id: this.auth.getUserId(),
