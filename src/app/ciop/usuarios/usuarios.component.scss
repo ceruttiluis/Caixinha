@@ -1,9 +1,10 @@
 .container {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 43.5%, #4caf50 90%);
-  margin-left: 110px;
-  padding: 1rem;
-  min-height: 160vh;
+  background: linear-gradient(135deg, #2d7d32 1%, #a8aca9 57%, #4caf50 92%);
+ margin-left: 95px;
+  display: flex;
+  padding: 0;
+  min-height: 79.5vh;
 
   @media (max-width: 768px) {
     margin-left: 0;
@@ -11,6 +12,7 @@
   }
 
   .content {
+    margin-left: 50px;
     margin-top: 0;
     flex-grow: 1;
     animation: fadeIn 0.6s ease-in;
@@ -19,6 +21,7 @@
       display: none;
     }
   }
+
 
   h1 {
     margin-bottom: 1.5rem;
@@ -54,49 +57,96 @@
     }
   }
 
-  table {
+   .usuarios {
+    margin-top: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+    gap: 0.5rem;
     width: 100%;
-    border-collapse: collapse;
-    background: white;
-    margin-top: 1rem;
 
-    th,
-    td {
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      text-align: left;
+  .tabela-usuario {
+    margin-top: 0;
+    margin: 0;
+    margin-right: 1rem;
+    max-height: 500px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 5px;
+
+    h1 {
+      color: #130458;
+      font-size: 1.5rem;
+      margin-top: 0;
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
 
-    th {
-      background: #f1f1f1;
-      font-weight: 600;
+    .list-usuario {
+      margin-top: 0;
+      overflow-y: auto;
+      max-height: 480px;
+      width: 100%;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+    &:not(:first-child) {
+      margin-top: 3rem;
     }
 
-    tr:hover {
-      background-color: #f1f1f1;
-    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
 
-    button {
-      margin-right: 0.5rem;
-      padding: 0.3rem 0.6rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      color: white;
-
-      &:first-child {
-        background: #2196f3;
-        color: white;
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
       }
 
-      &:last-child {
-        background: #f44336;
-        color: white;
+      th,
+      td {
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        text-align: left;
       }
-    }
+
+      th {
+        background: #f1f1f1;
+        font-weight: 600;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      button {
+        margin-right: 0.5rem;
+        padding: 0.3rem 0.6rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: white;
+
+        &:first-child {
+          background: #2196f3;
+          color: white;
+        }
+
+        &:last-child {
+          background: #f44336;
+          color: white;
+        }
+      }
+    }}
   }
 }

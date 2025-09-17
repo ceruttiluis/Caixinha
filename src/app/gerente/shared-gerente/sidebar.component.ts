@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -10,9 +10,15 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [RouterModule, CommonModule]
 })
-export class SidebarGerenteComponent {
+export class SidebarGerenteComponent implements OnInit {
   sidebarOpen = false;
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(private auth: AuthService, private router: Router, private ngZone: NgZone, private cd: ChangeDetectorRef) { }
+
+   ngOnInit() {
+    this.ngZone.run(() => {
+      this.sidebarOpen = false;
+    });
+  }
 
   logout() {
     this.auth.logout();
@@ -20,5 +26,6 @@ export class SidebarGerenteComponent {
   }
   toggleSidebar() {
   this.sidebarOpen = !this.sidebarOpen;
+  this.cd.detectChanges(); 
 }
 }

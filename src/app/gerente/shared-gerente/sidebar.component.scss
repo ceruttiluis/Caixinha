@@ -43,10 +43,10 @@
   }
 
   .menu-btn {
-    position: fixed;
+     position: fixed;
     top: 1rem;
     left: 1rem;
-    background: #1dac48;
+    background: #7BAE7F;
     color: white;
     border: none;
     font-size: 1.5rem;
@@ -56,7 +56,7 @@
     z-index: 1200;
 
     @media (min-width: 769px) {
-      display: none;
+      display: none; 
     }
   }
 
@@ -69,14 +69,13 @@
       left: 0;
     }
   }
-
-  .overlay {
-    position: fixed;
+   .overlay {
+     position: fixed;
     top: 0;
-    left: 90px;
+    left: 90px; 
     width: calc(100% - 90px);
     height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 900;
+    background: rgba(0, 0, 0, 0.3); 
+    z-index: 900; 
   }
 }

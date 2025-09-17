@@ -14,7 +14,7 @@
           <option value="trimestral">Trimestral</option>
           <option value="semestral">Semestral</option>
           <option value="anual">Anual</option>
-           <option value="personalizado">Personalizado</option>
+          <option value="personalizado">Personalizado</option>
         </select>
         <div class="periodo" *ngIf="periodoSelecionado === 'personalizado'">
           <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltros()">
@@ -53,154 +53,154 @@
       </label>
       <button (click)="exportarParaExcel()">Exportar Excel</button>
     </div>
-    <div class="tabela-lancamentos">
-      <div class="list-lancamento">
+    <div class="tables-cupons">
+      <div class="tabela-lancamentos">
         <h2>Cupons Pendentes</h2>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuário</th>
-            <th>Data</th>
-            <th>Tipo</th>
-            <th>Valor</th>
-            <th>Imagem</th>
-            <th>Excedente/Deficit</th>
-            <th>Observações</th>
-            <th>Aprovação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cupom of cuponsPendentes">
-            <td>{{ cupom.id }}</td>
-            <td>{{ cupom.usuario }}</td>
-            <td>{{ cupom.data | date:'shortDate' }}</td>
-            <td>{{ cupom.tipo }}</td>
-            <td>{{ cupom.valor | currency:'BRL' }}</td>
-            <td>
-              <a [href]="cupom.link" target="_blank">
-                <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
-              </a>
-            </td>
-            <td [ngClass]="{
+        <div class="list-lancamento">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Imagem</th>
+                <th>Excedente/Deficit</th>
+                <th>Observações</th>
+                <th>Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cuponsPendentes">
+                <td>{{ cupom.id }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td>{{ cupom.valor | currency:'BRL' }}</td>
+                <td>
+                  <a [href]="cupom.link" target="_blank">
+                    <img [src]="cupom.imagem" alt="Nota" class="imagem-nota">
+                  </a>
+                </td>
+                <td [ngClass]="{
                       'verde': cupom.exceDeficit > 0,
                       'vermelho': cupom.exceDeficit < 0,
                       'azul': cupom.exceDeficit === 0
                     }">
-              {{ cupom.exceDeficit | currency:'BRL' }}
-            </td>
-            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
-              <span class="obs-preview">{{ cupom.observacoes }}</span>
+                  {{ cupom.exceDeficit | currency:'BRL' }}
+                </td>
+                <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+                  <span class="obs-preview">{{ cupom.observacoes }}</span>
 
-              <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
-                {{ cupom.observacoes }}
-              </div>
-            </td>
-            <td>{{ cupom.aprovacao }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="tabela-lancamentos">
-      <div class="list-lancamento">
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
+                    {{ cupom.observacoes }}
+                  </div>
+                </td>
+              <td>{{ cupom.aprovacao }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
+      <div class="tabela-lancamentos">
         <h2>Cupons Aprovados</h2>
+        <div class="list-lancamento">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Imagem</th>
+                <th>Excedente/Deficit</th>
+                <th>Observações</th>
+                <th>Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cuponsAprovados">
+                <td>{{ cupom.id }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td>{{ cupom.valor | currency:'BRL' }}</td>
+                <td>
+                  <a [href]="cupom.link " target="_blank">
+                    <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
+                  </a>
+                </td>
+                <td [ngClass]="{
+                      'verde': cupom.exceDeficit > 0,
+                      'vermelho': cupom.exceDeficit < 0,
+                      'azul': cupom.exceDeficit === 0
+                    }">
+                  {{ cupom.exceDeficit | currency:'BRL' }}
+                </td>
+                <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+                  <span class="obs-preview">{{ cupom.observacoes }}</span>
+
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
+                    {{ cupom.observacoes }}
+                  </div>
+                </td>
+                <td>{{ cupom.aprovacao }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuário</th>
-            <th>Data</th>
-            <th>Tipo</th>
-            <th>Valor</th>
-            <th>Imagem</th>
-            <th>Excedente/Deficit</th>
-            <th>Observações</th>
-            <th>Aprovação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cupom of cuponsAprovados">
-            <td>{{ cupom.id }}</td>
-            <td>{{ cupom.usuario }}</td>
-            <td>{{ cupom.data | date:'shortDate' }}</td>
-            <td>{{ cupom.tipo }}</td>
-            <td>{{ cupom.valor | currency:'BRL' }}</td>
-            <td>
-              <a [href]="cupom.link " target="_blank">
-                <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
-              </a>
-            </td>
-            <td [ngClass]="{
-                  'verde': cupom.exceDeficit > 0,
-                  'vermelho': cupom.exceDeficit < 0,
-                  'azul': cupom.exceDeficit === 0
-                }">
-              {{ cupom.exceDeficit | currency:'BRL' }}
-            </td>
-            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
-              <span class="obs-preview">{{ cupom.observacoes }}</span>
-
-              <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
-                {{ cupom.observacoes }}
-              </div>
-            </td>
-            <td>{{ cupom.aprovacao }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="tabela-lancamentos">
-      <div class="list-lancamento">
+      <div class="tabela-lancamentos">
         <h2>Cupons Reprovados</h2>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuário</th>
-            <th>Data</th>
-            <th>Tipo</th>
-            <th>Valor</th>
-            <th>Imagem</th>
-            <th>Excedente/Deficit</th>
-            <th>Observações</th>
-            <th>Aprovação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cupom of cuponsReprovados">
-            <td>{{ cupom.id }}</td>
-            <td>{{ cupom.usuario }}</td>
-            <td>{{ cupom.data | date:'shortDate' }}</td>
-            <td>{{ cupom.tipo }}</td>
-            <td>{{ cupom.valor | currency:'BRL' }}</td>
-            <td>
-              <a [href]="cupom.link " target="_blank">
-                <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
-              </a>
-            </td>
-            <td [ngClass]="{
-                  'verde': cupom.exceDeficit > 0,
-                  'vermelho': cupom.exceDeficit < 0,
-                  'azul': cupom.exceDeficit === 0
-                }">
-              {{ cupom.exceDeficit | currency:'BRL' }}
-            </td>
-            <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
-              <span class="obs-preview">{{ cupom.observacoes }}</span>
+        <div class="list-lancamento">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuário</th>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Imagem</th>
+                <th>Excedente/Deficit</th>
+                <th>Observações</th>
+                <th>Aprovação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cupom of cuponsReprovados">
+                <td>{{ cupom.id }}</td>
+                <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.tipo }}</td>
+                <td>{{ cupom.valor | currency:'BRL' }}</td>
+                <td>
+                  <a [href]="cupom.link " target="_blank">
+                    <img [src]="cupom.imagem " alt="Nota" class="imagem-nota">
+                  </a>
+                </td>
+                <td [ngClass]="{
+                      'verde': cupom.exceDeficit > 0,
+                      'vermelho': cupom.exceDeficit < 0,
+                      'azul': cupom.exceDeficit === 0
+                    }">
+                  {{ cupom.exceDeficit | currency:'BRL' }}
+                </td>
+                <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(cupom.id)">
+                  <span class="obs-preview">{{ cupom.observacoes }}</span>
 
-              <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
-                {{ cupom.observacoes }}
-              </div>
-            </td>
-            <td>{{ cupom.aprovacao }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                  <div class="tooltip-observacao" *ngIf="isTooltipOpen(cupom.id)" (click)="$event.stopPropagation()">
+                    {{ cupom.observacoes }}
+                  </div>
+                </td>
+                  <td>{{ cupom.aprovacao }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
   </section>
 </main>

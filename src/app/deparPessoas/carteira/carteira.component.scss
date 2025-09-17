@@ -1,14 +1,26 @@
 .container {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 2%, #a8aca9 43.5%, #4caf50 90%);
-  margin-left: 110px;
+  display: flex;
+  margin-left: 120px;
   padding: 1rem;
   min-height: 160vh;
 
-  .content {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #2d7d32 0.7%, #a8aca9 43.5%, #4caf50 70%);
+  color: #1b1b1b;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
+  }
+
+ .content {
     margin-top: 0;
     flex-grow: 1;
     animation: fadeIn 0.6s ease-in;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   h1 {
@@ -64,7 +76,7 @@
     .form-actions {
       display: flex;
       gap: 1rem;
-      width: 70%;
+      width: 80%;
       justify-content: flex-end;
       margin-top: 1rem;
 
