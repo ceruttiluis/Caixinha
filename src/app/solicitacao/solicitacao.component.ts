@@ -17,6 +17,8 @@ export class SolicitacaoComponent {
   solicitacaoForm: FormGroup;
   preview: string = '';
   uploading = false;
+  mensagem: string = '';
+  mensagemTipo: 'sucesso' | 'erro' | '' = '';
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +35,7 @@ export class SolicitacaoComponent {
 
   async enviarCupom(): Promise<void> {
     if (this.solicitacaoForm.invalid) {
-      alert('Preencha todos os campos obrigatórios!');
+      this.mostrarMensagem('Preencha todos os campos obrigatórios!', 'erro');
       return;
     }
 
@@ -47,7 +49,7 @@ export class SolicitacaoComponent {
       .single();
 
     if (perfilError || !perfil?.filial_id) {
-      alert('Erro: não foi possível encontrar a filial do usuário.');
+      this.mostrarMensagem('Erro: não foi possível encontrar a filial do usuário.', 'erro');
       this.uploading = false;
       return;
     }
@@ -64,9 +66,9 @@ export class SolicitacaoComponent {
       });
 
     if (insertError) {
-      alert('Erro ao salvar cupom: ' + insertError.message);
+      this.mostrarMensagem('Erro ao enviar Solicitação de Recarga' + insertError.message, 'erro');
     } else {
-      alert('Solicitação enviado com sucesso!');
+      this.mostrarMensagem('✅ Solicitação enviada com sucesso!', 'sucesso');
       this.solicitacaoForm.reset({
         tipo: '',
         observacoes: '',
@@ -83,5 +85,9 @@ export class SolicitacaoComponent {
     if (option === 'home') {
       this.router.navigate(['/home']);
     }
+  }
+  mostrarMensagem(texto: string, tipo: 'sucesso' | 'erro') {
+    this.mensagem = texto;
+    this.mensagemTipo = tipo;
   }
 }

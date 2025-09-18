@@ -1,11 +1,13 @@
 <div class="container">
-  <div class="btn-flutuante" (click)="selectOption('home')">
+  <div class="header">
+    <div class="btn-flutuante" (click)="selectOption('home')">
       <a routerLink="/home" routerLinkActive="active">
         <img class="icon-add" src="assets/Back.png" alt="home">
       </a>
     </div>
+    <img src="assets/FirstLogo.png" alt="Logo" class="Logo">
+  </div>
   <div class="main-content">
-      <img src="assets/FirstLogo.png" alt="Logo" class="Logo">
   <div class="form-container">
     <h2>Lançar Cupom Fiscal</h2>
     <form [formGroup]="solicitacaoForm" (ngSubmit)="enviarCupom()">
@@ -28,5 +30,17 @@
       <button type="submit" [disabled]="uploading">Enviar</button>
     </form>
   </div>
+  </div>
+   <div class="overlay" *ngIf="uploading">
+    <div class="loading-box">
+      <p>⏳ Enviando cupom...</p>
+    </div>
+  </div>
+
+  <div *ngIf="mensagem" class="overlay">
+    <div class="mensagem-box" [ngClass]="{ 'erro': mensagemTipo === 'erro', 'sucesso': mensagemTipo === 'sucesso' }">
+      <p>{{ mensagem }}</p>
+      <button (click)="mensagem = ''">Fechar</button>
+    </div>
   </div>
 </div>
