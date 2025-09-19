@@ -1,6 +1,16 @@
 <app-header></app-header>
 <app-sidebar-dp></app-sidebar-dp>
 <main class="dashboard">
+  <div *ngIf="modalAberto" class="modal-backdrop">
+    <div class="modal">
+      <h3>Editar Valor</h3>
+      <input type="number" [(ngModel)]="valorEditado" min="0" step="0.01" />
+      <div class="actions">
+        <button class="approve" (click)="salvarEdicao()">Salvar</button>
+        <button class="reject" (click)="fecharModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
   <section class="content animate-fade-in">
     <div class="Description">
       <h2>Filial</h2>
@@ -100,6 +110,7 @@
                 <td class="actions">
                   <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
                   <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
+                  <button class="edit" (click)="abrirModalEditar(solicitacao)">Editar</button>
                 </td>
               </tr>
             </tbody>
@@ -185,5 +196,17 @@
         </div>
       </div>
     </div>
+    <div class="overlay uploading" *ngIf="uploading">
+      <div class="loading-box">
+        <p>⏳ Atualizando Valor...</p>
+      </div>
+    </div>
+
+    <div *ngIf="mensagem" class="overlay mensagem">
+    <div class="mensagem-box" [ngClass]="{ 'erro': mensagemTipo === 'erro', 'sucesso': mensagemTipo === 'sucesso' }">
+      <p>{{ mensagem }}</p>
+      <button (click)="mensagem = ''">Fechar</button>
+    </div>
+  </div>
   </section>
 </main>

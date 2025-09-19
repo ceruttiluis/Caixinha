@@ -1,12 +1,10 @@
-import { Router } from '@angular/router';
+
 import { CommonModule, NgFor } from '@angular/common';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { supabase } from '../../services/supabaseClient';
 import { FormsModule } from '@angular/forms';
-import { Component, HostListener } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { Component, HostListener, ChangeDetectorRef } from '@angular/core';
 import { SidebarDPComponent } from '../sharedDP/sidebarDP.component';
 import { SharedModule } from '../../shared/shared.module';
-import { environment } from '../../../environments/environment';
 import { SharedService } from '../../services/shared.service';
 
 type SolicitacoesStatus = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
@@ -34,10 +32,9 @@ interface Solicitacoes {
     CommonModule,
     SharedModule,
     SidebarDPComponent
-]
+  ]
 })
 export class SolicitacoesDPComponent {
-  supabase: SupabaseClient;
   filialId: string | null | undefined = undefined;
   colaboradorId: string | null | undefined = undefined;
   profiles: any[] = [];
@@ -49,14 +46,21 @@ export class SolicitacoesDPComponent {
   trimestreSelecionado: null | undefined;
   semestreSelecionado: null | undefined;
   mesSelecionado: null | undefined;
+  modalAberto = false;
+  valorEditado: number = 0;
+  solicitacaoSelecionada: Solicitacoes | null = null;
+  mensagem: string = '';
+  mensagemTipo: 'sucesso' | 'erro' | '' = '';
+  uploading = false;
 
   solicitacoesPendentes: Solicitacoes[] = [];
   solicitacoesAprovados: Solicitacoes[] = [];
   solicitacoesReprovados: Solicitacoes[] = [];
   solicitacoes: any[] = [];
 
-  constructor(private auth: AuthService, private router: Router, private sharedService: SharedService) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+  constructor(
+    private sharedService: SharedService,
+    private cdr: ChangeDetectorRef) {
   }
 
   async ngOnInit() {
@@ -98,7 +102,7 @@ export class SolicitacoesDPComponent {
 
   async carregarDados(startDate?: Date, endDate?: Date) {
 
-    let query = this.supabase
+    let query = supabase
       .from('solicitacao')
       .select('id, profile_id, tipo_recarga, status, valor, data_solicitacao, observacoes, profiles (name), filiais (nome)');
 
@@ -145,7 +149,7 @@ export class SolicitacoesDPComponent {
   }
 
   async atualizarStatusCupom(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('solicitacao')
       .update({ status: novoStatus })
       .eq('id', Number(solicitacoes.id))
@@ -153,7 +157,8 @@ export class SolicitacoesDPComponent {
       .maybeSingle();
 
     if (error) {
-      console.error(`Erro ao atualizar cupom #${solicitacoes.id}:`, error.message);
+      console.error(`Erro ao atualizar solicitacao #${solicitacoes.id}:`, error.message);
+      this.mostrarMensagem('Erro ao atualizar solicitacao:', 'erro');
       return;
     }
     if (!data) {
@@ -164,7 +169,7 @@ export class SolicitacoesDPComponent {
     if (novoStatus === 'APROVADO') {
       const usuarioId = solicitacoes.usuarioID;
 
-      const { data: usuario, error: usuarioError } = await this.supabase
+      const { data: usuario, error: usuarioError } = await supabase
         .from('profiles')
         .select('carteira, filial_id, name')
         .eq('id', usuarioId)
@@ -172,12 +177,13 @@ export class SolicitacoesDPComponent {
 
       if (usuarioError || !usuario) {
         console.error(`Usuário não encontrado: ${usuarioId}`);
+
         return;
       }
 
       const novoSaldo = (usuario.carteira || 0) + (solicitacoes.valor || 0);
 
-      const { error: updateError } = await this.supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({ carteira: novoSaldo })
         .eq('id', usuarioId);
@@ -195,7 +201,7 @@ export class SolicitacoesDPComponent {
         tipo_recarga: solicitacoes.tipo,
       };
 
-      const { error: insertError } = await this.supabase
+      const { error: insertError } = await supabase
         .from('carteira')
         .insert(historicoData);
 
@@ -214,6 +220,33 @@ export class SolicitacoesDPComponent {
     else this.solicitacoesPendentes.push(solicitacoes);
   }
 
+  async salvarEdicao() {
+    if (!this.solicitacaoSelecionada) return;
+    this.uploading = true;
+
+    const { data, error } = await supabase
+      .from('solicitacao')
+      .update({ valor: this.valorEditado })
+      .eq('id', this.solicitacaoSelecionada.id)
+      .select('*')
+      .maybeSingle();
+
+      this.uploading = false;
+
+    if (error) {
+      console.error('Erro ao editar valor:', error.message);
+      this.mostrarMensagem('❌ Erro ao editar valor!', 'erro');
+      this.fecharModal();
+      return;
+    }
+
+    if (data) {
+      this.solicitacaoSelecionada.valor = this.valorEditado;
+      this.mostrarMensagem('✅ Valor atualizado com sucesso!', 'sucesso');
+      this.fecharModal();
+    }
+  }
+
   isTooltipOpen(id: number | string): boolean {
     return this.tooltipOpenId === String(id);
   }
@@ -230,5 +263,20 @@ export class SolicitacoesDPComponent {
   exportarExcelSolicitacoes() {
     console.log('Exportando solicitacoes:', this.solicitacoes);
     this.sharedService.exportarExcelRecargas(this.solicitacoes, 'solicitacoes.xlsx')
+  }
+  abrirModalEditar(solicitacao: Solicitacoes) {
+    this.solicitacaoSelecionada = solicitacao;
+    this.valorEditado = solicitacao.valor;
+    this.modalAberto = true;
+  }
+
+  fecharModal() {
+    this.modalAberto = false;
+    this.solicitacaoSelecionada = null;
+  }
+  mostrarMensagem(texto: string, tipo: 'sucesso' | 'erro') {
+    this.mensagem = texto;
+    this.mensagemTipo = tipo;
+
   }
 }
