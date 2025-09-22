@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { supabase } from '../../services/supabaseClient';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
@@ -28,19 +27,20 @@ interface User {
   standalone: true
 })
 export class CarteiraComponent implements OnInit {
-  supabase: SupabaseClient;
   users: any[] = [];
   selectedUser: User | null = null;
   message: string = '';
   isError: boolean = false;
   carteiraForm: FormGroup;
-  uploading = false;
+  estadoMensagem: '' | 'loading' | 'sucesso' | 'erro' = '';
+  mensagem: string = '';
+  uploading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private cdr: ChangeDetectorRef,
     private ngZone: NgZone) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
     this.carteiraForm = this.fb.group({
       usuarioId: ['', Validators.required],
       tipo: ['', Validators.required],
@@ -59,7 +59,7 @@ export class CarteiraComponent implements OnInit {
   }
 
   async carregarUsuarios() {
-    const { data, error } = await this.supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('id, name, email, filial:filial_id ( nome ), carteira')
       .order('id', { ascending: false });
@@ -72,23 +72,23 @@ export class CarteiraComponent implements OnInit {
 
   async enviarSaldo(): Promise<void> {
     if (this.carteiraForm.invalid) {
-      this.showMessage('Preencha todos os campos obrigatórios!', true);
+      this.mostrarMensagem('Preencha todos os campos obrigatórios!', 'erro');
       return;
     }
 
-    this.uploading = true;
+    this.estadoMensagem = 'loading';
+    this.mensagem = 'Processando...';
 
     const { usuarioId, observacoes, valor, tipo } = this.carteiraForm.value;
 
     const valorNumerico = parseFloat(String(valor).replace(',', '.'));
     if (isNaN(valorNumerico) || valorNumerico <= 0) {
-      this.showMessage('Valor inválido!', true);
-      this.uploading = false;
+      this.mostrarMensagem('Valor inválido!', 'erro');
       return;
     }
 
     try {
-      const { data: usuario, error: usuarioError } = await this.supabase
+      const { data: usuario, error: usuarioError } = await supabase
         .from('profiles')
         .select('carteira, filial_id, name')
         .eq('id', usuarioId)
@@ -111,7 +111,7 @@ export class CarteiraComponent implements OnInit {
         throw new Error('Saldo insuficiente para remover este valor!');
       }
 
-      const { error: updateError } = await this.supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({ carteira: novoSaldo })
         .eq('id', usuarioId);
@@ -129,7 +129,7 @@ export class CarteiraComponent implements OnInit {
         criado_em: new Date().toISOString(),
       };
 
-      const { error: insertError } = await this.supabase
+      const { error: insertError } = await supabase
         .from('carteira')
         .insert(historicoData);
 
@@ -148,15 +148,14 @@ export class CarteiraComponent implements OnInit {
       });
 
       this.selectedUser = null;
-      this.showMessage(
-      `${isRemocao ? 'Removido' : 'Adicionado'} R$ ${Math.abs(valorNumerico).toFixed(2)} ${isRemocao ? 'da' : 'à'} carteira do usuário com sucesso!`
-    );
+      this.mostrarMensagem(
+        `${isRemocao ? 'Removido' : 'Adicionado'} R$ ${Math.abs(valorNumerico).toFixed(2)} ${isRemocao ? 'da' : 'à'} carteira do usuário com sucesso!`,
+        'sucesso'
+      );
 
     } catch (error: any) {
       console.error('Erro ao processar recarga:', error);
-      this.showMessage(error.message || 'Erro ao processar a recarga de saldo!', true);
-    } finally {
-      this.uploading = false;
+      this.mostrarMensagem(error.message || 'Erro ao processar a recarga de saldo!', 'erro');
     }
   }
 
@@ -169,9 +168,16 @@ export class CarteiraComponent implements OnInit {
     });
   }
 
-  private showMessage(msg: string, isError: boolean = false): void {
-    this.message = msg;
-    this.isError = isError;
-    setTimeout(() => this.message = '', 4000);
+  mostrarMensagem(msg: string, tipo: 'sucesso' | 'erro') {
+    this.mensagem = msg;
+    this.estadoMensagem = tipo;
+
+    setTimeout(() => {
+      this.ngZone.run(() => {
+        this.estadoMensagem = '';
+        this.mensagem = '';
+      });
+      this.cdr.detectChanges();
+    }, 2000);
   }
 }

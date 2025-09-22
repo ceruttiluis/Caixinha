@@ -196,17 +196,15 @@
         </div>
       </div>
     </div>
-    <div class="overlay uploading" *ngIf="uploading">
-      <div class="loading-box">
-        <p>⏳ Atualizando Valor...</p>
+    <div class="overlay feedback" *ngIf="estadoMensagem">
+      <div class="mensagem-box" [ngClass]="{ 'loading': estadoMensagem === 'loading',
+                    'sucesso': estadoMensagem === 'sucesso',
+                    'erro': estadoMensagem === 'erro' }">
+
+        <p *ngIf="estadoMensagem === 'loading'">⏳ Atualizando valor...</p>
+        <p *ngIf="estadoMensagem === 'sucesso'">✅ {{ mensagem }}</p>
+        <p *ngIf="estadoMensagem === 'erro'">❌ {{ mensagem }}</p>
       </div>
     </div>
-
-    <div *ngIf="mensagem" class="overlay mensagem">
-    <div class="mensagem-box" [ngClass]="{ 'erro': mensagemTipo === 'erro', 'sucesso': mensagemTipo === 'sucesso' }">
-      <p>{{ mensagem }}</p>
-      <button (click)="mensagem = ''">Fechar</button>
-    </div>
-  </div>
   </section>
 </main>

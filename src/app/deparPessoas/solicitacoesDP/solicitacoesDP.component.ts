@@ -1,11 +1,14 @@
 
 import { CommonModule, NgFor } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
 import { supabase } from '../../services/supabaseClient';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener, ChangeDetectorRef } from '@angular/core';
 import { SidebarDPComponent } from '../sharedDP/sidebarDP.component';
 import { SharedModule } from '../../shared/shared.module';
 import { SharedService } from '../../services/shared.service';
+import { filter } from 'rxjs/operators';
+import { NgZone } from '@angular/core';
 
 type SolicitacoesStatus = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
 
@@ -50,8 +53,7 @@ export class SolicitacoesDPComponent {
   valorEditado: number = 0;
   solicitacaoSelecionada: Solicitacoes | null = null;
   mensagem: string = '';
-  mensagemTipo: 'sucesso' | 'erro' | '' = '';
-  uploading = false;
+  estadoMensagem: '' | 'loading' | 'sucesso' | 'erro' = '';
 
   solicitacoesPendentes: Solicitacoes[] = [];
   solicitacoesAprovados: Solicitacoes[] = [];
@@ -60,6 +62,8 @@ export class SolicitacoesDPComponent {
 
   constructor(
     private sharedService: SharedService,
+    private router: Router,
+    private ngZone: NgZone,
     private cdr: ChangeDetectorRef) {
   }
 
@@ -67,6 +71,11 @@ export class SolicitacoesDPComponent {
     await this.carregarDados();
     await this.carregarUsuarios();
     await this.carregarFiliais();
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.carregarDados();
+      });
   }
 
   onFilialChange() {
@@ -76,6 +85,9 @@ export class SolicitacoesDPComponent {
   }
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
+    this.ngZone.run(() => {
+      this.filiais = this.filiais;
+    });
   }
 
   onColaboradorChange() {
@@ -86,6 +98,9 @@ export class SolicitacoesDPComponent {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialId
     );
+    this.ngZone.run(() => {
+      this.profiles = this.profiles;
+    });
   }
   async aplicarFiltros() {
     const { startDate, endDate } = this.sharedService.calcularPeriodo(
@@ -140,7 +155,10 @@ export class SolicitacoesDPComponent {
         observacoes: s.observacoes,
       };
     });
-    this.separarListas();
+    this.ngZone.run(() => {
+      this.solicitacoes = this.solicitacoes;
+      this.separarListas();
+    });
   }
   separarListas() {
     this.solicitacoesPendentes = this.solicitacoes.filter(s => s.status === 'PENDENTE');
@@ -222,28 +240,39 @@ export class SolicitacoesDPComponent {
 
   async salvarEdicao() {
     if (!this.solicitacaoSelecionada) return;
-    this.uploading = true;
 
-    const { data, error } = await supabase
-      .from('solicitacao')
-      .update({ valor: this.valorEditado })
-      .eq('id', this.solicitacaoSelecionada.id)
-      .select('*')
-      .maybeSingle();
+    this.estadoMensagem = 'loading';
+    this.mensagem = 'Atualizando valor...';
 
-      this.uploading = false;
+    try {
+      const { data, error } = await supabase
+        .from('solicitacao')
+        .update({ valor: this.valorEditado })
+        .eq('id', this.solicitacaoSelecionada.id)
+        .select('*')
+        .maybeSingle();
 
-    if (error) {
-      console.error('Erro ao editar valor:', error.message);
-      this.mostrarMensagem('❌ Erro ao editar valor!', 'erro');
+      if (error) {
+        console.error('Erro ao editar valor:', error.message);
+        this.mostrarMensagem('Erro ao editar valor!', 'erro');
+        this.fecharModal();
+        return;
+      }
+
+      if (data) {
+        this.solicitacaoSelecionada.valor = this.valorEditado;
+        this.estadoMensagem = '';
+        this.mensagem = '';
+        this.cdr.detectChanges();
+        this.mostrarMensagem('Valor atualizado com sucesso!', 'sucesso');
+        this.fecharModal();
+      }
+    } catch (error) {
+      console.error('Erro ao editar valor:', error);
+      this.mostrarMensagem('Erro ao editar valor!', 'erro');
       this.fecharModal();
-      return;
-    }
-
-    if (data) {
-      this.solicitacaoSelecionada.valor = this.valorEditado;
-      this.mostrarMensagem('✅ Valor atualizado com sucesso!', 'sucesso');
-      this.fecharModal();
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 
@@ -276,7 +305,12 @@ export class SolicitacoesDPComponent {
   }
   mostrarMensagem(texto: string, tipo: 'sucesso' | 'erro') {
     this.mensagem = texto;
-    this.mensagemTipo = tipo;
+    this.estadoMensagem = tipo;
 
+    setTimeout(() => {
+      this.estadoMensagem = '';
+      this.mensagem = '';
+      this.cdr.detectChanges();
+    }, 3000);
   }
 }

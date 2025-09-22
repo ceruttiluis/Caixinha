@@ -34,12 +34,12 @@
           <input type="number" id="valor" placeholder="R$" formControlName="valor" min="0.01" step="0.01" required>
         </div>
         <div class="form-group">
-        <div class="form-actions">
-          <button type="submit" [disabled]="uploading">Adicionar</button>
-          <button type="button" class="btn-cancel" (click)="cancelarEdicao()">
-            Cancelar
-          </button>
-        </div>
+          <div class="form-actions">
+            <button type="submit" [disabled]="uploading">Adicionar</button>
+            <button type="button" class="btn-cancel" (click)="cancelarEdicao()">
+              Cancelar
+            </button>
+          </div>
         </div>
       </div>
     </form>
@@ -66,6 +66,16 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+  <div class="overlay feedback" *ngIf="estadoMensagem">
+    <div class="mensagem-box" [ngClass]="{ 'loading': estadoMensagem === 'loading',
+                    'sucesso': estadoMensagem === 'sucesso',
+                    'erro': estadoMensagem === 'erro' }">
+
+      <p *ngIf="estadoMensagem === 'loading'">⏳ {{ mensagem }}</p>
+      <p *ngIf="estadoMensagem === 'sucesso'">✅ {{ mensagem }}</p>
+      <p *ngIf="estadoMensagem === 'erro'">❌ {{ mensagem }}</p>
     </div>
   </div>
 </div>
