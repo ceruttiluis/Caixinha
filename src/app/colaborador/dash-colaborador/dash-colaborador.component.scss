@@ -12,15 +12,18 @@
 
     .content {
       padding: 0.3rem;
-      width: 100%;}
+      width: 100%;
+    }
+
     background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
 
     @media (max-width: 480px) {
-     margin-left: 0;
+      margin-left: 0;
 
-    .content {
-      padding: 0.3rem;
-      width: 100%;}
+      .content {
+        padding: 0.3rem;
+        width: 100%;
+      }
     }
   }
 
@@ -46,11 +49,12 @@
     }
 
     @media (max-width: 768px) {
-      gap: 3rem;
+      display: none;
     }
   }
 
   .filters {
+    align-items: left;
     margin-top: 0;
     padding: 0;
     display: flex;
@@ -69,14 +73,37 @@
         gap: 3rem;
         border-radius: 4px;
         width: 515px;
-      }
-      @media (max-width: 768px) {
-      gap: 1rem;
 
-      label {
-        gap: 1rem;
+        @media (max-width: 768px) {
+          display: flex;
+          gap: 1rem;
+          border-radius: 4px;
+          width: 100%;
+        }
       }
-    }
+
+      @media (max-width: 768px) {
+        gap: 1rem;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+
+        label {
+          gap: 0, 2rem;
+        }
+
+        @media (max-width: 480px) {
+          gap: 1rem;
+          flex-direction: column;
+          width: 100%;
+          max-width: 100%;
+
+          label {
+            gap: 0, 2rem;
+          }
+        }
+      }
     }
 
     select,
@@ -87,14 +114,35 @@
       width: 220px;
 
       @media (max-width: 768px) {
-        width: 170px;
+        width: 100%;
+        max-width: 100%;
+        gap: 0;
 
         @media (max-width: 480px) {
-          width: 170px;
+          width: 100%;
+          max-width: 100%;
+          gap: 0;
         }
       }
     }
 
+    @media (max-width: 768px) {
+      margin-top: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      @media (max-width: 480px) {
+        margin-top: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+    }
   }
 
   .cards {
@@ -110,10 +158,10 @@
 
     @media (max-width: 768px) {
       flex-direction: column;
-        align-items: center;
-        margin: 0 auto;
-        width: 100%;
-        padding: 0.1rem;
+      align-items: center;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0.1rem;
 
       @media (max-width: 480px) {
         flex-direction: column;
@@ -131,33 +179,54 @@
       flex-direction: column;
       gap: 1rem;
       min-height: 260px;
-      flex: 1 1 200px; 
+      flex: 1 1 200px;
       background-color: white;
       border-radius: 8px;
       padding: 1rem;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s;
       width: 100%;
-      max-width: 250px; 
+      max-width: 250px;
 
       @media (max-width: 768px) {
-        width: 80%; 
-        max-width: 230px; 
+        width: 80%;
+        max-width: 230px;
         min-height: 120px;
         gap: 0.5rem;
         padding: 0.2rem;
-        .label { font-size: 1rem; } 
-        .value { font-size: 1.5rem; } 
-        .coin { width: 40px; height: 60px; }
+
+        .label {
+          font-size: 1rem;
+        }
+
+        .value {
+          font-size: 1.5rem;
+        }
+
+        .coin {
+          width: 40px;
+          height: 60px;
+        }
+
         @media (max-width: 480px) {
-          width: 80%; 
-          max-width: 230px; 
+          width: 80%;
+          max-width: 230px;
           min-height: 120px;
           gap: 0.5rem;
           padding: 0.2rem;
-          .label { font-size: 1rem; } 
-          .value { font-size: 1.5rem; } 
-          .coin { width: 40px; height: 60px; }
+
+          .label {
+            font-size: 1rem;
+          }
+
+          .value {
+            font-size: 1.5rem;
+          }
+
+          .coin {
+            width: 40px;
+            height: 60px;
+          }
         }
       }
 

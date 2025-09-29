@@ -44,6 +44,7 @@
         </div>
         <div class="periodo" *ngIf="periodoSelecionado === 'mensal'">
           <select [(ngModel)]="mesSelecionado" (change)="aplicarFiltros()">
+            <option [ngValue]="undefined" disabled>Selecione o Mes</option>
             <option value="1">Janeiro</option>
             <option value="2">Fevereiro</option>
             <option value="3">Março</option>
@@ -60,6 +61,7 @@
         </div>
         <div class="periodo" *ngIf="periodoSelecionado === 'trimestral'">
           <select [(ngModel)]="trimestreSelecionado" (change)="aplicarFiltros()">
+            <option [ngValue]="undefined" disabled>Selecione o Trimestre</option>
             <option value="1">1º Trimestre (Jan-Mar)</option>
             <option value="2">2º Trimestre (Abr-Jun)</option>
             <option value="3">3º Trimestre (Jul-Set)</option>
@@ -68,6 +70,7 @@
         </div>
         <div class="periodo" for *ngIf="periodoSelecionado === 'semestral'">
           <select [(ngModel)]="semestreSelecionado" (change)="aplicarFiltros()">
+            <option [ngValue]="undefined" disabled>Selecione o Semestre</option>
             <option value="1">1º Semestre (Jan-Jun)</option>
             <option value="2">2º Semestre (Jul-Dez)</option>
           </select>
