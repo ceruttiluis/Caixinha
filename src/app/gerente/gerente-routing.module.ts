@@ -4,6 +4,7 @@ import { DashboardGerenteComponent } from './dashboard-gerente/dashboard-gerente
 import { UsuariosGerenteComponent } from './usuarios-gerente/usu-gerente.component';
 import { CuponsComponent } from './cupons/cupons.component';
 import { GerenteGuard } from '../guards/gerente.guard';
+import { RecargaComponent } from './recarga/recarga.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,12 @@ const routes: Routes = [
     {
       path: 'cupons',
       component: CuponsComponent,
+      canActivate: [GerenteGuard],
+      data: { roles: ['GERENTE'] }
+    },
+    {
+      path: 'recarga',
+      component: RecargaComponent,
       canActivate: [GerenteGuard],
       data: { roles: ['GERENTE'] }
     },

@@ -55,7 +55,7 @@ export class SolicitacaoComponent {
     }
 
     const { error: insertError } = await supabase
-      .from('solicitacao')
+      .from('recarga')
       .insert({
         profile_id: this.auth.getUserId(),
         filial_id: perfil.filial_id,

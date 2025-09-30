@@ -1,4 +1,3 @@
-Botão pra editar o pedido de recarga.
 
 # Caixinha
 

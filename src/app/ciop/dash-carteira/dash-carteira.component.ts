@@ -236,7 +236,8 @@ export class DashCarteiraComponent implements OnInit {
       'Almoço': 0,
       'Janta': 0,
       'Café da Manhã': 0,
-      'Hospedagem': 0
+      'Hospedagem': 0,
+      'Outros': 0
     };
     for (const cupom of this.cupons) {
       this.totalGasto += cupom.valor;

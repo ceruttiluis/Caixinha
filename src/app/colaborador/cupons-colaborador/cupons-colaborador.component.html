@@ -75,7 +75,7 @@
               <tr *ngFor="let cupom of cuponsPendentes">
                 <td>{{ cupom.id }}</td>
                 <td>{{ cupom.usuario }}</td>
-                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ cupom.tipo }}</td>
                 <td>{{ cupom.valor | currency:'BRL' }}</td>
                 <td>
@@ -124,7 +124,7 @@
               <tr *ngFor="let cupom of cuponsAprovados">
                 <td>{{ cupom.id }}</td>
                 <td>{{ cupom.usuario }}</td>
-                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ cupom.tipo }}</td>
                 <td>{{ cupom.valor | currency:'BRL' }}</td>
                 <td>
@@ -173,7 +173,7 @@
               <tr *ngFor="let cupom of cuponsReprovados">
                 <td>{{ cupom.id }}</td>
                 <td>{{ cupom.usuario }}</td>
-                <td>{{ cupom.data | date:'shortDate' }}</td>
+                <td>{{ cupom.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ cupom.tipo }}</td>
                 <td>{{ cupom.valor | currency:'BRL' }}</td>
                 <td>

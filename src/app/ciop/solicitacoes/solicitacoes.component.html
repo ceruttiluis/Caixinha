@@ -86,7 +86,7 @@
                 <td>{{ solicitacao.id }}</td>
                 <td>{{ solicitacao.usuario }}</td>
                 <td>{{ solicitacao.filial }}</td>
-                <td>{{ solicitacao.data | date:'shortDate' }}</td>
+                <td>{{ solicitacao.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ solicitacao.tipo }}</td>
                 <td>{{ solicitacao.valor | currency:'BRL' }}</td>
                 <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
@@ -121,7 +121,7 @@
                 <td>{{ solicitacao.id }}</td>
                 <td>{{ solicitacao.usuario }}</td>
                 <td>{{ solicitacao.filial }}</td>
-                <td>{{ solicitacao.data | date:'shortDate' }}</td>
+                <td>{{ solicitacao.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ solicitacao.tipo }}</td>
                 <td>{{ solicitacao.valor | currency:'BRL' }}</td>
                 <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
@@ -156,7 +156,7 @@
                 <td>{{ solicitacao.id }}</td>
                 <td>{{ solicitacao.usuario }}</td>
                 <td>{{ solicitacao.filial }}</td>
-                <td>{{ solicitacao.data | date:'shortDate' }}</td>
+                <td>{{ solicitacao.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ solicitacao.tipo }}</td>
                 <td>{{ solicitacao.valor | currency:'BRL' }}</td>
                 <td class="observacoes" (click)="$event.stopPropagation(); toggleTooltip(solicitacao.id)">
