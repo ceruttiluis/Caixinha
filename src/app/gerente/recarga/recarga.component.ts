@@ -22,6 +22,7 @@ interface Solicitacoes {
     valor: number;
     status: SolicitacoesStatus;
     observacoes: string;
+    statusRH: SolicitacoesStatus;
 }
 
 @Component({
@@ -107,8 +108,17 @@ export class RecargaComponent {
     async carregarDados(startDate?: Date, endDate?: Date) {
         const filtro = this.filialId;
         let query = supabase
-            .from('solicitacao')
-            .select('id, profile_id, tipo_recarga, status, valor, data_solicitacao, observacoes, profiles (name), filiais (nome)');
+            .from('recarga')
+            .select(`id, 
+                profile_id, 
+                tipo_recarga, 
+                status, 
+                valor, 
+                data_solicitacao, 
+                observacoes, 
+                status_final, 
+                usuario:profiles!solicitacao_profile_id_fkey ( name ),
+                filiais (nome)`);
 
         if (filtro) {
             query = query.eq('filial_id', filtro);
@@ -135,13 +145,14 @@ export class RecargaComponent {
             return {
                 id: s.id,
                 usuarioID: s.profile_id,
-                usuario: s.profiles?.name,
+                usuario: s.usuario?.name ?? '-',
                 filial: s.filiais?.nome,
                 tipo: s.tipo_recarga,
                 status: s.status,
                 valor: s.valor,
                 data: s.data_solicitacao,
                 observacoes: s.observacoes,
+                statusRH: s.status_final,
             };
         });
         this.ngZone.run(() => {
@@ -157,8 +168,8 @@ export class RecargaComponent {
 
     async atualizarStatusRecarga(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
         const { data, error } = await supabase
-            .from('solicitacao')
-            .update({ status: novoStatus})
+            .from('recarga')
+            .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
             .eq('id', Number(solicitacoes.id))
             .select('*')
             .maybeSingle();
@@ -171,29 +182,6 @@ export class RecargaComponent {
         if (!data) {
             console.warn(`Nenhuma solicitacao encontrado ou permitido para atualização: #${solicitacoes.id}`);
             return;
-        }
-
-        if (novoStatus === 'APROVADO') {
-            const usuarioId = solicitacoes.usuarioID;
-
-            const historicoData = {
-                profile_id: usuarioId,
-                filial_id: solicitacoes.filial,
-                observacoes: solicitacoes.observacoes || 'Recarga aprovada',
-                valor_add: solicitacoes.valor,
-                criado_em: new Date().toISOString(),
-                tipo_recarga: solicitacoes.tipo,
-                data_solicitacao: solicitacoes.data,
-                aprovado_por: this.auth.getUserId() 
-            };
-
-            const { error: insertError } = await supabase
-                .from('solicitacao')
-                .insert(historicoData);
-
-            if (insertError) {
-                console.error('Erro ao registrar histórico: ' + insertError.message);
-            }
         }
 
         this.solicitacoesPendentes = this.solicitacoesPendentes.filter(s => s.id !== solicitacoes.id);
@@ -214,7 +202,7 @@ export class RecargaComponent {
 
         try {
             const { data, error } = await supabase
-                .from('solicitacao')
+                .from('recarga')
                 .update({ valor: this.valorEditado })
                 .eq('id', this.solicitacaoSelecionada.id)
                 .select('*')

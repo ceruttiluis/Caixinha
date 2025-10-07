@@ -7,6 +7,7 @@ import { FiliaisComponent } from './Filiais/filiais.component';
 import { DashCarteiraComponent } from './dash-carteira/dash-carteira.component';
 import { CuponsCiopComponent } from './cupons-ciop/cupons-ciop.component';
 import { SolicitacoesComponent } from './solicitacoes/solicitacoes.component';
+import { PowerBiComponent } from './Power-bi/powerbi.component';
 
 const routes: Routes = [
   {
@@ -44,7 +45,13 @@ const routes: Routes = [
     component: SolicitacoesComponent,
     canActivate: [CiopGuard],
     data: { roles: ['CIOP'] }
-  }
+  },
+  {
+    path: 'powerbi',
+    component: PowerBiComponent,
+    canActivate: [CiopGuard],
+    data: { roles: ['CIOP'] }
+  },
 ];
 
 @NgModule({

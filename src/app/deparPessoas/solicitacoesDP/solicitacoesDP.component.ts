@@ -22,6 +22,7 @@ interface Solicitacoes {
   valor: number;
   status: SolicitacoesStatus;
   observacoes: string;
+  aprovador: string;
 }
 
 @Component({
@@ -118,8 +119,19 @@ export class SolicitacoesDPComponent {
   async carregarDados(startDate?: Date, endDate?: Date) {
 
     let query = supabase
-      .from('solicitacao')
-      .select('id, profile_id, tipo_recarga, status, valor, data_solicitacao, observacoes, profiles (name), filiais (nome)');
+      .from('recarga')
+      .select(`id, 
+        profile_id, 
+        tipo_recarga, 
+        status_final, 
+        valor, 
+        data_solicitacao, 
+        observacoes, 
+        usuario:profiles!solicitacao_profile_id_fkey ( name ),
+        filiais (nome),
+        aprovador:profiles!recarga_aprovado_por_fkey ( name )
+        `)
+        .eq('status', 'APROVADO');
 
     if (this.filialId) {
       query = query.eq('filial_id', this.filialId);
@@ -146,13 +158,14 @@ export class SolicitacoesDPComponent {
       return {
         id: s.id,
         usuarioID: s.profile_id,
-        usuario: s.profiles?.name,
+        usuario: s.usuario?.name ?? '-',
         filial: s.filiais?.nome,
         tipo: s.tipo_recarga,
-        status: s.status,
+        status: s.status_final,
         valor: s.valor,
         data: s.data_solicitacao,
         observacoes: s.observacoes,
+        aprovador: s.aprovador?.name ?? '-',
       };
     });
     this.ngZone.run(() => {
@@ -163,13 +176,13 @@ export class SolicitacoesDPComponent {
   separarListas() {
     this.solicitacoesPendentes = this.solicitacoes.filter(s => s.status === 'PENDENTE');
     this.solicitacoesAprovados = this.solicitacoes.filter(s => s.status === 'APROVADO');
-    this.solicitacoesReprovados = this.solicitacoes.filter(s => s.status === 'DESCONTADO');
+    this.solicitacoesReprovados = this.solicitacoes.filter(s => s.status === 'REPROVADO');
   }
 
-  async atualizarStatusCupom(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
+  async atualizarStatusRH(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
     const { data, error } = await supabase
-      .from('solicitacao')
-      .update({ status: novoStatus })
+      .from('recarga')
+      .update({ status_final: novoStatus })
       .eq('id', Number(solicitacoes.id))
       .select('*')
       .maybeSingle();
@@ -236,6 +249,72 @@ export class SolicitacoesDPComponent {
     if (novoStatus === 'APROVADO') this.solicitacoesAprovados.push(solicitacoes);
     else if (novoStatus === 'REPROVADO') this.solicitacoesReprovados.push(solicitacoes);
     else this.solicitacoesPendentes.push(solicitacoes);
+
+    this.ngZone.run(() => {
+      this.solicitacoes = this.solicitacoes;
+      this.separarListas();
+    });
+  }
+
+  async reprovarValor(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus){
+    const { data, error } = await supabase
+      .from('recarga')
+      .update({ status_final: novoStatus })
+      .eq('id', Number(solicitacoes.id))
+      .select('*')
+      .maybeSingle();
+
+    if (error) {
+      console.error(`Erro ao atualizar solicitacao #${solicitacoes.id}:`, error.message);
+      this.mostrarMensagem('Erro ao atualizar solicitacao:', 'erro');
+      return;
+    }
+    if (!data) {
+      console.warn(`Nenhuma solicitacao encontrado ou permitido para atualização: #${solicitacoes.id}`);
+      return;
+    }
+
+    if (novoStatus === 'REPROVADO') {
+      const usuarioId = solicitacoes.usuarioID;
+
+      const { data: usuario, error: usuarioError } = await supabase
+        .from('profiles')
+        .select('carteira, filial_id, name')
+        .eq('id', usuarioId)
+        .maybeSingle();
+
+      if (usuarioError || !usuario) {
+        console.error(`Usuário não encontrado: ${usuarioId}`);
+
+        return;
+      }
+
+      const novoSaldo = (usuario.carteira || 0) - (solicitacoes.valor || 0);
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ carteira: novoSaldo })
+        .eq('id', usuarioId);
+
+      if (updateError) {
+        console.error('Erro ao atualizar saldo: ' + updateError.message);
+        return;
+      }
+    }
+
+    this.solicitacoesPendentes = this.solicitacoesPendentes.filter(s => s.id !== solicitacoes.id);
+    this.solicitacoesAprovados = this.solicitacoesAprovados.filter(s => s.id !== solicitacoes.id);
+    this.solicitacoesReprovados = this.solicitacoesReprovados.filter(s => s.id !== solicitacoes.id);
+
+    solicitacoes.status = novoStatus;
+    if (novoStatus === 'APROVADO') this.solicitacoesAprovados.push(solicitacoes);
+    else if (novoStatus === 'REPROVADO') this.solicitacoesReprovados.push(solicitacoes);
+    else this.solicitacoesPendentes.push(solicitacoes);
+
+    this.ngZone.run(() => {
+      this.solicitacoes = this.solicitacoes;
+      this.separarListas();
+    });
   }
 
   async salvarEdicao() {
@@ -246,7 +325,7 @@ export class SolicitacoesDPComponent {
 
     try {
       const { data, error } = await supabase
-        .from('solicitacao')
+        .from('recarga')
         .update({ valor: this.valorEditado })
         .eq('id', this.solicitacaoSelecionada.id)
         .select('*')

@@ -92,6 +92,7 @@
                 <th>Tipo</th>
                 <th>Valor</th>
                 <th>Observações</th>
+                <th>Aprovador</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -110,9 +111,10 @@
                     {{ solicitacao.observacoes }}
                   </div>
                 </td>
+                <td>{{ solicitacao.aprovador }}</td>
                 <td class="actions">
-                  <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
-                  <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
+                  <button class="approve" (click)="atualizarStatusRH(solicitacao, 'APROVADO')">Aprovar</button>
+                  <button class="reject" (click)="atualizarStatusRH(solicitacao, 'REPROVADO')">Reprovar</button>
                   <button class="edit" (click)="abrirModalEditar(solicitacao)">Editar</button>
                 </td>
               </tr>
@@ -133,6 +135,7 @@
                 <th>Tipo</th>
                 <th>Valor</th>
                 <th>Observações</th>
+                <th>Aprovador</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -151,8 +154,9 @@
                     {{ solicitacao.observacoes }}
                   </div>
                 </td>
+                <td>{{ solicitacao.aprovador }}</td>
                 <td class="actions">
-                  <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
+                  <button class="reject" (click)="reprovarValor(solicitacao, 'REPROVADO')">Reprovar</button>
                 </td>
               </tr>
             </tbody>
@@ -191,7 +195,7 @@
                   </div>
                 </td>
                 <td class="actions">
-                  <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
+                  <button class="approve" (click)="atualizarStatusRH(solicitacao, 'APROVADO')">Aprovar</button>
                 </td>
               </tr>
             </tbody>

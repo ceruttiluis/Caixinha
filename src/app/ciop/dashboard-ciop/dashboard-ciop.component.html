@@ -110,11 +110,13 @@
                 <th>Valor</th>
               </tr>
             </thead>
-            <tr *ngFor="let item of rankingGastos">
+            <tbody>
+              <tr *ngFor="let item of rankingGastos">
               <td>{{ item.nome }} </td>
               <td>{{ item.filial }}</td>
               <td>{{ item.total | currency:'BRL' }}</td>
             </tr>
+            </tbody>
           </table>
         </div>
       </div>

@@ -81,7 +81,6 @@
               <tr>
                 <th>ID</th>
                 <th>Usuário</th>
-                <th>Filial</th>
                 <th>Data</th>
                 <th>Tipo</th>
                 <th>Valor</th>
@@ -93,7 +92,6 @@
               <tr *ngFor="let solicitacao of solicitacoesPendentes">
                 <td>{{ solicitacao.id }}</td>
                 <td>{{ solicitacao.usuario }}</td>
-                <td>{{ solicitacao.filial }}</td>
                 <td>{{ solicitacao.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ solicitacao.tipo }}</td>
                 <td>{{ solicitacao.valor | currency:'BRL' }}</td>
@@ -105,8 +103,8 @@
                   </div>
                 </td>
                 <td class="actions">
-                  <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
-                  <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
+                  <button class="approve" (click)="atualizarStatusRecarga(solicitacao, 'APROVADO')">Aprovar</button>
+                  <button class="reject" (click)="atualizarStatusRecarga(solicitacao, 'REPROVADO')">Reprovar</button>
                   <button class="edit" (click)="abrirModalEditar(solicitacao)">Editar</button>
                 </td>
               </tr>
@@ -122,19 +120,18 @@
               <tr>
                 <th>ID</th>
                 <th>Usuário</th>
-                <th>Filial</th>
                 <th>Data</th>
                 <th>Tipo</th>
                 <th>Valor</th>
                 <th>Observações</th>
-                <th>Ações</th>
+                <th>Status RH</th>
+                <th>Ações</th>       
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let solicitacao of solicitacoesAprovados">
                 <td>{{ solicitacao.id }}</td>
                 <td>{{ solicitacao.usuario }}</td>
-                <td>{{ solicitacao.filial }}</td>
                 <td>{{ solicitacao.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ solicitacao.tipo }}</td>
                 <td>{{ solicitacao.valor | currency:'BRL' }}</td>
@@ -145,8 +142,9 @@
                     {{ solicitacao.observacoes }}
                   </div>
                 </td>
+                <td>{{ solicitacao.statusRH }}</td>
                 <td class="actions">
-                  <button class="reject" (click)="atualizarStatusCupom(solicitacao, 'REPROVADO')">Reprovar</button>
+                  <button class="reject" (click)="atualizarStatusRecarga(solicitacao, 'REPROVADO')">Reprovar</button>
                 </td>
               </tr>
             </tbody>
@@ -161,7 +159,6 @@
               <tr>
                 <th>ID</th>
                 <th>Usuário</th>
-                <th>Filial</th>
                 <th>Data</th>
                 <th>Tipo</th>
                 <th>Valor</th>
@@ -173,7 +170,6 @@
               <tr *ngFor="let solicitacao of solicitacoesReprovados">
                 <td>{{ solicitacao.id }}</td>
                 <td>{{ solicitacao.usuario }}</td>
-                <td>{{ solicitacao.filial }}</td>
                 <td>{{ solicitacao.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ solicitacao.tipo }}</td>
                 <td>{{ solicitacao.valor | currency:'BRL' }}</td>
@@ -185,7 +181,7 @@
                   </div>
                 </td>
                 <td class="actions">
-                  <button class="approve" (click)="atualizarStatusCupom(solicitacao, 'APROVADO')">Aprovar</button>
+                  <button class="approve" (click)="atualizarStatusRecarga(solicitacao, 'APROVADO')">Aprovar</button>
                 </td>
               </tr>
             </tbody>

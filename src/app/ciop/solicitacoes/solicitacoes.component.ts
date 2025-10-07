@@ -22,6 +22,7 @@ interface Solicitacoes {
   valor: number;
   status: SolicitacoesStatus;
   observacoes: string;
+  aprovador: string;
 }
 
 @Component({
@@ -56,8 +57,8 @@ export class SolicitacoesComponent {
   solicitacoes: any[] = [];
 
   constructor(
-    private auth: AuthService, 
-    private router: Router, 
+    private auth: AuthService,
+    private router: Router,
     private sharedService: SharedService,
     private ngZone: NgZone
   ) {
@@ -83,7 +84,7 @@ export class SolicitacoesComponent {
   }
   async carregarFiliais() {
     this.filiais = await this.sharedService.carregarFiliais();
-     this.ngZone.run(() => {
+    this.ngZone.run(() => {
       this.filiais = this.filiais;
     });
   }
@@ -99,7 +100,7 @@ export class SolicitacoesComponent {
     this.ngZone.run(() => {
       this.profiles = this.profiles;
     });
-    
+
   }
   async aplicarFiltros() {
     const { startDate, endDate } = this.sharedService.calcularPeriodo(
@@ -117,8 +118,19 @@ export class SolicitacoesComponent {
   async carregarDados(startDate?: Date, endDate?: Date) {
 
     let query = supabase
-      .from('solicitacao')
-      .select('id, profile_id, tipo_recarga, status, valor, data_solicitacao, observacoes, profiles (name), filiais (nome)');
+      .from('recarga')
+      .select(`id, 
+        profile_id, 
+        tipo_recarga, 
+        status_final, 
+        valor, 
+        data_solicitacao, 
+        observacoes, 
+        usuario:profiles!solicitacao_profile_id_fkey ( name ),
+        filiais (nome),
+        aprovador:profiles!recarga_aprovado_por_fkey ( name )
+        `)
+        .eq('status', 'APROVADO');
 
     if (this.filialId) {
       query = query.eq('filial_id', this.filialId);
@@ -145,94 +157,25 @@ export class SolicitacoesComponent {
       return {
         id: s.id,
         usuarioID: s.profile_id,
-        usuario: s.profiles?.name,
+        usuario: s.usuario?.name ?? '-',
         filial: s.filiais?.nome,
         tipo: s.tipo_recarga,
-        status: s.status,
+        status: s.status_final,
         valor: s.valor,
         data: s.data_solicitacao,
         observacoes: s.observacoes,
+        aprovador: s.aprovador?.name ?? '-',
       };
     });
     this.ngZone.run(() => {
       this.solicitacoes = this.solicitacoes;
-    this.separarListas();
+      this.separarListas();
     });
   }
   separarListas() {
     this.solicitacoesPendentes = this.solicitacoes.filter(s => s.status === 'PENDENTE');
     this.solicitacoesAprovados = this.solicitacoes.filter(s => s.status === 'APROVADO');
     this.solicitacoesReprovados = this.solicitacoes.filter(s => s.status === 'DESCONTADO');
-  }
-
-  async atualizarStatusCupom(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
-    const { data, error } = await supabase
-      .from('solicitacao')
-      .update({ status: novoStatus })
-      .eq('id', Number(solicitacoes.id))
-      .select('*')
-      .maybeSingle();
-
-    if (error) {
-      console.error(`Erro ao atualizar cupom #${solicitacoes.id}:`, error.message);
-      return;
-    }
-    if (!data) {
-      console.warn(`Nenhuma solicitacao encontrado ou permitido para atualização: #${solicitacoes.id}`);
-      return;
-    }
-
-    if (novoStatus === 'APROVADO') {
-      const usuarioId = solicitacoes.usuarioID;
-
-      const { data: usuario, error: usuarioError } = await supabase
-        .from('profiles')
-        .select('carteira, filial_id, name')
-        .eq('id', usuarioId)
-        .maybeSingle();
-
-      if (usuarioError || !usuario) {
-        console.error(`Usuário não encontrado: ${usuarioId}`);
-        return;
-      }
-
-      const novoSaldo = (usuario.carteira || 0) + (solicitacoes.valor || 0);
-
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ carteira: novoSaldo })
-        .eq('id', usuarioId);
-
-      if (updateError) {
-        console.error('Erro ao atualizar saldo: ' + updateError.message);
-        return;
-      }
-      const historicoData = {
-        profile_id: usuarioId,
-        filial_id: usuario.filial_id,
-        observacoes: solicitacoes.observacoes || 'Recarga aprovada',
-        valor_add: solicitacoes.valor,
-        criado_em: new Date().toISOString(),
-        tipo_recarga: solicitacoes.tipo,
-      };
-
-      const { error: insertError } = await supabase
-        .from('carteira')
-        .insert(historicoData);
-
-      if (insertError) {
-        console.error('Erro ao registrar histórico: ' + insertError.message);
-      }
-    }
-
-    this.solicitacoesPendentes = this.solicitacoesPendentes.filter(s => s.id !== solicitacoes.id);
-    this.solicitacoesAprovados = this.solicitacoesAprovados.filter(s => s.id !== solicitacoes.id);
-    this.solicitacoesReprovados = this.solicitacoesReprovados.filter(s => s.id !== solicitacoes.id);
-
-    solicitacoes.status = novoStatus;
-    if (novoStatus === 'APROVADO') this.solicitacoesAprovados.push(solicitacoes);
-    else if (novoStatus === 'REPROVADO') this.solicitacoesReprovados.push(solicitacoes);
-    else this.solicitacoesPendentes.push(solicitacoes);
   }
 
   isTooltipOpen(id: number | string): boolean {

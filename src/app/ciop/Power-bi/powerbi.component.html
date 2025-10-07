@@ -1,0 +1,21 @@
+
+<main class="dashboard">
+  <app-sidebar-ciop></app-sidebar-ciop>
+  <div class="report-shell">
+      <iframe
+        class="report-iframe"
+        [src]="embedUrl"
+        frameborder="0"
+        allowfullscreen="true"
+        title="Relatório Power BI"
+      ></iframe>
+    </div>
+  <!---<section class="content animate-fade-in">
+    <div class="report-shell">
+      <div *ngIf="isBrowser" #reportContainer class="report-container" role="region" aria-label="Relatório Power BI"></div>
+
+      <div *ngIf="!isBrowser" class="report-fallback">
+      </div>
+    </div>
+  </section>--->
+</main>

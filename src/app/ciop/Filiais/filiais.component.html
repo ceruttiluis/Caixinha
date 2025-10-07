@@ -9,8 +9,10 @@
       <button type="submit">{{ editando ? 'Atualizar' : 'Cadastrar' }}</button>
       <button *ngIf="editando" type="button" (click)="editando=null; novaFilial={nome:'',cidade:''}">Cancelar</button>
     </form>
-    <div class="tabela-filiais">
-      <table>
+    <div class="filiais">
+      <div class="tabela-filiais">
+        <div class="list-filiais">
+          <table>
         <thead>
           <tr>
             <th>ID</th>
@@ -33,6 +35,8 @@
           </tr>
         </tbody>
       </table>
+        </div>
+    </div>
     </div>
   </section>
 </div>

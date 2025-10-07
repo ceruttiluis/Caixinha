@@ -42,6 +42,8 @@
     "jwt-decode": "^4.0.0",
     "ng2-charts": "^5.0.4",
     "ngx-spinner": "^19.0.0",
+    "powerbi-client": "^2.23.1",
+    "powerbi-models": "^1.15.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "xlsx": "^0.18.5",

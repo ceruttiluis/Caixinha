@@ -2,7 +2,6 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { supabase } from '../services/supabaseClient';
 import { jwtDecode } from 'jwt-decode';
-import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

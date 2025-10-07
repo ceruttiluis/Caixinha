@@ -43,29 +43,32 @@
         </div>
       </div>
     </form>
-
-    <div class="tabela-usuarios">
-      <table>
-        <thead>
-          <tr>
-            <th>Filial</th>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Carteira (R$)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of users">
-            <td>{{ user.filial?.nome ?? '-'}}</td>
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.carteira | number:'1.2-2' }}</td>
-          </tr>
-          <tr *ngIf="users.length === 0">
-            <td colspan="5" class="no-data">Nenhum usuário cadastrado</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="usuarios">
+      <div class="tabela-usuarios">
+        <div class="list-usuarios">
+          <table>
+            <thead>
+              <tr>
+                <th>Filial</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Carteira (R$)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users">
+                <td>{{ user.filial?.nome ?? '-'}}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.carteira | number:'1.2-2' }}</td>
+              </tr>
+              <tr *ngIf="users.length === 0">
+                <td colspan="5" class="no-data">Nenhum usuário cadastrado</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
   <div class="overlay feedback" *ngIf="estadoMensagem">

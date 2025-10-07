@@ -1,21 +1,19 @@
 .container {
-  display: flex;
-  margin-left: 120px;
-  padding: 1rem;
-  min-height: 160vh;
-
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 0.7%, #a8aca9 43.5%, #4caf50 70%);
-  color: #1b1b1b;
+  background: linear-gradient(135deg, #2d7d32 1%, #a8aca9 57%, #4caf50 92%);
+  margin-left: 120px;
+  display: flex;
+  padding: 1rem;
+  min-height: 81.3vh;
 
   @media (max-width: 768px) {
     margin-left: 0;
     background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
   }
 
- .content {
-    margin-top: 0;
-    flex-grow: 1;
+  .content {
+    padding: 0.3rem;
+    width: 100%;
     animation: fadeIn 0.6s ease-in;
 
     @media (max-width: 768px) {
@@ -112,35 +110,76 @@
     }
   }
 
-  .tabela-usuarios {
-    margin-top: 2rem;
-    background-color: #f5fffa;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  .usuarios {
+    margin-top: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
 
-    table {
+    .tabela-usuarios {
+      margin-top: 0;
+      margin: 0;
+      max-height: 500px;
       width: 100%;
-      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 5px;
 
-      th,
-      td {
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        text-align: left;
+      h1 {
+        color: #130458;
+        font-size: 1.5rem;
+        margin-top: 0;
+        position: sticky;
+        top: 0;
+        z-index: 2;
       }
 
-      th {
-        background-color: #e8f5e9;
+      .list-usuarios {
+        margin-top: 0;
+        overflow-y: auto;
+        max-height: 500px;
+        width: 100%;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
       }
 
-      tr:nth-child(even) {
-        background-color: #f1f8e9;
+      &:not(:first-child) {
+        margin-top: 3rem;
       }
 
-      .actions {
-        display: flex;
-        gap: 0.5rem;
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+          position: sticky;
+          top: 0;
+          z-index: 2;
+        }
+
+        th,
+        td {
+          padding: 0.75rem;
+          border: 1px solid #ddd;
+          text-align: left;
+        }
+
+        th {
+          background: #f1f1f1;
+          font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+
+        tr:hover {
+          background-color: #f1f1f1;
+        }
 
         button {
           margin-right: 0.5rem;
@@ -148,40 +187,18 @@
           border: none;
           border-radius: 4px;
           cursor: pointer;
+          color: white;
 
           &:first-child {
             background: #2196f3;
             color: white;
-
-            &:hover {
-              background: #0b7dda;
-            }
-          }
-
-          &:nth-child(2) {
-            background: #ffc107;
-            color: #333;
-
-            &:hover {
-              background: #e0a800;
-            }
           }
 
           &:last-child {
             background: #f44336;
             color: white;
-
-            &:hover {
-              background: #d32f2f;
-            }
           }
         }
-      }
-
-      .no-data {
-        text-align: center;
-        padding: 1.5rem;
-        color: #666;
       }
     }
   }
@@ -196,14 +213,17 @@
     opacity: 1;
   }
 }
+
 .overlay.feedback {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 999;
 }
 
@@ -216,6 +236,14 @@
   text-align: center;
 }
 
-.mensagem-box.loading { color: #555; }
-.mensagem-box.sucesso { color: #2e7d32; }
-.mensagem-box.erro { color: #c62828; }
+.mensagem-box.loading {
+  color: #555;
+}
+
+.mensagem-box.sucesso {
+  color: #2e7d32;
+}
+
+.mensagem-box.erro {
+  color: #c62828;
+}

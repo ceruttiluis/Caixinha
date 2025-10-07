@@ -1,12 +1,13 @@
 .dashboard {
-  margin-left: 95px;
+  margin-left: 120px;
   display: flex;
-  padding: 0;
-  min-height: 180vh;
+  padding: 1rem;
+  min-height: 160vh;
 
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #2d7d32 1%, #a8aca9 42%, #4caf50 63%);
   color: #1b1b1b;
+
 
   @media (max-width: 768px) {
     margin-left: 0;
@@ -14,7 +15,6 @@
   }
 
   .content {
-    margin-left: 50px;
     margin-top: 0;
     flex-grow: 1;
     animation: fadeIn 0.6s ease-in;
@@ -98,7 +98,6 @@
     .tabela-lancamentos {
       margin-top: 0;
       margin: 0;
-      margin-right: 1rem;
       max-height: 500px;
       width: 100%;
       background: #ffffff;

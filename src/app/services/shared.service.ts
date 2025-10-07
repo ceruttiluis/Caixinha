@@ -81,12 +81,10 @@ export class SharedService {
     const rankingGastos = Object.entries(gastosPorUsuario)
       .map(([nome, dados]) => ({ nome, total: dados.total, filial: dados.filialNome }))
       .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
 
     const rankingExtrapolo = Object.entries(excedentePorUsuario)
       .map(([nome, dados]) => ({ nome, diferenca: dados.diferenca, filial: dados.filialNome }))
       .sort((a, b) => b.diferenca - a.diferenca)
-      .slice(0, 5);
 
     return { rankingGastos, rankingExtrapolo };
   }
@@ -290,7 +288,8 @@ export class SharedService {
       .from('cupons')
       .select(`
         id,
-        tipo_gasto, 
+        tipo_gasto,
+        usuario_id, 
         data_nota, 
         valor, 
         url_imagem, 
@@ -348,6 +347,7 @@ export class SharedService {
       }
       return {
         id: c.id,
+        usuarioID: c.usuario_id,
         usuario: c.usuario?.name ?? '-',
         data: c.data_nota,
         tipo: c.tipo_gasto,

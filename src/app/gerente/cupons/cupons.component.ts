@@ -63,7 +63,7 @@ export class CuponsComponent {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
-    private ngZone: NgZone) {}
+    private ngZone: NgZone) { }
 
   async ngOnInit() {
     this.filialId = this.auth.getFilialId();
@@ -120,9 +120,9 @@ export class CuponsComponent {
         endDate
       );
       this.ngZone.run(() => {
-      this.cupons = this.cupons;
-      this.separarListas();
-    });
+        this.cupons = this.cupons;
+        this.separarListas();
+      });
     } catch (error) {
       console.error('Erro ao carregar cupons:', error);
     }
@@ -140,28 +140,34 @@ export class CuponsComponent {
   }
 
   async atualizarStatusCarteira(cupom: Cupom, novoStatus: CupomStatus) {
-    const { data, error } = await supabase
+    const { data: cupomAtualizado, error: cupomErr } = await supabase
       .from('cupons')
       .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
       .eq('id', Number(cupom.id))
-      .select('*')
+      .select('id, status, usuario_id, valor')
       .maybeSingle();
 
-    if (error) {
-      console.error(`Erro ao atualizar cupom #${cupom.id}:`, error.message);
+    if (cupomErr) {
+      console.error(`Erro ao atualizar cupom #${cupom.id}:`, cupomErr.message);
       return;
     }
-    if (!data) {
-      console.warn(`Nenhum cupom encontrado ou permitido para atualização: #${cupom.id}`);
+    if (!cupomAtualizado) {
+      console.warn(`0 linhas afetadas ao atualizar cupom #${cupom.id} (id inválido ou RLS bloqueou).`);
       return;
     }
     if (novoStatus === 'APROVADO' || novoStatus === 'DESCONTADO') {
 
-      const usuarioId = cupom.usuarioID;
+      const usuarioId = cupom.usuarioID ?? cupomAtualizado.usuario_id;
+      const valorCupom = cupom.valor ?? cupomAtualizado.valor;
+
+      if (!usuarioId) {
+        console.error(`Usuário não encontrado no cupom #${cupom.id}`);
+        return;
+      }
 
       const { data: usuario, error: usuarioError } = await supabase
         .from('profiles')
-        .select('carteira, filial_id, name, id')
+        .select('id, carteira')
         .eq('id', usuarioId)
         .maybeSingle();
 
@@ -169,24 +175,29 @@ export class CuponsComponent {
         console.error(`Usuário não encontrado: ${usuarioId}`);
         return;
       }
+      console.log('Carteira', usuario.carteira);
 
       const novoSaldo = (usuario.carteira || 0) - (cupom.valor || 0);
+      console.log(`Carteira atualizado no banco:`, novoSaldo);
 
-      const { error: updateError } = await supabase
+      const { data: perfilAtualizado, error: walletErr } = await supabase
         .from('profiles')
         .update({ carteira: novoSaldo })
-        .eq('id', usuarioId);
+        .eq('id', usuarioId)
+        .select('id, carteira')
+        .maybeSingle();
 
-      if (updateError) {
-        console.error('Erro ao atualizar saldo: ' + updateError.message);
+      if (walletErr) {
+        console.error('Erro ao atualizar saldo:', walletErr.message);
         return;
       }
+      console.log('✅ Carteira depois do update:', perfilAtualizado?.carteira);
       this.ngZone.run(() => {
-      this.cupons = this.cupons;
-    });
+        this.cupons = this.cupons;
+      });
     }
 
-    console.log(`Cupom atualizado no banco:`, data);
+    console.log(`Cupom atualizado no banco:`, cupomAtualizado);
 
     this.cuponsPendentes = this.cuponsPendentes.filter(c => c.id !== cupom.id);
     this.cuponsAprovados = this.cuponsAprovados.filter(c => c.id !== cupom.id);
@@ -230,14 +241,14 @@ export class CuponsComponent {
     });
   }
 
-  async excluirCupom(id: Number){
-     const { error } = await supabase
+  async excluirCupom(id: Number) {
+    const { error } = await supabase
       .from('cupons')
       .delete()
       .eq('id', Number(id))
       .maybeSingle();
 
-      if (!error) {
+    if (!error) {
       await this.carregarDados();
     }
   }
