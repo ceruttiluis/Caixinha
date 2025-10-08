@@ -167,31 +167,36 @@ export class RecargaComponent {
     }
 
     async atualizarStatusRecarga(solicitacoes: Solicitacoes, novoStatus: SolicitacoesStatus) {
-        const { data, error } = await supabase
-            .from('recarga')
-            .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
-            .eq('id', Number(solicitacoes.id))
-            .select('*')
-            .maybeSingle();
 
-        if (error) {
-            console.error(`Erro ao atualizar solicitacao #${solicitacoes.id}:`, error.message);
-            this.mostrarMensagem('Erro ao atualizar solicitacao:', 'erro');
-            return;
+        if (solicitacoes.statusRH === 'PENDENTE') {
+            const { data, error } = await supabase
+                .from('recarga')
+                .update({ status: novoStatus, aprovado_por: this.auth.getUserId() })
+                .eq('id', Number(solicitacoes.id))
+                .select('*')
+                .maybeSingle();
+
+            if (error) {
+                console.error(`Erro ao atualizar solicitacao #${solicitacoes.id}:`, error.message);
+                this.mostrarMensagem('Erro ao atualizar solicitacao:', 'erro');
+                return;
+            }
+            if (!data) {
+                console.warn(`Nenhuma solicitacao encontrado ou permitido para atualização: #${solicitacoes.id}`);
+                return;
+            }
+
+            this.solicitacoesPendentes = this.solicitacoesPendentes.filter(s => s.id !== solicitacoes.id);
+            this.solicitacoesAprovados = this.solicitacoesAprovados.filter(s => s.id !== solicitacoes.id);
+            this.solicitacoesReprovados = this.solicitacoesReprovados.filter(s => s.id !== solicitacoes.id);
+
+            solicitacoes.status = novoStatus;
+            if (novoStatus === 'APROVADO') this.solicitacoesAprovados.push(solicitacoes);
+            else if (novoStatus === 'REPROVADO') this.solicitacoesReprovados.push(solicitacoes);
+            else this.solicitacoesPendentes.push(solicitacoes);
+        } else {
+            this.mostrarMensagem('Erro ao atualizar, recarga Aprovada ou recusada pelo rh', 'erro');
         }
-        if (!data) {
-            console.warn(`Nenhuma solicitacao encontrado ou permitido para atualização: #${solicitacoes.id}`);
-            return;
-        }
-
-        this.solicitacoesPendentes = this.solicitacoesPendentes.filter(s => s.id !== solicitacoes.id);
-        this.solicitacoesAprovados = this.solicitacoesAprovados.filter(s => s.id !== solicitacoes.id);
-        this.solicitacoesReprovados = this.solicitacoesReprovados.filter(s => s.id !== solicitacoes.id);
-
-        solicitacoes.status = novoStatus;
-        if (novoStatus === 'APROVADO') this.solicitacoesAprovados.push(solicitacoes);
-        else if (novoStatus === 'REPROVADO') this.solicitacoesReprovados.push(solicitacoes);
-        else this.solicitacoesPendentes.push(solicitacoes);
     }
 
     async salvarEdicao() {

@@ -4,7 +4,7 @@
   margin-left: 120px;
   display: flex;
   padding: 1rem;
-  min-height: 81.3vh;
+  min-height: 77.8vh;
 
   @media (max-width: 768px) {
     margin-left: 0;
@@ -122,7 +122,7 @@
     .tabela-usuarios {
       margin-top: 0;
       margin: 0;
-      max-height: 500px;
+      max-height: 480px;
       width: 100%;
       background: #ffffff;
       border-radius: 12px;
@@ -140,7 +140,7 @@
       .list-usuarios {
         margin-top: 0;
         overflow-y: auto;
-        max-height: 500px;
+        max-height: 480px;
         width: 100%;
         background: #fff;
         border-radius: 12px;

@@ -16,6 +16,7 @@ interface Filial {
   gerente?: {
     name: string;
   } | null;
+  gerenteID: string;
 }
 
 @Component({
@@ -25,7 +26,6 @@ interface Filial {
   standalone: true,
   imports: [
     SidebarCiopComponent,
-    NgIf,
     NgFor,
     CommonModule,
     ReactiveFormsModule,
@@ -35,8 +35,13 @@ interface Filial {
 })
 export class FiliaisComponent implements OnInit {
   filiais: Filial[] = [];
-  novaFilial: Filial = { nome: '', cidade: '' };
+  novaFilial: Filial = { nome: '', cidade: '', gerenteID: '' };
   editando: Filial | null = null;
+  gerentes: any[] = [];
+  uploading = false;
+  mensagem: string = '';
+  mensagemTipo: 'sucesso' | 'erro' | '' = '';
+
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -45,6 +50,7 @@ export class FiliaisComponent implements OnInit {
 
   async ngOnInit() {
     await this.carregarFiliais();
+    await this.carregarGerentes()
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -62,12 +68,12 @@ export class FiliaisComponent implements OnInit {
     if (this.editando) {
       const { error } = await supabase
         .from('filiais')
-        .update({ nome: this.novaFilial.nome, cidade: this.novaFilial.cidade })
+        .update({ nome: this.novaFilial.nome, cidade: this.novaFilial.cidade, gerente_id: this.novaFilial.gerenteID })
         .eq('id', this.editando.id);
-
+        this.mostrarMensagem('Filial Atualizada com sucesso', 'sucesso');
       if (!error) {
         this.editando = null;
-        this.novaFilial = { nome: '', cidade: '' };
+        this.novaFilial = { nome: '', cidade: '', gerenteID: '' };
         await this.carregarFiliais();
       }
     } else {
@@ -76,9 +82,10 @@ export class FiliaisComponent implements OnInit {
         .insert([this.novaFilial]);
 
       if (!error) {
-        this.novaFilial = { nome: '', cidade: '' };
+        this.novaFilial = { nome: '', cidade: '', gerenteID: '' };
         await this.carregarFiliais();
       }
+      this.mostrarMensagem('Filial cadastrada com sucesso', 'sucesso');
     }
   }
 
@@ -96,5 +103,22 @@ export class FiliaisComponent implements OnInit {
     if (!error) {
       await this.carregarFiliais();
     }
+    this.mostrarMensagem('Filial excluida com sucesso', 'sucesso');
+  }
+  async carregarGerentes() {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, name, role')
+      .eq('role', 'moderator');
+
+    if (error) console.error(error);
+    else this.gerentes = data || [];
+    this.ngZone.run(() => {
+      this.gerentes = this.gerentes;
+    });
+  }
+  mostrarMensagem(texto: string, tipo: 'sucesso' | 'erro') {
+    this.mensagem = texto;
+    this.mensagemTipo = tipo;
   }
 }

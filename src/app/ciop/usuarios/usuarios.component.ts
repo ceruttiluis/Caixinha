@@ -39,6 +39,8 @@ export class UsuariosComponent implements OnInit {
   filiais: Filial[] = [];
   gerentes: any[] = [];
   usuarioEditando: Usuario | null = null;
+  mensagem: string = '';
+  mensagemTipo: 'sucesso' | 'erro' | '' = '';
 
   constructor(
     private fb: FormBuilder,
@@ -54,7 +56,7 @@ export class UsuariosComponent implements OnInit {
       name: ['', Validators.required],
       role: ['', Validators.required],
       filial: ['', Validators.required],
-      gerente: ['', Validators.required],
+      gerente: ['']
     });
   }
 
@@ -62,6 +64,17 @@ export class UsuariosComponent implements OnInit {
     this.carregarUsuarios()
     this.carregarFiliais()
     this.carregarGerentes()
+
+    this.profileForm.get('role')?.valueChanges.subscribe((valorCargo) => {
+      const gerenteCtrl = this.profileForm.get('gerente');
+      if (valorCargo === 'user') {
+        gerenteCtrl?.addValidators(Validators.required);
+      } else {
+        gerenteCtrl?.clearValidators();
+      }
+      gerenteCtrl?.updateValueAndValidity();
+    });
+
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -117,13 +130,13 @@ export class UsuariosComponent implements OnInit {
       role,
       filial_id: filial,
       carteira: 0,
-      gerente_id: gerente,
-      password
+      gerente_id: gerente ? gerente : null,
+      password,
     };
     this.usuarioService.criarUsuario(novoUsuario).subscribe({
       next: (res) => {
         console.log('Usuário criado com sucesso!', res);
-        console.log('usuario:', novoUsuario)
+        this.mostrarMensagem('Usuário criado com sucesso!', 'sucesso');
         this.carregarUsuarios();
         this.profileForm.reset();
         this.uploading = false;
@@ -131,6 +144,7 @@ export class UsuariosComponent implements OnInit {
 
       error: (err) => {
         console.error('Erro ao criar usuário:', err.error?.error || err.message);
+        this.mostrarMensagem('Erro ao criar usuário:', 'erro');
         this.uploading = false;
       }
     });
@@ -143,12 +157,12 @@ export class UsuariosComponent implements OnInit {
     this.profileForm.get('email')?.updateValueAndValidity();
     this.profileForm.get('password')?.updateValueAndValidity();
 
-    this.profileForm.patchValue({
-      name: usuario.name,
-      role: usuario.role,
-      filial: usuario.filial_id,
-      gerente: usuario.gerente_id
-    });
+  this.profileForm.patchValue({
+    name: usuario.name,
+    role: usuario.role,
+    gerente: usuario.gerente_id || null,
+    filial: usuario.filial_id || null,
+  });
     console.log("editando", this.usuarioEditando)
   }
   salvarEdicao() {
@@ -171,6 +185,7 @@ export class UsuariosComponent implements OnInit {
         },
         error: (err) => console.error('Erro ao atualizar usuário:', err)
       });
+      this.mostrarMensagem('Usuario atualizado com sucesso', 'sucesso');
   }
   cancelarEdicao() {
     this.usuarioEditando = null;
@@ -181,14 +196,17 @@ export class UsuariosComponent implements OnInit {
     this.usuarioService.excluirUsuario(id).subscribe({
       next: () => {
         console.log('Usuário excluído com sucesso!');
+        this.mostrarMensagem('Usuário excluído com sucesso!', 'sucesso');
         this.carregarUsuarios();
       },
       error: (err) => {
         console.error('Erro ao excluir usuário:', err);
+        this.mostrarMensagem('Erro ao excluir usuário:', 'erro');
       }
     });
   }
-  testeSubmit() {
-    console.log('Form submetido!', this.profileForm.value);
+  mostrarMensagem(texto: string, tipo: 'sucesso' | 'erro') {
+    this.mensagem = texto;
+    this.mensagemTipo = tipo;
   }
 }

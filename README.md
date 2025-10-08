@@ -1,4 +1,4 @@
-Fazer o cadastro de usuario igual o lançamento de valores
+Fazer mensagem para quando o JWT token expirar aparecer na tela uma mensagem para logar novamente.
 # Caixinha
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.1.

@@ -4,64 +4,98 @@
   <section class="content animate-fade-in">
     <h1>Gerenciar Usuários</h1>
     <form [formGroup]="profileForm" (ngSubmit)="usuarioEditando ? salvarEdicao() : criarUsuario()">
-      <input type="text" formControlName="name" placeholder="Nome" required />
-      <input type="text" formControlName="email" placeholder="Email" required />
-      <input type="text" formControlName="password" placeholder="Senha" required />
-      <select formControlName="role" required>
-        <option value="" disabled selected>Selecione o Cargo</option>
-        <option value="admin">Admin</option>
-        <option value="moderator">Gerente</option>
-        <option value="user">Colaborador</option>
-        <option value="dp">DP</option>
-      </select>
-
-      <select formControlName="gerente" placeholder="Selecione o Gerente" required>
-        <option value="" disabled selected>Selecione o Gerente</option>
-        <option *ngFor="let g of gerentes" [value]="g.id">
-          {{ g.name }}
-        </option>
-      </select>
-
-      <select formControlName="filial" required>
-        <option value="" disabled selected>Selecione a Filial</option>
-        <option *ngFor="let filial of filiais" [value]="filial.id">
-          {{ filial.nome}}
-        </option>
-      </select>
-      <button *ngIf="!usuarioEditando" [disabled]="uploading" type="submit">Criar Usuário</button>
-      <button *ngIf="usuarioEditando" type="submit">Salvar Alterações</button>
-      <button (click)="cancelarEdicao()" type="button">Cancelar</button>
+      <div class="form-usuario">
+        <div class="form-group">
+          <label for="usuario">Insira o Nome:</label>
+          <input type="text" formControlName="name" placeholder="Nome" required />
+        </div>
+        <div class="form-group">
+          <label for="usuario">Insira o Email:</label>
+          <input type="text" formControlName="email" placeholder="Email" required />
+        </div>
+        <div class="form-group">
+          <label for="usuario">Insira a Senha:</label>
+          <input type="text" formControlName="password" placeholder="Senha" required />
+        </div>
+        <div class="form-group">
+          <label for="usuario">Selecione o Cargo:</label>
+          <select formControlName="role" required>
+            <option value="" disabled selected>Selecione o Cargo</option>
+            <option value="admin">Admin</option>
+            <option value="moderator">Gerente</option>
+            <option value="user">Colaborador</option>
+            <option value="dp">DP</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="usuario">Selecione o Gerente (se tiver):</label>
+          <select formControlName="gerente" placeholder="Selecione o Gerente">
+            <option value="" disabled>Selecione o Gerente</option>
+            <option *ngFor="let g of gerentes" [value]="g.id">
+              {{ g.name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="usuario">Selecione a Filial:</label>
+          <select formControlName="filial" required>
+            <option value="" disabled>Selecione a Filial</option>
+            <option *ngFor="let filial of filiais" [value]="filial.id">
+              {{ filial.nome}}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-actions">
+            <button *ngIf="!usuarioEditando" [disabled]="uploading" type="submit">Criar Usuário</button>
+            <button *ngIf="usuarioEditando" type="submit">Salvar Alterações</button>
+            <button (click)="cancelarEdicao()" class="btn-cancel" type="button">Cancelar</button>
+          </div>
+        </div>
+      </div>
     </form>
     <div class="usuarios">
-       <div class="tabela-usuario">
-      <div class="list-usuario">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Perfil</th>
-              <th>Filial</th>
-              <th>Gerente</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let user of usuarios">
-              <td>{{ user.name }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.role }}</td>
-              <td>{{ user.filial?.nome }}</td>
-              <td>{{ user.gerente?.name }}</td>
-              <td>
-                <button (click)="editarUsuario(user)">Editar</button>
-                <button (click)="excluirUsuario(user.id)">Excluir</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="tabela-usuario">
+        <div class="list-usuario">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Perfil</th>
+                <th>Filial</th>
+                <th>Gerente</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of usuarios">
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.filial?.nome }}</td>
+                <td>{{ user.gerente?.name }}</td>
+                <td>
+                  <button (click)="editarUsuario(user)">Editar</button>
+                  <button (click)="excluirUsuario(user.id)">Excluir</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+    <div class="overlay" *ngIf="uploading">
+      <div class="loading-box">
+        <p>⏳ Carregando...</p>
+      </div>
+    </div>
+
+    <div *ngIf="mensagem" class="overlay">
+      <div class="mensagem-box" [ngClass]="{ 'erro': mensagemTipo === 'erro', 'sucesso': mensagemTipo === 'sucesso' }">
+        <p>{{ mensagem }}</p>
+        <button (click)="mensagem = ''">Fechar</button>
+      </div>
     </div>
   </section>
 </div>

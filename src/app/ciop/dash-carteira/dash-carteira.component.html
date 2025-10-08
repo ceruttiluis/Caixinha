@@ -103,6 +103,7 @@
               <tr>
                 <th>Data</th>
                 <th>Usuário</th>
+                <th>Filial</th>
                 <th>Descrição</th>
                 <th>Valor</th>
               </tr>
@@ -111,6 +112,7 @@
               <tr *ngFor="let cupom of cupons">
                 <td>{{ cupom.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ cupom.usuario }}</td>
+                <td>{{ cupom.filial}}</td>
                 <td>{{ cupom.tipo }}</td>
                 <td class="negativo">{{ cupom.valor | currency:'BRL' }}</td>
               </tr>
@@ -126,6 +128,7 @@
               <tr>
                 <th>Data</th>
                 <th>Usuário</th>
+                <th>Filial</th>
                 <th>Valor</th>
                 <th>Tipo Recarga</th>
               </tr>
@@ -134,6 +137,7 @@
               <tr *ngFor="let adicao of adicoes">
                 <td>{{ adicao.data | date:'dd/MM/yyyy' }}</td>
                 <td>{{ adicao.usuario }}</td>
+                <td>{{ adicao.filial }}</td>
                 <td class="positivo">+R$ {{ adicao.valor }},00</td>
                 <td>{{ adicao.tipo }}</td>
               </tr>

@@ -15,8 +15,7 @@
   .tabela-usuario {
     margin-top: 0;
     margin: 0;
-    margin-right: 1rem;
-    max-height: 600px;
+    max-height: 470px;
     width: 100%;
     background: #ffffff;
     border-radius: 12px;
@@ -31,10 +30,10 @@
       z-index: 2;
     }
 
-    .list-usuarios {
+    .list-usuario {
       margin-top: 0;
       overflow-y: auto;
-      max-height: 350px;
+      max-height: 470px;
       width: 100%;
       background: #fff;
       border-radius: 12px;
@@ -50,10 +49,10 @@
       border-collapse: collapse;
 
       thead {
-          position: sticky;
-          top: 0;
-          z-index: 2;
-        }
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
 
       th,
       td {
@@ -74,9 +73,29 @@
       tr:hover {
         background-color: #f1f1f1;
       }
-    }
-    @media (max-width: 768px) {
-        display: none;
+
+      button {
+        margin-right: 0.5rem;
+        padding: 0.3rem 0.6rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: white;
+
+        &:first-child {
+          background: #2196f3;
+          color: white;
+        }
+
+        &:last-child {
+          background: #f44336;
+          color: white;
+        }
       }
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 }

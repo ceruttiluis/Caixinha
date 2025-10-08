@@ -149,7 +149,13 @@ export class DashCarteiraComponent implements OnInit {
   async carregarAdicoes() {
     let query = supabase
       .from('carteira')
-      .select('profile_id, criado_em, observacoes, tipo_recarga,  valor_add, profiles (name)');
+      .select(`profile_id, 
+        criado_em, 
+        observacoes, 
+        tipo_recarga,  
+        valor_add, 
+        profiles (name), 
+        filiais (nome)`);
 
     if (this.filialId) {
       query = query.eq('filial_id', this.filialId);
@@ -174,11 +180,12 @@ export class DashCarteiraComponent implements OnInit {
     this.adicoes = (data || []).map((a: any) => {
 
       return {
-        usuario: a.profiles?.name || 'Sem nome',
+        usuario: a.profiles?.name ?? '-',
         data: a.criado_em,
         tipo: a.tipo_recarga,
         observacao: a.observacoes,
         valor: a.valor_add,
+        filial: a.filiais?.nome ?? '-',
       };
     });
     this.ngZone.run(() => {
