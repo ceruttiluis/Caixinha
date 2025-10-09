@@ -1,12 +1,9 @@
 .Principal {
-  background: linear-gradient(135deg, #2d7d32 11%, #a8aca9 82.5%, #4caf50 120%);
-  margin-left: 90px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
   padding: 0 30px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   height: 170px;
   top: 0;
   left: 0;
@@ -15,7 +12,6 @@
   font-family: 'Segoe UI', sans-serif;
 
   @media (max-width: 768px) {
-    background: linear-gradient(110deg, #2d7d32 20%, #a8aca9 67%, #4caf50 150%);
     margin-left: 0;
     height: 100px;
 

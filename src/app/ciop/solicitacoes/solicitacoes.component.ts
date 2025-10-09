@@ -175,7 +175,7 @@ export class SolicitacoesComponent {
   separarListas() {
     this.solicitacoesPendentes = this.solicitacoes.filter(s => s.status === 'PENDENTE');
     this.solicitacoesAprovados = this.solicitacoes.filter(s => s.status === 'APROVADO');
-    this.solicitacoesReprovados = this.solicitacoes.filter(s => s.status === 'DESCONTADO');
+    this.solicitacoesReprovados = this.solicitacoes.filter(s => s.status === 'REPROVADO');
   }
 
   isTooltipOpen(id: number | string): boolean {

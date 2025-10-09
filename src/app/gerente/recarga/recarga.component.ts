@@ -117,6 +117,7 @@ export class RecargaComponent {
                 data_solicitacao, 
                 observacoes, 
                 status_final, 
+                aprovador:profiles!recarga_aprovado_por_fkey ( name ),
                 usuario:profiles!solicitacao_profile_id_fkey ( name ),
                 filiais (nome)`);
 
@@ -153,6 +154,7 @@ export class RecargaComponent {
                 data: s.data_solicitacao,
                 observacoes: s.observacoes,
                 statusRH: s.status_final,
+                aprovador: s.aprovador?.name ?? '-',
             };
         });
         this.ngZone.run(() => {
@@ -252,7 +254,7 @@ export class RecargaComponent {
     }
     exportarExcelRecargas() {
         console.log('Exportando solicitacoes:', this.solicitacoes);
-        this.sharedService.exportarExcelRecargas(this.solicitacoes, 'solicitacoes.xlsx')
+        this.sharedService.exportarRecargasGerente(this.solicitacoes, 'solicitacoes.xlsx')
     }
     abrirModalEditar(solicitacao: Solicitacoes) {
         this.solicitacaoSelecionada = solicitacao;

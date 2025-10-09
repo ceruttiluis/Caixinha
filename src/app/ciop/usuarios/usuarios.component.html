@@ -1,7 +1,7 @@
-<app-header></app-header>
 <app-sidebar-ciop></app-sidebar-ciop>
 <div class="container">
   <section class="content animate-fade-in">
+    <app-header></app-header>
     <h1>Gerenciar Usuários</h1>
     <form [formGroup]="profileForm" (ngSubmit)="usuarioEditando ? salvarEdicao() : criarUsuario()">
       <div class="form-usuario">

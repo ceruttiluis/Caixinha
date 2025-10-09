@@ -1,4 +1,3 @@
-<app-header></app-header>
 <app-sidebar-dp></app-sidebar-dp>
 <main class="dashboard">
   <div *ngIf="modalAberto" class="modal-backdrop">
@@ -12,6 +11,7 @@
     </div>
   </div>
   <section class="content animate-fade-in">
+    <app-header></app-header>
     <div class="Description">
       <h2>Filial</h2>
       <h2>Colaborador</h2>
@@ -78,7 +78,7 @@
       </label>
       <button (click)="exportarExcelSolicitacoes()">Exportar Excel</button>
     </div>
-    <div class="tables-cupons">
+    <div class="tables-recargas">
       <div class="tabela-lancamentos">
         <h2>Recargas Pendentes</h2>
         <div class="list-lancamento">

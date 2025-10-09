@@ -50,7 +50,7 @@ export class CarteiraComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.carregarUsuarios();
+   await this.carregarUsuarios();
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {

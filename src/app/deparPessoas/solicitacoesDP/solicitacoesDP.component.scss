@@ -5,7 +5,7 @@
   min-height: 160vh;
 
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #2d7d32 1%, #a8aca9 42%, #4caf50 63%);
+  background: linear-gradient(135deg, #2d7d32 1%, #a8aca9 44%, #4caf50 63%);
   color: #1b1b1b;
 
   @media (max-width: 768px) {
@@ -15,8 +15,6 @@
       padding: 0.3rem;
       width: 100%;
     }
-
-    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
 
     @media (max-width: 480px) {
       margin-left: 0;
@@ -32,7 +30,9 @@
     margin-top: 0;
     flex-grow: 1;
     animation: fadeIn 0.6s ease-in;
+    width: 100%;
   }
+
 
   .modal-backdrop {
     position: fixed;
@@ -211,7 +211,7 @@
     color: white;
   }
 
-  .tables-cupons {
+  .tables-recargas {
     margin-top: 0.5rem;
     align-items: center;
     justify-content: center;
@@ -256,7 +256,6 @@
 
       table {
         width: 100%;
-        min-width: 800px;
         border-collapse: collapse;
 
         thead {
@@ -340,6 +339,7 @@
         gap: 1rem;
 
         button {
+          display: flex;
           height: 50px;
           padding: 1rem;
           border: none;

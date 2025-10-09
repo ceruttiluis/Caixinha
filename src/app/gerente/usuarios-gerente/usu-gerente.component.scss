@@ -4,18 +4,20 @@
   margin-left: 120px;
   margin-top: 0;
   padding: 1rem;
-  min-height: 77.8vh;
+  min-height: 96.5vh;
 
-  @media (max-width: 768px) {
+   @media (max-width: 768px) {
     margin-left: 0;
-    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
-    min-height: 150vh;
+
+    @media (max-width: 480px) {
+      margin-left: 0;
+    }
   }
 
   .tabela-usuario {
     margin-top: 0;
     margin: 0;
-    max-height: 470px;
+    max-height: 650px;
     width: 100%;
     background: #ffffff;
     border-radius: 12px;
@@ -33,7 +35,7 @@
     .list-usuario {
       margin-top: 0;
       overflow-y: auto;
-      max-height: 470px;
+      max-height: 650px;
       width: 100%;
       background: #fff;
       border-radius: 12px;
@@ -93,9 +95,5 @@
         }
       }
     }
-  }
-
-  @media (max-width: 768px) {
-    display: none;
   }
 }

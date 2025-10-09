@@ -1,7 +1,7 @@
-<app-header></app-header>
 <app-sidebar-gerente></app-sidebar-gerente>
 <main class="dashboard">
   <section class="content animate-fade-in">
+    <app-header></app-header>
     <div class="Description">
       <h2>Colaborador</h2>
       <h2>Periodo</h2>
@@ -28,6 +28,7 @@
         </div>
         <div class="periodo" *ngIf="periodoSelecionado === 'mensal'">
           <select [(ngModel)]="mesSelecionado" (change)="aplicarFiltros()">
+            <option [ngValue]="undefined" disabled>Selecione o Mes</option>
             <option value="1">Janeiro</option>
             <option value="2">Fevereiro</option>
             <option value="3">Março</option>
@@ -44,6 +45,7 @@
         </div>
         <div class="periodo" *ngIf="periodoSelecionado === 'trimestral'">
           <select [(ngModel)]="trimestreSelecionado" (change)="aplicarFiltros()">
+            <option [ngValue]="undefined" disabled>Selecione o Trimestre</option>
             <option value="1">1º Trimestre (Jan-Mar)</option>
             <option value="2">2º Trimestre (Abr-Jun)</option>
             <option value="3">3º Trimestre (Jul-Set)</option>
@@ -52,6 +54,7 @@
         </div>
         <div class="periodo" for *ngIf="periodoSelecionado === 'semestral'">
           <select [(ngModel)]="semestreSelecionado" (change)="aplicarFiltros()">
+            <option [ngValue]="undefined" disabled>Selecione o Semestre</option>
             <option value="1">1º Semestre (Jan-Jun)</option>
             <option value="2">2º Semestre (Jul-Dez)</option>
           </select>
@@ -106,7 +109,7 @@
                 <td class="actions">
                   <button class="approve" (click)="atualizarStatusCarteira(cupom, 'APROVADO')">Aprovar</button>
                   <button class="reject" (click)="atualizarStatusCarteira(cupom, 'DESCONTADO')">Descontar</button>
-                 <button class="delete" (click)="excluirCupom(cupom.id)">Excluir</button>
+                  <button class="delete" (click)="excluirCupom(cupom.id)">Excluir</button>
                 </td>
               </tr>
             </tbody>

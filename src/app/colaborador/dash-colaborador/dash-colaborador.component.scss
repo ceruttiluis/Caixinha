@@ -1,6 +1,6 @@
 .dashboard {
   margin-left: 120px;
-  min-height: 77.8vh;
+  min-height: 96.5vh;
   padding: 1rem;
   display: flex;
   font-family: 'Segoe UI', sans-serif;
@@ -14,8 +14,6 @@
       padding: 0.3rem;
       width: 100%;
     }
-
-    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
 
     @media (max-width: 480px) {
       margin-left: 0;
@@ -172,6 +170,10 @@
       }
     }
 
+    @media (max-width: 1366px) {
+        gap: 0.7rem;
+      }
+
     .card {
       display: flex;
       align-items: center;
@@ -187,6 +189,12 @@
       transition: transform 0.3s;
       width: 100%;
       max-width: 250px;
+
+      @media (max-width: 1366px) {
+        width: 100%;
+        max-width: 190px;
+        min-height: 240px;
+      }
 
       @media (max-width: 768px) {
         width: 80%;

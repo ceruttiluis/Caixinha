@@ -1,8 +1,8 @@
 .dashboard {
-  margin-left: 95px;
+  margin-left: 120px;
   display: flex;
-  padding: 0;
-  min-height: 180vh;
+  padding: 1rem;
+  min-height: 160vh;
 
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #2d7d32 1%, #a8aca9 42%, #4caf50 63%);
@@ -10,19 +10,27 @@
 
   @media (max-width: 768px) {
     margin-left: 0;
-     min-height: 150vh;
-    background: linear-gradient(110deg, #2d7d32 6%, #a8aca9 28%, #4caf50 75%);
+
+    .content {
+      padding: 0.3rem;
+      width: 100%;
+    }
+
+    @media (max-width: 480px) {
+      margin-left: 0;
+
+      .content {
+        padding: 0.3rem;
+        width: 100%;
+      }
+    }
   }
 
   .content {
-    margin-left: 50px;
+    width: 100%;
     margin-top: 0;
     flex-grow: 1;
     animation: fadeIn 0.6s ease-in;
-
-    @media (max-width: 768px) {
-      display: none;
-    }
   }
 
   .Description {
@@ -38,9 +46,13 @@
       font-weight: bold;
       width: 140px;
     }
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   .filters {
+    align-items: left;
     margin-top: 0;
     padding: 0;
     display: flex;
@@ -59,6 +71,36 @@
         gap: 3rem;
         border-radius: 4px;
         width: 515px;
+
+        @media (max-width: 768px) {
+          display: flex;
+          gap: 1rem;
+          border-radius: 4px;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        gap: 1rem;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+
+        label {
+          gap: 0, 2rem;
+        }
+
+        @media (max-width: 480px) {
+          gap: 1rem;
+          flex-direction: column;
+          width: 100%;
+          max-width: 100%;
+
+          label {
+            gap: 0, 2rem;
+          }
+        }
       }
     }
 
@@ -68,9 +110,38 @@
       border: 1px solid #a5d6a7;
       border-radius: 4px;
       width: 220px;
+
+      @media (max-width: 768px) {
+        width: 100%;
+        max-width: 100%;
+        gap: 0;
+
+        @media (max-width: 480px) {
+          width: 100%;
+          max-width: 100%;
+          gap: 0;
+        }
+      }
     }
 
-    button {
+    @media (max-width: 768px) {
+      margin-top: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      @media (max-width: 480px) {
+        margin-top: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+    }
+     button {
       margin-left: 250px;
       display: flex;
       max-width: 120px;
@@ -85,8 +156,8 @@
       background-color: #4caf50;
       color: white;
     }
-
   }
+  
 
   .tables-cupons {
     margin-top: 0.5rem;
@@ -100,7 +171,6 @@
     .tabela-lancamentos {
       margin-top: 0;
       margin: 0;
-      margin-right: 1rem;
       max-height: 500px;
       width: 100%;
       background: #ffffff;
@@ -118,7 +188,8 @@
 
       .list-lancamento {
         margin-top: 0;
-        overflow-y: scroll;
+        overflow-y: auto;
+        overflow-x: auto;
         max-height: 350px;
         width: 100%;
         background: #fff;

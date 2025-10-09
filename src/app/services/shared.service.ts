@@ -125,7 +125,8 @@ export class SharedService {
       Valor: cupom.valor,
       Excedente: cupom.excedente ?? cupom.diferenca ?? 0,
       Status: cupom.status,
-      Filial: cupom.filial ?? cupom.filial_nome ?? ''
+      Filial: cupom.filial ?? cupom.filial_nome ?? '',
+      Aprovador: cupom.aprovacao ?? cupom.aprovador_nome ?? '',
     }));
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
@@ -150,6 +151,32 @@ export class SharedService {
       Valor: solicitacao.valor,
       Status: solicitacao.status,
       Observacoes: solicitacao.observacoes,
+      Aprovador: solicitacao.aprovador,
+    }));
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Solicitacoes': worksheet }, SheetNames: ['Solicitacoes'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(data, nomeArquivo);
+  }
+  exportarRecargasGerente(solicitacoes: any[], nomeArquivo: string = 'relatorio_solicitacoes.xlsx'): void {
+    if (!solicitacoes || solicitacoes.length === 0) {
+      console.warn('Nenhum dado para exportar');
+      return;
+    }
+
+    const exportData = solicitacoes.map(solicitacao => ({
+      ID: solicitacao.id,
+      Colaborador: solicitacao.usuario,
+      Data: solicitacao.data,
+      Tipo: solicitacao.tipo,
+      Valor: solicitacao.valor,
+      Status: solicitacao.status,
+      StatusRH: solicitacao.statusRH,
+      Observacoes: solicitacao.observacoes,
+      Aprovador: solicitacao.aprovador,
     }));
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
@@ -294,6 +321,7 @@ export class SharedService {
         valor, 
         url_imagem, 
         status, 
+        aprovador:profiles!cupons_aprovado_por_fkey ( name ),
         observacoes,
         usuario:profiles!cupons_usuario_id_fkey ( name ),
         filiais (nome)
@@ -361,6 +389,7 @@ export class SharedService {
         exceDeficit,
         descontar: c.descontar,
         observacoes: c.observacoes,
+        aprovacao: c.aprovador?.name ?? '-',
       };
     });
   }
