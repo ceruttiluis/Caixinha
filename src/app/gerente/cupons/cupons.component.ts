@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { SidebarGerenteComponent } from '../shared-gerente/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { SharedService } from '../../services/shared.service';
+import { CupomService } from '../../services/cupom.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
 
@@ -63,6 +64,7 @@ export class CuponsComponent {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
+    private cupomService: CupomService,
     private ngZone: NgZone) { }
 
   async ngOnInit() {
@@ -113,7 +115,7 @@ export class CuponsComponent {
         startDate = dataInicio;
         endDate = dataFim;
       }
-      this.cupons = await this.sharedService.carregarCuponsGerente(
+      this.cupons = await this.cupomService.carregarCuponsGerente(
         this.filialSelecionada,
         this.colaboradorId,
         startDate,
@@ -128,7 +130,7 @@ export class CuponsComponent {
     }
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
-    this.cupons = await this.sharedService.carregarCuponsGerente(
+    this.cupons = await this.cupomService.carregarCuponsGerente(
       filialId,
       colaboradorId
     );

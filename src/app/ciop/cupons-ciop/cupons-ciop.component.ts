@@ -7,6 +7,7 @@ import { Component, HostListener } from '@angular/core';
 import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
 import { SharedService } from '../../services/shared.service';
+import { CupomService } from '../../services/cupom.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
 
@@ -63,6 +64,7 @@ export class CuponsCiopComponent {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
+    private cupomService: CupomService,
     private ngZone: NgZone) {}
 
   async ngOnInit() {
@@ -102,7 +104,7 @@ export class CuponsCiopComponent {
     });
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
-    this.cupons = await this.sharedService.carregarCuponsCiop(
+    this.cupons = await this.cupomService.carregarCuponsCiop(
       filialId,
       colaboradorId
     );
@@ -131,7 +133,7 @@ export class CuponsCiopComponent {
         startDate = dataInicio;
         endDate = dataFim;
       }
-      this.cupons = await this.sharedService.carregarCuponsCiop(
+      this.cupons = await this.cupomService.carregarCuponsCiop(
         this.filialId,
         this.colaboradorId,
         startDate,

@@ -54,9 +54,6 @@ router.put('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  console.log('✅ Rota POST /api/profiles atingida!');
-  console.log('📦 Body recebido:', req.body);
-  console.log('👤 Usuário autenticado:', req.user);
   const { name, role, filial_id, gerente_id, email, password } = req.body;
 
   const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({

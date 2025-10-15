@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.component';
 import { SharedService } from '../../services/shared.service';
+import { CupomService } from '../../services/cupom.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
 
@@ -43,6 +44,7 @@ export class DashColaboradorComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
+    private cupomService: CupomService,
     private ngZone: NgZone,) {
   }
   logout() {
@@ -83,7 +85,7 @@ export class DashColaboradorComponent implements OnInit {
         startDate = dataInicio;
         endDate = dataFim;
       }
-      this.cupons = await this.sharedService.carregarCuponsColaborador(
+      this.cupons = await this.cupomService.carregarCuponsColaborador(
         this.filialId,
         startDate,
         endDate
@@ -97,14 +99,14 @@ export class DashColaboradorComponent implements OnInit {
     }
   }
   processarIndicadoresColaborador() {
-    const indicadores = this.sharedService.processarIndicadores(this.cupons);
+    const indicadores = this.cupomService.processarIndicadores(this.cupons);
     this.totalGasto = indicadores.totalGasto;
     this.totalOrcamento = indicadores.totalOrcamento;
     this.totalDeficit = indicadores.totalDeficit;
     this.totalDescontado = indicadores.totalDescontado;
     this.totalExcedenteAprovado = indicadores.totalExcedenteAprovado;
 
-    const rankings = this.sharedService.gerarRankings(this.cupons);
+    const rankings = this.cupomService.gerarRankings(this.cupons);
     this.rankingGastos = rankings.rankingGastos;
     this.rankingExtrapolo = rankings.rankingExtrapolo;
   }

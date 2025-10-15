@@ -8,6 +8,7 @@ import { SidebarCiopComponent } from '../shared-ciop/sidebar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
 import { SharedService } from '../../services/shared.service';
+import { CupomService } from '../../services/cupom.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NgZone } from '@angular/core';
@@ -56,6 +57,7 @@ export class DashCarteiraComponent implements OnInit {
     private router: Router,
     private sharedService: SharedService,
     private ngZone: NgZone,
+    private cupomService: CupomService,
     @Inject(PLATFORM_ID) private platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
@@ -104,7 +106,7 @@ export class DashCarteiraComponent implements OnInit {
     });
   }
   async carregarComFiltros(filialId?: string, colaboradorId?: string) {
-    this.cupons = await this.sharedService.carregarCuponsCiop(
+    this.cupons = await this.cupomService.carregarCuponsCiop(
       filialId,
       colaboradorId
     );
@@ -131,7 +133,7 @@ export class DashCarteiraComponent implements OnInit {
     try {
       let startDate = dataInicio ?? this.startDate;
       let endDate = dataFim ?? this.endDate;
-      this.cupons = await this.sharedService.carregarCuponsCiop(
+      this.cupons = await this.cupomService.carregarCuponsCiop(
         this.filialId,
         this.colaboradorId,
         startDate,

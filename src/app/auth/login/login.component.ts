@@ -63,7 +63,7 @@ export class LoginComponent {
       }, 100);
     } catch (error: any) {
       console.error('Erro completo:', error);
-      this.errorMessage = error.message || 'Credenciais inválidas ou erro no servidor';
+      this.errorMessage = 'Credenciais inválidas';
     } finally {
       this.loading = false;
     }

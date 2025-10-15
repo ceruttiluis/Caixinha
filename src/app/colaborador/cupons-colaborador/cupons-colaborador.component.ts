@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { SidebarColaboradorComponent } from '../shared-colaborador/sidebar.component';
 import { SharedModule } from "../../shared/shared.module";
 import { SharedService } from '../../services/shared.service';
+import { CupomService } from '../../services/cupom.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
 
@@ -60,6 +61,7 @@ export class CuponsColaboradorComponent implements OnInit{
     private auth: AuthService, 
     private router: Router, 
     private sharedService: SharedService,
+    private cupomService: CupomService,
   private ngZone: NgZone) {
   }
 
@@ -96,7 +98,7 @@ export class CuponsColaboradorComponent implements OnInit{
         startDate = dataInicio;
         endDate = dataFim;
       }
-      this.cupons = await this.sharedService.carregarCuponsColaborador(
+      this.cupons = await this.cupomService.carregarCuponsColaborador(
         this.filialId,
         startDate,
         endDate
