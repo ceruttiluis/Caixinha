@@ -1,4 +1,5 @@
 Fazer mensagem para quando o JWT token expirar aparecer na tela uma mensagem para logar novamente.
+Colocar um limitador nos botões de apenas 1 click, para que não seja enviada 2 requisições iguais.
 # Caixinha
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.1.
