@@ -12,6 +12,7 @@ import { filter } from 'rxjs/operators';
 })
 export class HeaderComponent {
   carteira: string | null = null;
+  name: string | null = null;
   constructor(
     private auth: AuthService,
     private router: Router,
@@ -51,6 +52,7 @@ export class HeaderComponent {
       return;
     }
 
+    this.name = data?.name || 'Usuário';
     this.carteira =  data?.carteira || 0;
     this.ngZone.run(() => {
       this.carteira = this.carteira;
