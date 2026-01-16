@@ -10,6 +10,9 @@ import { SharedService } from '../../services/shared.service';
 import { CupomService } from '../../services/cupom.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { LOGO_BASE64 } from '../../shared/logo';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -65,7 +68,7 @@ export class CuponsCiopComponent {
     private router: Router,
     private sharedService: SharedService,
     private cupomService: CupomService,
-    private ngZone: NgZone) {}
+    private ngZone: NgZone) { }
 
   async ngOnInit() {
     await this.carregarDados();
@@ -99,7 +102,7 @@ export class CuponsCiopComponent {
     this.profiles = await this.sharedService.carregarProfiles(
       this.filialId
     );
-     this.ngZone.run(() => {
+    this.ngZone.run(() => {
       this.profiles = this.profiles;
     });
   }
@@ -202,5 +205,136 @@ export class CuponsCiopComponent {
     );
     this.carregarDados(this.periodoSelecionado, startDate, endDate);
     this.separarListas();
+  }
+
+  async imageUrlToBase64(url: string): Promise<string> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async gerarPdf() {
+    const doc = new jsPDF('l');
+    doc.addImage(
+    LOGO_BASE64,
+    'PNG',
+    14,   // X
+    7,   // Y
+    50,   // largura
+    25    // altura
+  );
+
+    doc.setFontSize(14);
+    doc.text('Relatório de Cupons Fiscais', 14, 15);
+
+    const body = [];
+
+    for (const c of this.cupons) {
+      let imagemBase64 = '';
+
+      if (c.url_imagem) {
+        try {
+          c.__imgBase64 = await this.imageUrlToBase64(c.url_imagem);
+        } catch (e) {
+          console.error('Erro ao carregar imagem:', c.url_imagem);
+        }
+      }
+
+
+      body.push([
+        c.id ?? '-',
+        c.usuario ?? '-',
+        c.data ?? '-',
+        c.tipo ?? '-',
+        `R$ ${Number(c.valor ?? 0).toFixed(2)}`,
+        `R$ ${Number(c.exceDeficit ?? 0).toFixed(2)}`,
+        c.observacoes || '-',
+      ]);
+    }
+    const totalValor = this.cupons.reduce(
+      (acc, c) => acc + Number(c.valor ?? 0),
+      0
+    );
+
+    const totalExcedente = this.cupons.reduce(
+      (acc, c) => acc + Number(c.exceDeficit ?? 0),
+      0
+    );
+    const foot = [[
+      'TOTAL',        // ID
+      '',             // Usuário
+      '',             // Data
+      '',             // Tipo
+      `R$ ${totalValor.toFixed(2)}`,      // Valor
+      `R$ ${totalExcedente.toFixed(2)}`,  // Excedente
+      '',             // Observações
+      ''              // Imagem
+    ]];
+
+    autoTable(doc, {
+      startY: 25,
+      styles: {
+        fontSize: 9,
+        minCellHeight: 20,
+        valign: 'middle'
+      },
+      head: [[
+        'ID',
+        'Usuário',
+        'Data',
+        'Tipo',
+        'Valor',
+        'Excedente',
+        'Observações',
+        'Imagem'
+      ]],
+      body,
+      didDrawCell: (data) => {
+        if (data.column.index === 7 && data.row.section === 'body') {
+          const cupom = this.cupons[data.row.index];
+          if (cupom?.__imgBase64) {
+            const imgWidth = 16;
+            const imgHeight = 16;
+
+            const x = data.cell.x + (data.cell.width - imgWidth) / 2;
+            const y = data.cell.y + (data.cell.height - imgHeight) / 2;
+            doc.addImage(
+              cupom.__imgBase64,
+              'JPEG',
+              data.cell.x + 2,
+              data.cell.y + 2,
+              18,
+              14
+            );
+          }
+        }
+      }
+
+    });
+
+    const finalY = (doc as any).lastAutoTable.finalY + 12;
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Resumo do Relatório', 14, finalY - 6);
+
+    doc.setDrawColor(180);
+    doc.setLineWidth(0.5);
+    doc.line(14, finalY - 4, 280, finalY - 4);
+
+    const textY = finalY + 4;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.text(`Total Gasto: R$ ${totalValor.toFixed(2)}`, 14, textY);
+    doc.text(`Total Excedente/Déficit: R$ ${totalExcedente.toFixed(2)}`, 14, textY + 6);
+
+    doc.save('relatorio-cupons.pdf');
   }
 }
