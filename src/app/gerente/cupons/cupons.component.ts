@@ -10,6 +10,8 @@ import { SharedService } from '../../services/shared.service';
 import { CupomService } from '../../services/cupom.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
+import { PdfService } from '../../services/pdf.service';
+import { LOGO_BASE64 } from '../../shared/logo';
 
 type CupomStatus = 'PENDENTE' | 'APROVADO' | 'DESCONTADO';
 
@@ -65,6 +67,7 @@ export class CuponsComponent {
     private router: Router,
     private sharedService: SharedService,
     private cupomService: CupomService,
+    private pdfService: PdfService,
     private ngZone: NgZone) { }
 
   async ngOnInit() {
@@ -281,5 +284,13 @@ export class CuponsComponent {
     );
     this.carregarDados(this.periodoSelecionado, startDate, endDate);
     this.separarListas();
+  }
+
+  gerarPdf() {
+    this.pdfService.gerarPdfCupons(
+      this.cupons,
+      LOGO_BASE64,
+      'relatorio-cupons.pdf'
+    );
   }
 }

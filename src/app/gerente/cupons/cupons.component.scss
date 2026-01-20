@@ -46,6 +46,7 @@
       font-weight: bold;
       width: 140px;
     }
+
     @media (max-width: 768px) {
       display: none;
     }
@@ -141,8 +142,8 @@
         gap: 1rem;
       }
     }
-     button {
-      margin-left: 250px;
+
+    button {
       display: flex;
       max-width: 120px;
       height: 35px;
@@ -156,8 +157,24 @@
       background-color: #4caf50;
       color: white;
     }
+
+    .btn-exel {
+      background-color: #4caf50;
+
+      &:hover {
+        background-color: #43a047;
+      }
+    }
+
+    .btn-pdf {
+      background-color: #f44336;
+
+      &:hover {
+        background-color: #e53935;
+      }
+    }
   }
-  
+
 
   .tables-cupons {
     margin-top: 0.5rem;

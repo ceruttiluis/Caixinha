@@ -9,6 +9,8 @@ import { SharedModule } from '../../shared/shared.module';
 import { SharedService } from '../../services/shared.service';
 import { NgZone } from '@angular/core';
 import { filter } from 'rxjs/operators';
+import { PdfService } from '../../services/pdf.service';
+import { LOGO_BASE64 } from '../../shared/logo';
 
 type SolicitacoesStatus = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
 
@@ -60,6 +62,7 @@ export class SolicitacoesComponent {
     private auth: AuthService,
     private router: Router,
     private sharedService: SharedService,
+    private pdfService: PdfService,
     private ngZone: NgZone
   ) {
   }
@@ -130,7 +133,7 @@ export class SolicitacoesComponent {
         filiais (nome),
         aprovador:profiles!recarga_aprovado_por_fkey ( name )
         `)
-        .eq('status', 'APROVADO');
+      .eq('status', 'APROVADO');
 
     if (this.filialId) {
       query = query.eq('filial_id', this.filialId);
@@ -194,5 +197,13 @@ export class SolicitacoesComponent {
   exportarExcelSolicitacoes() {
     console.log('Exportando solicitacoes:', this.solicitacoes);
     this.sharedService.exportarExcelRecargas(this.solicitacoes, 'solicitacoes.xlsx')
+  }
+
+  gerarPdf() {
+    this.pdfService.gerarPdfRecargas(
+      this.solicitacoes,
+      LOGO_BASE64,
+      'relatorio-cupons.pdf'
+    );
   }
 }

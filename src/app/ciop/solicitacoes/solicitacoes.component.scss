@@ -47,6 +47,7 @@
       font-weight: bold;
       width: 140px;
     }
+
     @media (max-width: 768px) {
       display: none;
     }
@@ -157,6 +158,22 @@
     transition: all 0.2s;
     background-color: #4caf50;
     color: white;
+  }
+
+  .btn-exel {
+    background-color: #4caf50;
+
+    &:hover {
+      background-color: #43a047;
+    }
+  }
+
+  .btn-pdf {
+    background-color: #f44336;
+
+    &:hover {
+      background-color: #e53935;
+    }
   }
 
   .tables-racargas {
